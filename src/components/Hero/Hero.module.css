@@ -1,0 +1,220 @@
+.heroSection {
+    display: flex;
+    flex-direction: row;
+}
+
+.heroImg {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    z-index: 1;
+    border-radius: 0 30px 30px 0;
+    object-fit: cover;
+}
+
+.heroTitle {
+    position: absolute;
+    z-index: 4;
+    left: 96px;
+    top: 251px;
+    width: 100%;
+    max-width: 517px;
+}
+
+.heroTitleH1 {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 70px;
+    line-height: 100%;
+    letter-spacing: -0.03em;
+    color: #fbfbfb;
+    margin-bottom: 28px;
+}
+
+.heroTitleH2 {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 107%;
+    letter-spacing: -0.02em;
+    color: #fbfbfb;
+    margin-bottom: 64px;
+}
+
+.navLink {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 120%;
+    letter-spacing: -0.01em;
+    color: #fbfbfb;
+
+    border: 1px solid rgba(251, 251, 251, 0.4);
+    border-radius: 30px;
+    padding: 18px 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.navLink:hover {
+    color: var(--hover);
+    transform: scale(1.05);
+}
+
+.svgLink {
+    width: 15px;
+    height: 17px;
+    transform: rotate(45deg);
+    transform-origin: center;
+    transition: transform 0.5s ease;
+}
+
+.navLink:hover .svgLink {
+    transform: rotate(90deg);
+}
+
+.expNan {
+    position: absolute;
+    z-index: 3;
+    top: calc(100% - 168px);
+    left: calc(100% - 334px);
+    border-radius: 20px;
+    width: 284px;
+    height: 118px;
+    background: #fbfbfb;
+    padding: 32px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.expNanP {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.check {
+    border-radius: 13px;
+    width: 52px;
+    height: 52px;
+    background: var(--main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.check svg {
+    width: 20px;
+    height: 16px;
+    fill: #fbfbfb;
+}
+
+.expNanP1 {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 16px;
+    color: rgba(17, 16, 28, 0.5);
+}
+
+.expNanP2 {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 24px;
+    color: #11101c;
+}
+
+
+@media screen and (max-width: 750px) {
+    .heroTitle {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .heroTitleH1 {
+        font-size: 50px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .heroTitleH2 {
+        font-size: 20px;
+        margin-bottom: 44px;
+        text-align: center;
+    }
+
+    .navLink {
+        font-size: 18px;
+        padding: 18px 30px;
+
+    }
+
+    .expNan {
+        top: calc(100% - 148px);
+        left: calc(100% - 294px);
+        width: 234px;
+        height: 98px;
+        padding: 24px;
+        gap: 10px;
+    }
+
+    .expNan {
+        gap: 4px;
+    }
+
+    .check {
+        width: 42px;
+        height: 42px;
+        display: flex;
+    }
+
+    .expNanP1 {
+        font-size: 14px;
+    }
+
+    .expNanP2 {
+        font-size: 18px;
+    }
+
+}
+
+@media screen and (max-width: 650px) {
+    .heroImg {
+        width: 100%;
+        left: 0;
+        z-index: 1;
+        border-radius: 30px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .heroTitleH1 {
+        font-size: 40px;
+    }
+
+    .heroTitleH2 {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .expNan {
+        top: calc(100% - 118px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 204px;
+        height: 88px;
+        padding: 16px;
+        gap: 8px;
+    }
+
+    .expNan {
+        gap: 2px;
+    }
+}

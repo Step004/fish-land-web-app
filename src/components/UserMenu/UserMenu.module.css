@@ -1,0 +1,110 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.username {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 111%;
+    letter-spacing: -0.01em;
+    color: #fbfbfb;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.username:hover {
+    transform: scale(1.05);
+}
+
+.userNameContainer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logout {
+    border: 1px solid rgba(251, 251, 251, 0.4);
+    border-radius: 30px;
+    padding: 14px 39px;
+    background: none;
+
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 125%;
+    letter-spacing: -0.01em;
+    color: #fbfbfb;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.logout:hover {
+    color: var(--hover);
+    transform: scale(1.05);
+}
+
+.userIcon {
+    width: 40px;
+    height: 40px;
+    background: #fbfbfb;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.userSvg {
+    fill: var(--main);
+    width: 16px;
+    height: 16px;
+}
+
+.logoutSVG {
+    display: none;
+    fill: #fbfbfb;
+    width: 40px;
+    height: 40px;
+}
+
+@media screen and (max-width: 560px) {
+    .wrapper {
+        gap: 15px;
+    }
+
+    .username {
+        font-size: 16px;
+        width: 50px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .userNameContainer {
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .wrapper {
+        gap: 5px;
+    }
+
+    .logout {
+        display: none;
+    }
+
+    .logoutSVG {
+        display: block;
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media screen and (max-width: 355px) {
+    .userIcon {
+        display: none;
+    }
+}

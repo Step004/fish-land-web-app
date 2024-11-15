@@ -1,0 +1,33 @@
+.link {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 110%;
+    color: var(--button-hover);
+    font-family: var(--font-family);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.link:hover {
+    color: var(--hover);
+    transform: scale(1.05);
+}
+
+.active::after {
+    content: "•";
+    color: var(--button-hover);
+    font-size: 28px;
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
