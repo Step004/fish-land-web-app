@@ -4,6 +4,7 @@ import css from "./UserMenu.module.css";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosLogOut } from "react-icons/io";
+import { useEffect } from "react";
 
 export default function UserMenu() {
   const { currentUser } = useAuth();
@@ -20,7 +21,7 @@ export default function UserMenu() {
         <span className={css.userIcon}>
           <FaUser className={css.userSvg} />
         </span>
-        <p className={css.username} onClick={()=>navigate("/user")}>{currentUser.name}</p>
+        <p className={css.username} onClick={() => navigate("/user")}>{currentUser.name}</p>
       </div>
 
       <button className={css.logout} onClick={handleLogout}>

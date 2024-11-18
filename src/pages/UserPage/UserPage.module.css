@@ -1,0 +1,8 @@
+.photo{
+    width: 320px;
+    height: 320px;
+    border: 1px white solid;
+    background-color: antiquewhite;
+    margin-left: 20px;
+    margin-top: 20px;
+}

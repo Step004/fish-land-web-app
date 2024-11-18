@@ -18,20 +18,20 @@ const NotFoundPage = lazy(() =>
 
 function App() {
   return (
-    <Layout>
-      <Suspense fallback={<div>Please wait loading page...</div>}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/user" element={<UserPage />} />
-          <Route path="/friends/id" element={<FriendPage />} />
-          <Route path="/friends" element={<FriendListPage />} />
+      <Layout>
+        <Suspense fallback={<div>Please wait loading page...</div>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/user" element={<UserPage />} />
+            <Route path="/friends/:id" element={<FriendPage />} />
+            <Route path="/friends" element={<FriendListPage />} />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
-    </Layout>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </Layout>
   );
 }
 

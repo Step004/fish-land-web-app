@@ -6,6 +6,7 @@ import { GoEyeClosed } from "react-icons/go";
 import { useState } from "react";
 import { doCreateUserWithEmailAndPassword } from "../../firebase/firebase/auth.js";
 import { useNavigate } from "react-router-dom";
+import { saveUserToDatabase } from "../../firebase/firebase/writeData.js";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -15,12 +16,15 @@ export default function RegisterForm() {
     if (!isRegistering) {
       setIsRegistering(true);
       try {
-        await doCreateUserWithEmailAndPassword(
+       const user = await doCreateUserWithEmailAndPassword(
           values.email,
           values.password,
           values.name
         );
-        navigate("/");
+        if (user) {
+          navigate("/");
+          await saveUserToDatabase(user.uid, user.email, user.displayName);
+        }
       } catch (error) {
         console.error("Error during registration:", error);
       }
