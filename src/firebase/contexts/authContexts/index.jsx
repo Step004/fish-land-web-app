@@ -20,17 +20,18 @@ export function AuthProvider({ children }) {
 
  async function initializeUser(user) {
    if (user) {
-     await user.reload();
      setCurrentUser({
        ...user,
-       name: user.displayName,
-       uid: user.uid,
+      //  name: user.displayName,
+      //  uid: user.uid,
      });
      setUserLoggedIn(true);
    } else {
      setUserLoggedIn(false);
      setCurrentUser(null);
    }
+  //  await user.reload();
+
    setLoading(false);
  }
     const value = { currentUser, userLoggedIn, loading }

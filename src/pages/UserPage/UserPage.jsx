@@ -1,43 +1,43 @@
-// import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import css from "./UserPage.module.css";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-// import { saveUserToDatabase } from "../../firebase/firebase/readData.js";
-// import { getAllUsers } from "../../firebase/firebase/readData.js";
+import { getAllUsers } from "../../firebase/firebase/readData.js";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
-  // const [users, setUsers] = useState(null); // State to store users data
-  // const [loading, setLoading] = useState(true); // Loading state
-  if (!currentUser) return;
+  const [users, setUsers] = useState(null);
+  const [loading, setLoading] = useState(true);
   console.log(currentUser);
-  
-// saveUserToDatabase(currentUser.uid, currentUser.email, currentUser.name);
-  // useEffect(() => {
-  //   // Fetch users data when component mounts
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const usersData = await getAllUsers(); // Get users data
-  //       // setUsers(usersData); // Set users in state
-  //     } catch (error) {
-  //       console.error("Error fetching users:", error); // Log error if fetching fails
-  //     } finally {
-  //       setLoading(false); // Set loading to false once the data is fetched
-  //     }
-  //   };
 
-  //   if (currentUser) {
-  //     fetchUsers(); // Only fetch users if there is a logged-in user
-  //   }
-  // }, [currentUser]); // Effect will rerun when `currentUser` changes
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await getAllUsers();
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // if (!currentUser) return <p>Please log in to view users.</p>; // If not logged in, show message
-  // if (loading) return <p>Loading...</p>; // Show loading state while fetching data
+    if (currentUser) {
+      fetchUsers();
+    }
+  }, [currentUser]);
+
+  if (!currentUser) return <p>Please log in to view users.</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <main>
-      <div className={css.photo}>photo</div>
+    <main className={css.container}>
+      <div className={css.photo}></div>
       <div className={css.infContainer}>
-        <p>{currentUser.name}</p>
+        <div className={css.containerForElement}>
+          <p className={css.userName}>{currentUser.displayName}</p>
+          <p>Friends: 0</p>
+        </div>
+        <div className={css.containerForElement}>Публікації</div>
         {/* <h3>All Users:</h3>
         {users ? (
           <ul>

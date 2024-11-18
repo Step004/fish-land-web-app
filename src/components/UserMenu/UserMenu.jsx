@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { doSignOut } from "../../firebase/firebase/auth.js";
 import css from "./UserMenu.module.css";
-import { FaUser } from "react-icons/fa";
+import { FaRegUserCircle } from "react-icons/fa";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosLogOut } from "react-icons/io";
-import { useEffect } from "react";
 
 export default function UserMenu() {
   const { currentUser } = useAuth();
-
   const navigate = useNavigate();
+
+  console.log(currentUser);
   const handleLogout = async () => {
     await doSignOut();
     navigate("/login");
@@ -18,10 +18,10 @@ export default function UserMenu() {
   return (
     <div className={css.wrapper}>
       <div className={css.userNameContainer}>
-        <span className={css.userIcon}>
-          <FaUser className={css.userSvg} />
-        </span>
-        <p className={css.username} onClick={() => navigate("/user")}>{currentUser.name}</p>
+          <FaRegUserCircle className={css.userIcon} />
+        <p className={css.username} onClick={() => navigate("/user")}>
+          {currentUser.displayName}
+        </p>
       </div>
 
       <button className={css.logout} onClick={handleLogout}>
