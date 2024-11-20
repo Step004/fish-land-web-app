@@ -5,6 +5,8 @@ import { getAllUsers } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { IoMdAddCircleOutline } from "react-icons/io";
+
 // import { IoAddSharp } from "react-icons/io5";
 
 export default function UserPage() {
@@ -35,14 +37,28 @@ export default function UserPage() {
   if (loading) return <p>Loading...</p>;
   console.log(users);
 
-
   return (
     <main className={css.container}>
-      {currentUser.PhotoURL ? (
-        <img src={currentUser.PhotoURL} alt="UserPhoto" className={css.photo} />
-      ) : (
-        <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
-      )}
+      <div>
+        {currentUser.PhotoURL ? (
+          <img
+            src={currentUser.PhotoURL}
+            alt="UserPhoto"
+            className={css.photo}
+          />
+        ) : (
+          <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
+        )}
+        <div className={css.containerForRecomended}>
+          <h2>Recommendations</h2>
+          <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+          </ul>
+        </div>
+      </div>
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
           <h2 className={css.userName}>{currentUser.displayName}</h2>
@@ -52,7 +68,13 @@ export default function UserPage() {
         </div>
         {false ? <p className={css.fromLocal}>From:</p> : null}
         <div>
-          <h3 className={css.forP}>My photo:</h3>
+          <div className={css.containerForPhotoText}>
+            <h3 className={css.forP}>My photo</h3>
+            <button className={css.addPhotoButton}>
+              <IoMdAddCircleOutline className={css.iconAdd} />{" "}
+              <p className={css.textAdd}>Add photo</p>
+            </button>
+          </div>
           <ul className={css.photoList}>
             <li>1</li>
             <li>2</li>
@@ -62,7 +84,7 @@ export default function UserPage() {
         </div>
         <div className={css.containerForSeeAll}>
           <h3 className={css.friendsP}>
-            My friends:{Object.keys(users).length}
+            My friends: {Object.keys(users).length}
           </h3>
           <button
             className={css.buttonSeeAll}
@@ -70,7 +92,7 @@ export default function UserPage() {
               navigation("/friends");
             }}
           >
-            See all!
+            See all
           </button>
         </div>
         {users ? (
@@ -78,7 +100,13 @@ export default function UserPage() {
             {Object.keys(users)
               .slice(0, 6)
               .map((userId) => (
-                <li key={userId} className={css.friendItem} onClick={()=>{navigation(`/friends/${userId}`);}}>
+                <li
+                  key={userId}
+                  className={css.friendItem}
+                  onClick={() => {
+                    navigation(`/friends/${userId}`);
+                  }}
+                >
                   {users[userId].photo !== "null" ? (
                     <img
                       src={users[userId].photo}

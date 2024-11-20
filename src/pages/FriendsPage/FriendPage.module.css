@@ -26,12 +26,6 @@
     margin-bottom: 10px;
 }
 
-.buttonSettings {
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-
 .settingsIcon {
     color: aliceblue;
     width: 40px;
@@ -134,7 +128,7 @@
     gap: 5px;
     font-size: 14px;
     border-radius: 15px;
-    width: 100px;
+    width: 140px;
     height: 30px;
     border: 3px solid white;
     background: none;

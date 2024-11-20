@@ -12,6 +12,10 @@ const FriendPage = lazy(() => import("../../pages/FriendsPage/FriendPage.jsx"));
 const FriendListPage = lazy(() =>
   import("../../pages/FriendListPage/FriendListPage.jsx")
 );
+const MessagePage = lazy(() => import("../../pages/MessagePage/MessagePage.jsx"));
+
+const MapPage = lazy(() => import("../../pages/MapPage/MapPage.jsx"));
+
 const NotFoundPage = lazy(() =>
   import("../../pages/NotFoundPage/NotFoundPage")
 );
@@ -28,6 +32,8 @@ function App() {
           <Route path="/user" element={<UserPage />} />
           <Route path="/friends/:friendId" element={<FriendPage />} />
           <Route path="/friends" element={<FriendListPage />} />
+          <Route path="/message" element={<MessagePage />} />
+          <Route path="/map" element={<MapPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

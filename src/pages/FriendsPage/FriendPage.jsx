@@ -12,7 +12,6 @@ export default function FriendPage() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigate();
 
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -42,8 +41,8 @@ export default function FriendPage() {
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
           <h2 className={css.userName}>{user.name}</h2>
-          <button className={css.buttonSettings}>
-            <IoSettingsOutline className={css.settingsIcon} />
+          <button className={css.publish}>
+            Add to friends
           </button>
         </div>
         {false ? <p className={css.fromLocal}>From:</p> : null}
@@ -57,9 +56,7 @@ export default function FriendPage() {
           </ul>
         </div>
         <div className={css.containerForSeeAll}>
-          <h3 className={css.friendsP}>
-            {/* My friends:{Object.keys(users).length} */}
-          </h3>
+          <h3 className={css.friendsP}>Friends: {Object.keys(users).length}</h3>
           <button
             className={css.buttonSeeAll}
             onClick={() => {

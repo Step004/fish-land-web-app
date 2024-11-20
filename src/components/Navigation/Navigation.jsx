@@ -11,11 +11,17 @@ export default function Navigation() {
     <>
       <nav className={css.navigation}>
         <NavLink to="/" className={buildLinkClass}>
-          Home
+          News
         </NavLink>
 
         <NavLink to="/friends" className={buildLinkClass}>
           Friends
+        </NavLink>
+        <NavLink to="/message" className={buildLinkClass}>
+          Message
+        </NavLink>
+        <NavLink to="/map" className={buildLinkClass}>
+          Map
         </NavLink>
       </nav>
     </>

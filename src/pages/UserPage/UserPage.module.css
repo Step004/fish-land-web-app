@@ -49,6 +49,12 @@
     padding: 30px 40px;
 }
 
+.containerForRecomended {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px 15px;
+    box-sizing: border-box;
+}
+
 .friendPhoto {
     width: 90px;
     height: 90px;
@@ -93,7 +99,6 @@
 
 .forP {
     font-size: 24px;
-    margin-bottom: 15px;
 }
 
 .friendsP {
@@ -152,4 +157,42 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
+}
+
+.addPhotoButton {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background: none;
+    color: aliceblue;
+    cursor: pointer;
+}
+
+.containerForPhotoText {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.textAdd {
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.iconAdd {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+}
+
+.addPhotoButton:hover .textAdd {
+    transform: scale(1.1);
+}
+
+.addPhotoButton:hover .iconAdd {
+    width: 23px;
+    height: 23px;
 }

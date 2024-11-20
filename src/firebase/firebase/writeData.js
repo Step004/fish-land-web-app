@@ -8,7 +8,12 @@ export async function saveUserToDatabase(userId, email, name) {
     await set(userRef, {
       email,
       name,
+      origin: "",
       photo: null,
+      preference:[],
+      friends: [],
+      gallery: null,
+      posts: [],
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
