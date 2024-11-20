@@ -1,0 +1,155 @@
+.photo {
+    width: 320px;
+    height: 320px;
+    border: 4px solid black;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.container {
+    display: flex;
+    gap: 40px;
+    padding: 40px 70px;
+    color: aliceblue;
+}
+
+.userName {
+    font-size: 40px;
+}
+
+.nameAndButton {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.fromLocal {
+    margin-bottom: 10px;
+}
+
+.buttonSettings {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.settingsIcon {
+    color: aliceblue;
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s ease;
+}
+
+.settingsIcon:hover {
+    transform: scale(1.1);
+}
+
+.containerForElement {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    padding: 30px 40px;
+}
+
+.friendPhoto {
+    width: 90px;
+    height: 90px;
+}
+
+.friendList {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.friendItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.friendItem:hover {
+    transform: scale(1.1);
+}
+
+.friendName {
+    color: aliceblue;
+    font-size: 20px;
+}
+
+.containerForSeeAll {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.photoList {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 15px;
+}
+
+.forP {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.friendsP {
+    font-size: 24px;
+}
+
+.buttonSeeAll {
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: aliceblue;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buttonSeeAll:hover {
+    transform: scale(1.1);
+}
+
+.publicationsText {
+    font-size: 28px;
+    border-bottom: 1px solid wheat;
+}
+
+.pForNothingPublications {
+    text-align: center;
+    font-size: 24px;
+}
+
+.containerForPublic {
+    margin-bottom: 60px;
+}
+
+.publish {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    border-radius: 15px;
+    width: 100px;
+    height: 30px;
+    border: 3px solid white;
+    background: none;
+    color: aliceblue;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.publish:hover {
+    transform: scale(1.1);
+}
+
+.contPubl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}

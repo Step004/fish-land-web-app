@@ -26,7 +26,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/user" element={<UserPage />} />
-          <Route path="/friends/:id" element={<FriendPage />} />
+          <Route path="/friends/:friendId" element={<FriendPage />} />
           <Route path="/friends" element={<FriendListPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
