@@ -126,17 +126,17 @@ export default function FriendPage() {
           </div>
           <div className={css.containerForPublic}>
             {user.posts ? (
-              <ul>
-                {user.posts.map((post) => {
-                  <li key={post.id}>
-                    <p>{post.title}</p>
-                    <p>{post.content}</p>
-                  </li>;
-                })}
+              <ul className={css.listPublications}>
+                {user.posts.map((post) => (
+                  <li key={post.id} className={css.listPublicationsItem}>
+                    <p className={css.titlePost}>{post.title}</p>
+                    <p className={css.contentPost}>{post.content}</p>
+                  </li>
+                ))}
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>
-                {user.name} doesn`t have publications!
+                {user.name} don`t have publications!
               </p>
             )}
           </div>
