@@ -59,3 +59,42 @@ export const getUserById = async (userId) => {
     throw error; 
   }
 };
+
+
+export const getFriendsContacts = async (userId) => {
+  const db = database;
+  const dbRef = ref(db, "/");
+
+  try {
+    // Отримати список друзів користувача
+    const friendsSnapshot = await get(child(dbRef, `users/${userId}/friends`));
+    if (!friendsSnapshot.exists()) {
+      console.log(`No friends found for user with ID ${userId}`);
+      return [];
+    }
+
+    const friends = friendsSnapshot.val();
+
+    // Отримати деталі кожного друга (з об'єкта, а не масиву)
+    const friendDetailsPromises = Object.keys(friends).map(async (friendId) => {
+      const friendSnapshot = await get(child(dbRef, `users/${friendId}`));
+      if (friendSnapshot.exists()) {
+        return friendSnapshot.val();
+      } else {
+        console.log(`Friend with ID ${friendId} not found`);
+        return null;
+      }
+    });
+
+    const friendDetails = await Promise.all(friendDetailsPromises);
+
+    // Фільтруємо `null`, якщо є друзі, які не знайдені
+    return friendDetails.filter((friend) => friend !== null);
+  } catch (error) {
+    console.error(
+      `Error fetching friends' contacts for user with ID ${userId}:`,
+      error
+    );
+    throw error;
+  }
+};

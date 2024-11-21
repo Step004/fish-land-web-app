@@ -5,12 +5,16 @@ import defaultPhoto from "../../img/default-user.jpg";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import { IoIosSend } from "react-icons/io";
+import { IoMdAdd } from "react-icons/io";
+import { addFriend } from "../../firebase/firebase/writeData.js";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
   const { friendId } = useParams();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState(null);
+  const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigate();
 
@@ -21,6 +25,11 @@ export default function FriendPage() {
         const usersData = await getAllUsers();
         setUsers(usersData);
         setUser(userData);
+
+        // Перевірити, чи друг уже є в списку друзів
+        if (usersData[currentUser?.uid]?.friends?.[friendId]) {
+          setIsFriend(true);
+        }
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -28,9 +37,15 @@ export default function FriendPage() {
       }
     };
     fetchUser();
-  }, [friendId]);
+  }, [friendId, currentUser]);
+  console.log(friendId);
 
   if (loading) return <p>Loading...</p>;
+
+  const handleAddFriend = () => {
+    addFriend(currentUser.uid, friendId);
+    setIsFriend(true);
+  };
 
   return (
     <main className={css.container}>
@@ -51,7 +66,20 @@ export default function FriendPage() {
               )}
             </p>
           </div>
-          <button className={css.publish}>Add to friends</button>
+          <div className={css.buttonsFriend}>
+            {isFriend ? (
+              <p className={css.online}>We are friends.</p>
+            ) : (
+              <button className={css.publish} onClick={handleAddFriend}>
+                <IoMdAdd />
+                Add to friends
+              </button>
+            )}
+            <button className={css.publish}>
+              <IoIosSend />
+              Send message
+            </button>
+          </div>
         </div>
         <div className={css.descriptions}>
           {user.origin ? (

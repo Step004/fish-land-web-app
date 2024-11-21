@@ -17,6 +17,7 @@ export async function saveUserToDatabase(userId, email, name) {
       friends: [],
       gallery: [],
       posts: [],
+      messages: [],
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
@@ -86,5 +87,30 @@ export async function changeOnlineStatusForLogOut(userId) {
     await update(userRef, { online: false });
   } catch (error) {
     console.error("Error updating online status:", error);
+  }
+}
+export async function addFriend(userId, friendId) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}/friends`);
+
+  try {
+    const snapshot = await get(userRef);
+    const friends = snapshot.val() || {};
+
+    // Перевірити, чи друг уже доданий
+    if (friends[friendId]) {
+      console.log("Friend is already in the list.");
+      return;
+    }
+
+    // Додати нового друга до об'єкта
+    const updatedFriends = { ...friends, [friendId]: friendId };
+
+    // Оновити список друзів у базі даних
+    await update(ref(db, `users/${userId}`), { friends: updatedFriends });
+
+    console.log("Friend added successfully.");
+  } catch (error) {
+    console.error("Error adding friend:", error);
   }
 }
