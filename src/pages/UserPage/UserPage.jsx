@@ -167,13 +167,13 @@ export default function UserPage() {
           </div>
           <div className={css.containerForPublic}>
             {thisUser.posts ? (
-              <ul>
-                {thisUser.posts.map((post) => {
-                  <li key={post.id}>
-                    <p>{post.title}</p>
-                    <p>{post.content}</p>
-                  </li>;
-                })}
+              <ul className={css.listPublications}>
+                {thisUser.posts.map((post) => (
+                  <li key={post.id} className={css.listPublicationsItem}>
+                    <p className={css.titlePost}>{post.title}</p>
+                    <p className={css.contentPost}>{post.content}</p>
+                  </li>
+                ))}
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>

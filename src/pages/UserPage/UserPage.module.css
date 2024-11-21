@@ -213,6 +213,31 @@
 .fromLocal span {
     text-decoration: underline;
 }
+
 .desc span {
     text-decoration: underline;
+}
+
+.listPublications {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.listPublicationsItem {
+    padding: 20px 40px;
+    background-color: rgba(16, 57, 49, 0.4);
+    border-radius: 30px;
+}
+
+.titlePost {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.contentPost {
+    color: white;
+    font-size: 24px;
 }

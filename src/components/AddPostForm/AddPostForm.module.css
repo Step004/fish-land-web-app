@@ -1,0 +1,81 @@
+.closeBtn {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    fill: #11101c;
+}
+
+.submitButton {
+    border-radius: 30px;
+    width: 100%;
+    max-width: 438px;
+    height: 52px;
+    background: var(--main);
+    border: none;
+
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 125%;
+    letter-spacing: -0.01em;
+    color: #fbfbfb;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.submitButton:hover {
+    color: var(--hover);
+    transform: scale(1.05);
+}
+
+.logInText {
+    font-family: var(--font-family);
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    color: #11101c;
+    margin-bottom: 20px;
+}
+
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 40px;
+}
+
+.twoFields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.fieldTitle, .fieldContent {
+    border: 1px solid rgba(17, 16, 28, 0.1);
+    border-radius: 12px;
+    padding: 16px 18px;
+    height: 52px;
+    box-sizing: border-box;
+
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 125%;
+    color: #11101c;
+}
+
+.fieldTitle:hover {
+    border-color: rgba(17, 16, 28, 0.5);
+}
+.fieldContent {
+    width: 100%;
+    max-width: 472px;
+    height: 116px;
+    resize: none;
+}

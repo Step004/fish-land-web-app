@@ -10,6 +10,7 @@ import defaultPhoto from "../../img/default-user.jpg";
 import { updateUserFields } from "../../firebase/firebase/writeData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
+
 export default function UserSettingsForm({ close, user }) {
   console.log(user);
   const { updateCurrentUser } = useAuth();
