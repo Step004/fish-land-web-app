@@ -66,14 +66,18 @@ export default function FriendPage() {
             Preference: <span>{user.preference}</span>
           </p>
         ) : null}
-        <div>
+        <div className={css.containerForPhotoText}>
           <h3 className={css.forP}>Photo:</h3>
-          <ul className={css.photoList}>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-          </ul>
+          {user.gallery ? (
+            <ul className={css.photoList}>
+              <li>1</li>
+              <li>2</li>
+              <li>3</li>
+              <li>4</li>
+            </ul>
+          ) : (
+            <p className={css.pointPhoto}>{user.name} don`t have photo yet.</p>
+          )}
         </div>
         <div className={css.containerForSeeAll}>
           <h3 className={css.friendsP}>Friends: {Object.keys(users).length}</h3>

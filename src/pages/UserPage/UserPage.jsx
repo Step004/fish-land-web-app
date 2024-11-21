@@ -103,12 +103,16 @@ export default function UserPage() {
               <p className={css.textAdd}>Add photo</p>
             </button>
           </div>
-          <ul className={css.photoList}>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-          </ul>
+          {thisUser.gallery ? (
+            <ul className={css.photoList}>
+              <li>1</li>
+              <li>2</li>
+              <li>3</li>
+              <li>4</li>
+            </ul>
+          ) : (
+            <p className={css.pointPhoto}>You don`t have photo yet.</p>
+          )}
         </div>
         <div className={css.containerForSeeAll}>
           <h3 className={css.friendsP}>

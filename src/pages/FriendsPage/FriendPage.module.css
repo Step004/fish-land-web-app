@@ -73,6 +73,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    border-top: 2px solid white;
+    padding-top: 10px;
 }
 
 .photoList {
@@ -185,4 +187,20 @@
 .contentPost {
     color: white;
     font-size: 24px;
+}
+
+.publications {
+    border-top: 2px solid white;
+    padding-top: 10px;
+}
+
+.pointPhoto {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.containerForPhotoText {
+    margin-bottom: 15px;
+    border-top: 2px solid white;
+    padding-top: 10px;
 }
