@@ -41,7 +41,16 @@ export default function FriendPage() {
       )}
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
-          <h2 className={css.userName}>{user.name}</h2>
+          <div className={css.nameAndStatus}>
+            <h2 className={css.userName}>{user.name}</h2>
+            <p>
+              {user.online ? (
+                <span className={css.online}>Online</span>
+              ) : (
+                <span className={css.offline}>Offline</span>
+              )}
+            </p>
+          </div>
           <button className={css.publish}>Add to friends</button>
         </div>
         <div className={css.descriptions}>

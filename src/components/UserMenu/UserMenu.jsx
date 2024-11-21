@@ -4,13 +4,28 @@ import css from "./UserMenu.module.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosLogOut } from "react-icons/io";
+import { useEffect, useState } from "react";
+import { getUserById } from "../../firebase/firebase/readData.js";
+import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
 
 export default function UserMenu() {
   const { currentUser } = useAuth();
+  const [user, setUser] = useState(currentUser);
   const navigate = useNavigate();
-
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUserById(currentUser.uid);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } 
+    };
+    fetchUser();
+  }, [currentUser]);
 
   const handleLogout = async () => {
+    changeOnlineStatusForLogOut(currentUser.uid);
     await doSignOut();
     navigate("/login");
   };
@@ -20,7 +35,7 @@ export default function UserMenu() {
       <div className={css.userNameContainer}>
         <FaRegUserCircle className={css.userIcon} />
         <p className={css.username} onClick={() => navigate("/user")}>
-          {currentUser.name}
+          {user.name}
         </p>
       </div>
 

@@ -204,3 +204,11 @@
     border-top: 2px solid white;
     padding-top: 10px;
 }
+
+.online {
+    color: rgb(0, 236, 0);
+}
+
+.offline {
+    color: red;
+}

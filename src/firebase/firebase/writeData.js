@@ -8,6 +8,7 @@ export async function saveUserToDatabase(userId, email, name) {
       uid: userId,
       email,
       name,
+      online: true,
       origin: null,
       photo: null,
       age: null,
@@ -65,5 +66,25 @@ export async function addUserPost(userId, post) {
     console.log("Post added successfully");
   } catch (error) {
     console.error("Error adding user post:", error);
+  }
+}
+export async function changeOnlineStatusForLogin(userId) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}`);
+
+  try {
+    await update(userRef, { online: true });
+  } catch (error) {
+    console.error("Error updating online status:", error);
+  }
+}
+export async function changeOnlineStatusForLogOut(userId) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}`);
+
+  try {
+    await update(userRef, { online: false });
+  } catch (error) {
+    console.error("Error updating online status:", error);
   }
 }

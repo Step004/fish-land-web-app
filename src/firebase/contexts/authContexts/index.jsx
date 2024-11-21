@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
       setUserLoggedIn(false);
       setCurrentUser(null);
     }
-    await user.reload();
+    // await user.reload();
 
     setLoading(false);
   }
