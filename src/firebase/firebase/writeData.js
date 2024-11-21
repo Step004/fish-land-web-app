@@ -1,4 +1,4 @@
-import { ref, set, getDatabase, update } from "firebase/database";
+import { ref, set, getDatabase, update, get } from "firebase/database";
 
 export async function saveUserToDatabase(userId, email, name) {
   const db = getDatabase();
@@ -44,5 +44,26 @@ export async function updateUserFields(userId, updates) {
     console.log("User fields updated successfully");
   } catch (error) {
     console.error("Error updating user fields:", error);
+  }
+}
+
+
+export async function addUserPost(userId, post) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}/posts`);
+  try {
+    // Отримати поточний список постів
+    const snapshot = await get(userRef);
+    const existingPosts = snapshot.val() || [];
+
+    // Додати новий пост
+    const updatedPosts = [post, ...existingPosts];
+
+    // Оновити список постів у базі даних
+    await update(ref(db, `users/${userId}`), { posts: updatedPosts });
+
+    console.log("Post added successfully");
+  } catch (error) {
+    console.error("Error adding user post:", error);
   }
 }

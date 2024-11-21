@@ -24,10 +24,6 @@
     margin-bottom: 5px;
 }
 
-.fromLocal {
-    margin-bottom: 10px;
-}
-
 .buttonSettings {
     border: none;
     background: none;
@@ -201,4 +197,22 @@
 .addPhotoButton:hover .iconAdd {
     width: 23px;
     height: 23px;
+}
+
+.descriptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 5px;
+}
+
+.fromLocal {
+    margin-bottom: 15px;
+}
+
+.fromLocal span {
+    text-decoration: underline;
+}
+.desc span {
+    text-decoration: underline;
 }

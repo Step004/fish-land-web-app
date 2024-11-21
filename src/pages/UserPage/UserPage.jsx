@@ -7,6 +7,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import UserSettingsModal from "../../components/UserSettingsModal/UserSettingsModal.jsx";
+import AddPostModal from "../../components/AddPostModal/AddPostModal.jsx";
 
 // import { IoAddSharp } from "react-icons/io5";
 
@@ -16,8 +17,8 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [openSetting, setOpenSetting] = useState(false);
   const [thisUser, setThisUser] = useState(null);
+  const [openAddPost, setOpenAddPost] = useState(false);
   const navigation = useNavigate();
-  console.log(currentUser);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,7 +44,9 @@ export default function UserPage() {
   const toggleSettings = () => {
     setOpenSetting(!openSetting);
   };
-
+  const toggleAddPost = () => {
+    setOpenAddPost(!openAddPost);
+  };
   const userPhoto = thisUser.photo ? (
     <img src={thisUser.photo} alt="UserPhoto" className={css.photo} />
   ) : (
@@ -70,21 +73,31 @@ export default function UserPage() {
             <IoSettingsOutline className={css.settingsIcon} />
           </button>
         </div>
-        {thisUser.origin ? (
-          <p className={css.fromLocal}>From: {thisUser.origin}</p>
-        ) : null}
-        {thisUser.age ? (
-          <p className={css.fromLocal}>Age: {thisUser.age}</p>
-        ) : null}
+        <div className={css.descriptions}>
+          {thisUser.origin ? (
+            <p className={css.desc}>
+              From: <span>{thisUser.origin}</span>
+            </p>
+          ) : null}
+          {thisUser.age ? (
+            <p className={css.desc}>
+              Age: <span>{thisUser.age}</span>
+            </p>
+          ) : null}
+          {thisUser.number ? (
+            <p className={css.desc}>
+              Number: <span>{thisUser.number}</span>
+            </p>
+          ) : null}
+        </div>
         {thisUser.preference ? (
-          <p className={css.fromLocal}>Preference: {thisUser.preference}</p>
-        ) : null}
-        {thisUser.number ? (
-          <p className={css.fromLocal}>Number: {thisUser.number}</p>
+          <p className={css.fromLocal}>
+            Preference: <span>{thisUser.preference}</span>
+          </p>
         ) : null}
         <div>
           <div className={css.containerForPhotoText}>
-            <h3 className={css.forP}>My photo</h3>
+            <h3 className={css.forP}>My photos</h3>
             <button className={css.addPhotoButton}>
               <IoMdAddCircleOutline className={css.iconAdd} />{" "}
               <p className={css.textAdd}>Add photo</p>
@@ -119,7 +132,9 @@ export default function UserPage() {
                   key={userId}
                   className={css.friendItem}
                   onClick={() => {
-                    navigation(`/friends/${userId}`);
+                    if (userId == currentUser.uid) {
+                      navigation("/user");
+                    } else navigation(`/friends/${userId}`);
                   }}
                 >
                   {users[userId].photo ? (
@@ -145,23 +160,33 @@ export default function UserPage() {
         <div className={css.publications}>
           <div className={css.contPubl}>
             <h3 className={css.publicationsText}>Publications</h3>
-            <button className={css.publish}>
+            <button className={css.publish} onClick={toggleAddPost}>
               {/* <IoAddSharp className={css.iconAdd} /> */}
               Add news
             </button>
           </div>
           <div className={css.containerForPublic}>
-            <ul></ul>
-
-            <p className={css.pForNothingPublications}>
-              You don`t have publications!
-            </p>
+            {thisUser.posts ? (
+              <ul>
+                {thisUser.posts.map((post) => {
+                  <li key={post.id}>
+                    <p>{post.title}</p>
+                    <p>{post.content}</p>
+                  </li>;
+                })}
+              </ul>
+            ) : (
+              <p className={css.pForNothingPublications}>
+                You don`t have publications!
+              </p>
+            )}
           </div>
         </div>
       </div>
       {openSetting && (
         <UserSettingsModal close={toggleSettings} user={thisUser} />
       )}
+      {openAddPost && <AddPostModal close={toggleAddPost} />}
     </main>
   );
 }

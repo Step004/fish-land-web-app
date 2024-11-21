@@ -4,8 +4,10 @@ import { getAllUsers, getUserById } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
 export default function FriendPage() {
+  const { currentUser } = useAuth();
   const { friendId } = useParams();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState(null);
@@ -42,15 +44,27 @@ export default function FriendPage() {
           <h2 className={css.userName}>{user.name}</h2>
           <button className={css.publish}>Add to friends</button>
         </div>
-        {user.origin ? (
-          <p className={css.fromLocal}>From: {user.origin}</p>
-        ) : null}
-        {user.age ? <p className={css.fromLocal}>Age: {user.age}</p> : null}
+        <div className={css.descriptions}>
+          {user.origin ? (
+            <p className={css.desc}>
+              From: <span>{user.origin}</span>
+            </p>
+          ) : null}
+          {user.age ? (
+            <p className={css.desc}>
+              Age: <span>{user.age}</span>
+            </p>
+          ) : null}
+          {user.number ? (
+            <p className={css.desc}>
+              Number: <span>{user.number}</span>
+            </p>
+          ) : null}
+        </div>
         {user.preference ? (
-          <p className={css.fromLocal}>Preference: {user.preference}</p>
-        ) : null}
-        {user.number ? (
-          <p className={css.fromLocal}>Number: {user.number}</p>
+          <p className={css.fromLocal}>
+            Preference: <span>{user.preference}</span>
+          </p>
         ) : null}
         <div>
           <h3 className={css.forP}>Photo:</h3>
@@ -81,7 +95,9 @@ export default function FriendPage() {
                   key={userId}
                   className={css.friendItem}
                   onClick={() => {
-                    navigation(`/friends/${userId}`);
+                    if (userId == currentUser.uid) {
+                      navigation("/user");
+                    } else navigation(`/friends/${userId}`);
                   }}
                 >
                   {users[userId].photo ? (
@@ -109,11 +125,20 @@ export default function FriendPage() {
             <h3 className={css.publicationsText}>Publications</h3>
           </div>
           <div className={css.containerForPublic}>
-            <ul></ul>
-
-            <p className={css.pForNothingPublications}>
-              This user doesn`t have publications!
-            </p>
+            {user.posts ? (
+              <ul>
+                {user.posts.map((post) => {
+                  <li key={post.id}>
+                    <p>{post.title}</p>
+                    <p>{post.content}</p>
+                  </li>;
+                })}
+              </ul>
+            ) : (
+              <p className={css.pForNothingPublications}>
+                {user.name} doesn`t have publications!
+              </p>
+            )}
           </div>
         </div>
       </div>
