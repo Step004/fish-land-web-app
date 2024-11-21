@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import css from "./UserPage.module.css";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-import { getAllUsers } from "../../firebase/firebase/readData.js";
+import { getAllUsers, getUserById } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import UserSettingsModal from "../../components/UserSettingsModal/UserSettingsModal.jsx";
 
 // import { IoAddSharp } from "react-icons/io5";
 
@@ -13,6 +14,8 @@ export default function UserPage() {
   const { currentUser } = useAuth();
   const [users, setUsers] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openSetting, setOpenSetting] = useState(false);
+  const [thisUser, setThisUser] = useState(null);
   const navigation = useNavigate();
   console.log(currentUser);
 
@@ -20,6 +23,8 @@ export default function UserPage() {
     const fetchUsers = async () => {
       try {
         const usersData = await getAllUsers();
+        const user = await getUserById(currentUser.uid);
+        setThisUser(user);
         setUsers(usersData);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -33,23 +38,22 @@ export default function UserPage() {
     }
   }, [currentUser]);
 
-  if (!currentUser) return <p>Please log in to view users.</p>;
   if (loading) return <p>Loading...</p>;
-  console.log(users);
 
+  const toggleSettings = () => {
+    setOpenSetting(!openSetting);
+  };
+
+  const userPhoto = thisUser.photo ? (
+    <img src={thisUser.photo} alt="UserPhoto" className={css.photo} />
+  ) : (
+    <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
+  );
   return (
     <main className={css.container}>
       <div>
-        {currentUser.PhotoURL ? (
-          <img
-            src={currentUser.PhotoURL}
-            alt="UserPhoto"
-            className={css.photo}
-          />
-        ) : (
-          <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
-        )}
-        <div className={css.containerForRecomended}>
+        {userPhoto}
+        <div className={css.containerForRecommended}>
           <h2>Recommendations</h2>
           <ul>
             <li>1</li>
@@ -61,12 +65,23 @@ export default function UserPage() {
       </div>
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
-          <h2 className={css.userName}>{currentUser.displayName}</h2>
-          <button className={css.buttonSettings}>
+          <h2 className={css.userName}>{thisUser.name}</h2>
+          <button className={css.buttonSettings} onClick={toggleSettings}>
             <IoSettingsOutline className={css.settingsIcon} />
           </button>
         </div>
-        {false ? <p className={css.fromLocal}>From:</p> : null}
+        {thisUser.origin ? (
+          <p className={css.fromLocal}>From: {thisUser.origin}</p>
+        ) : null}
+        {thisUser.age ? (
+          <p className={css.fromLocal}>Age: {thisUser.age}</p>
+        ) : null}
+        {thisUser.preference ? (
+          <p className={css.fromLocal}>Preference: {thisUser.preference}</p>
+        ) : null}
+        {thisUser.number ? (
+          <p className={css.fromLocal}>Number: {thisUser.number}</p>
+        ) : null}
         <div>
           <div className={css.containerForPhotoText}>
             <h3 className={css.forP}>My photo</h3>
@@ -107,7 +122,7 @@ export default function UserPage() {
                     navigation(`/friends/${userId}`);
                   }}
                 >
-                  {users[userId].photo !== "null" ? (
+                  {users[userId].photo ? (
                     <img
                       src={users[userId].photo}
                       alt="UserPhoto"
@@ -144,6 +159,9 @@ export default function UserPage() {
           </div>
         </div>
       </div>
+      {openSetting && (
+        <UserSettingsModal close={toggleSettings} user={thisUser} />
+      )}
     </main>
   );
 }

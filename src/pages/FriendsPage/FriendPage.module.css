@@ -50,8 +50,8 @@
 
 .friendList {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 40px;
+    gap: 51.6px;
 }
 
 .friendItem {

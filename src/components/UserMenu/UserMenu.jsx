@@ -9,7 +9,7 @@ export default function UserMenu() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  console.log(currentUser);
+
   const handleLogout = async () => {
     await doSignOut();
     navigate("/login");
@@ -18,9 +18,9 @@ export default function UserMenu() {
   return (
     <div className={css.wrapper}>
       <div className={css.userNameContainer}>
-          <FaRegUserCircle className={css.userIcon} />
+        <FaRegUserCircle className={css.userIcon} />
         <p className={css.username} onClick={() => navigate("/user")}>
-          {currentUser.displayName}
+          {currentUser.name}
         </p>
       </div>
 

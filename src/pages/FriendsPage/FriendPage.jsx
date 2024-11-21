@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import css from "./FriendPage.module.css";
 import { getAllUsers, getUserById } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
-import { IoSettingsOutline } from "react-icons/io5";
+// import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function FriendPage() {
@@ -29,11 +29,10 @@ export default function FriendPage() {
   }, [friendId]);
 
   if (loading) return <p>Loading...</p>;
-  console.log(user);
 
   return (
     <main className={css.container}>
-      {user.photo !== "null" ? (
+      {user.photo ? (
         <img src={user.photo} alt="UserPhoto" className={css.photo} />
       ) : (
         <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
@@ -41,11 +40,18 @@ export default function FriendPage() {
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
           <h2 className={css.userName}>{user.name}</h2>
-          <button className={css.publish}>
-            Add to friends
-          </button>
+          <button className={css.publish}>Add to friends</button>
         </div>
-        {false ? <p className={css.fromLocal}>From:</p> : null}
+        {user.origin ? (
+          <p className={css.fromLocal}>From: {user.origin}</p>
+        ) : null}
+        {user.age ? <p className={css.fromLocal}>Age: {user.age}</p> : null}
+        {user.preference ? (
+          <p className={css.fromLocal}>Preference: {user.preference}</p>
+        ) : null}
+        {user.number ? (
+          <p className={css.fromLocal}>Number: {user.number}</p>
+        ) : null}
         <div>
           <h3 className={css.forP}>Photo:</h3>
           <ul className={css.photoList}>
@@ -78,7 +84,7 @@ export default function FriendPage() {
                     navigation(`/friends/${userId}`);
                   }}
                 >
-                  {users[userId].photo !== "null" ? (
+                  {users[userId].photo ? (
                     <img
                       src={users[userId].photo}
                       alt="UserPhoto"

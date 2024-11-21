@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const AuthContext = React.createContext();
 
 export function useAuth() {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 }
 
 export function AuthProvider({ children }) {
@@ -18,26 +18,36 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
- async function initializeUser(user) {
-   if (user) {
-     setCurrentUser({
-       ...user,
-      //  name: user.displayName,
-      //  uid: user.uid,
-     });
-     setUserLoggedIn(true);
-   } else {
-     setUserLoggedIn(false);
-     setCurrentUser(null);
-   }
-  //  await user.reload();
+  async function initializeUser(user) {
+    if (user) {
+      setCurrentUser({
+        ...user,
+        name: user.displayName,
+        origin: "Lviv",
+        photo: null,
+        age: 25,
+        number: null,
+        preference: null,
+        friends: [],
+        gallery: [],
+        posts: [],
+        createdAt: new Date().toISOString(),
+      });
+      setUserLoggedIn(true);
+    } else {
+      setUserLoggedIn(false);
+      setCurrentUser(null);
+    }
+    await user.reload();
 
-   setLoading(false);
- }
-    const value = { currentUser, userLoggedIn, loading }
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    )
+    setLoading(false);
+  }
+  function updateCurrentUser(updates) {
+    setCurrentUser((prev) => ({
+      ...prev,
+      ...updates,
+    }));
+  }
+  const value = { currentUser, userLoggedIn, loading, updateCurrentUser };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
