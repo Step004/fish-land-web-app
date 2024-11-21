@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import css from "./FriendPage.module.css";
-import { getAllUsers, getUserById } from "../../firebase/firebase/readData.js";
+import { getAllUsers, getFriendsContacts, getUserById } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,6 +14,7 @@ export default function FriendPage() {
   const { friendId } = useParams();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState(null);
+  const [friends, setFriends] = useState(null);
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigate();
@@ -21,8 +22,10 @@ export default function FriendPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        const friendsContacts = await getFriendsContacts(friendId);
         const userData = await getUserById(friendId);
         const usersData = await getAllUsers();
+        setFriends(friendsContacts);
         setUsers(usersData);
         setUser(userData);
 
@@ -117,7 +120,7 @@ export default function FriendPage() {
           )}
         </div>
         <div className={css.containerForSeeAll}>
-          <h3 className={css.friendsP}>Friends: {Object.keys(users).length}</h3>
+          <h3 className={css.friendsP}>Friends: {Object.keys(friends).length}</h3>
           <button
             className={css.buttonSeeAll}
             onClick={() => {
@@ -127,9 +130,9 @@ export default function FriendPage() {
             See all!
           </button>
         </div>
-        {users ? (
+        {friends ? (
           <ul className={css.friendList}>
-            {Object.keys(users)
+            {Object.keys(friends)
               .slice(0, 6)
               .map((userId) => (
                 <li
@@ -138,12 +141,12 @@ export default function FriendPage() {
                   onClick={() => {
                     if (userId == currentUser.uid) {
                       navigation("/user");
-                    } else navigation(`/friends/${userId}`);
+                    } else navigation(`/friends/${friends[userId].uid}`);
                   }}
                 >
-                  {users[userId].photo ? (
+                  {friends[userId].photo ? (
                     <img
-                      src={users[userId].photo}
+                      src={friends[userId].photo}
                       alt="UserPhoto"
                       className={css.friendPhoto}
                     />
@@ -154,7 +157,7 @@ export default function FriendPage() {
                       className={css.friendPhoto}
                     />
                   )}
-                  <p className={css.friendName}>{users[userId].name}</p>
+                  <p className={css.friendName}>{friends[userId].name}</p>
                 </li>
               ))}
           </ul>
