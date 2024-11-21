@@ -69,7 +69,6 @@ export const getFriendsContacts = async (userId) => {
     // Отримати список друзів користувача
     const friendsSnapshot = await get(child(dbRef, `users/${userId}/friends`));
     if (!friendsSnapshot.exists()) {
-      console.log(`No friends found for user with ID ${userId}`);
       return [];
     }
 

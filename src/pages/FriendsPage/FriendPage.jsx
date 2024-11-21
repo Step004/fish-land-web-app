@@ -13,7 +13,7 @@ export default function FriendPage() {
   const { currentUser } = useAuth();
   const { friendId } = useParams();
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState(null);
+  // const [users, setUsers] = useState(null);
   const [friends, setFriends] = useState(null);
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ export default function FriendPage() {
         const userData = await getUserById(friendId);
         const usersData = await getAllUsers();
         setFriends(friendsContacts);
-        setUsers(usersData);
+        // setUsers(usersData);
         setUser(userData);
 
         // Перевірити, чи друг уже є в списку друзів
@@ -41,7 +41,6 @@ export default function FriendPage() {
     };
     fetchUser();
   }, [friendId, currentUser]);
-  console.log(friendId);
 
   if (loading) return <p>Loading...</p>;
 
