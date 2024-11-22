@@ -1,46 +1,26 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-import { getAllUsers } from "../../firebase/firebase/readData.js";
+import css from "./FriendListPage.module.css";
+import { NavLink, Outlet } from "react-router-dom";
+import clsx from "clsx";
 
 export default function FriendListPage() {
-  const { currentUser } = useAuth();
-  const [users, setUsers] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-   useEffect(() => {
-     const fetchUsers = async () => {
-       try {
-         const usersData = await getAllUsers();
-         setUsers(usersData);
-       } catch (error) {
-         console.error("Error fetching users:", error);
-       } finally {
-         setLoading(false);
-       }
-     };
-
-     if (currentUser) {
-       fetchUsers();
-     }
-   }, [currentUser]);
-  
-    if (!currentUser) return <p>Please log in to view users.</p>;
-    if (loading) return <p>Loading...</p>;
+  const buildLinkClass = ({ isActive }) => {
+    return clsx(css.link, isActive && css.active);
+  };
   return (
-    <div>
-      <h3>All Users:</h3>
-        {users ? (
-          <ul>
-            {Object.keys(users).map((userId) => (
-              <li key={userId}>
-                <p>Name: {users[userId].name}</p>
-                <p>Email: {users[userId].email}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No users found.</p>
-        )}
-    </div>
+    <section className={css.container}>
+      <ul className={css.listNav}>
+        <li>
+          <NavLink to="friends" className={buildLinkClass}>
+            Friends
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="users" className={buildLinkClass}>
+            All users
+          </NavLink>
+        </li>
+      </ul>
+      <Outlet />
+    </section>
   );
 }

@@ -130,7 +130,7 @@ export default function UserPage() {
           <button
             className={css.buttonSeeAll}
             onClick={() => {
-              navigation("/friends");
+              navigation("/friends/friends");
             }}
           >
             See all
@@ -148,7 +148,6 @@ export default function UserPage() {
                     if (userId == currentUser.uid) {
                       navigation("/user");
                     } else navigation(`/friends/${friends[userId].uid}`);
-                    
                   }}
                 >
                   {friends[userId].photo ? (

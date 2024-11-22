@@ -14,7 +14,7 @@ export default function Navigation() {
           News
         </NavLink>
 
-        <NavLink to="/friends" className={buildLinkClass}>
+        <NavLink to="/friends/friends" className={buildLinkClass}>
           Friends
         </NavLink>
         <NavLink to="/message" className={buildLinkClass}>

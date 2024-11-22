@@ -1,0 +1,43 @@
+.container {
+    margin-top: 20px;
+    padding: 40px;
+    background-color: rgba(16, 57, 49, 0.4);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.card {
+    background-color: rgba(16, 57, 49, 0.8);
+    border-radius: 30px;
+    padding: 40px;
+    cursor: pointer;
+    display: flex;
+    gap: 40px;
+}
+
+.photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+}
+
+.name {
+    font-size: 24px;
+    color: white;
+    font-weight: 700;
+}
+
+.online {
+    color: rgb(0, 236, 0);
+}
+
+.offline {
+    color: red;
+}
+
+.nameAndStatus {
+    display: flex;
+    justify-content: center;
+}

@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../Layout/Layout.jsx";
+import UsersList from "../UsersList/UsersList.jsx";
+import FriendsList from "../FriendsList/FriendsList.jsx";
 
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage.jsx"));
 const UserPage = lazy(() => import("../../pages/UserPage/UserPage.jsx"));
@@ -12,7 +14,9 @@ const FriendPage = lazy(() => import("../../pages/FriendsPage/FriendPage.jsx"));
 const FriendListPage = lazy(() =>
   import("../../pages/FriendListPage/FriendListPage.jsx")
 );
-const MessagePage = lazy(() => import("../../pages/MessagePage/MessagePage.jsx"));
+const MessagePage = lazy(() =>
+  import("../../pages/MessagePage/MessagePage.jsx")
+);
 
 const MapPage = lazy(() => import("../../pages/MapPage/MapPage.jsx"));
 
@@ -21,7 +25,6 @@ const NotFoundPage = lazy(() =>
 );
 
 function App() {
-
   return (
     <Layout>
       <Suspense fallback={<div>Please wait loading page...</div>}>
@@ -31,7 +34,10 @@ function App() {
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/user" element={<UserPage />} />
           <Route path="/friends/:friendId" element={<FriendPage />} />
-          <Route path="/friends" element={<FriendListPage />} />
+          <Route path="/friends" element={<FriendListPage />}>
+            <Route path="friends" element={<FriendsList />} />
+            <Route path="users" element={<UsersList />} />
+          </Route>
           <Route path="/message" element={<MessagePage />} />
           <Route path="/map" element={<MapPage />} />
 

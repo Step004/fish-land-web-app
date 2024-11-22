@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import css from "./FriendPage.module.css";
-import { getAllUsers, getFriendsContacts, getUserById } from "../../firebase/firebase/readData.js";
+import {
+  getAllUsers,
+  getFriendsContacts,
+  getUserById,
+} from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
@@ -119,11 +123,13 @@ export default function FriendPage() {
           )}
         </div>
         <div className={css.containerForSeeAll}>
-          <h3 className={css.friendsP}>Friends: {Object.keys(friends).length}</h3>
+          <h3 className={css.friendsP}>
+            Friends: {Object.keys(friends).length}
+          </h3>
           <button
             className={css.buttonSeeAll}
             onClick={() => {
-              navigation("/friends");
+              navigation("/friends/friends");
             }}
           >
             See all!
