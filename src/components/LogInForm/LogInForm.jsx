@@ -7,6 +7,8 @@ import { doSignInWithEmailAndPassword } from "../../firebase/firebase/auth.js";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { changeOnlineStatusForLogin } from "../../firebase/firebase/writeData.js";
+import toast from "react-hot-toast";
+
 
 export default function LogInForm() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,13 +16,18 @@ export default function LogInForm() {
   const handleSubmit = async (values, actions) => {
     if (!isLoggedIn) {
       setIsLoggedIn(true);
-      await doSignInWithEmailAndPassword(values.email, values.password).then(
+      try {
+        await doSignInWithEmailAndPassword(values.email, values.password).then(
         async (userCredential) => {
           const userId = userCredential.user.uid;
           await changeOnlineStatusForLogin(userId);
           console.log("User logged in and status updated");
         }
       );
+      } catch (error) {
+        toast.error(error.message);
+      }
+      
       navigate("/");
     }
     actions.resetForm();

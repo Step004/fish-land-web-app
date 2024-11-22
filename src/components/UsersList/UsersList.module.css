@@ -6,6 +6,7 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
+    width: 100%;
 }
 
 .card {
@@ -23,6 +24,10 @@
     width: 150px;
     height: 150px;
     border-radius: 10px;
+    object-fit: cover;
+}
+.userInfo{
+    flex: 1;
 }
 
 .name {
@@ -39,7 +44,6 @@
     color: red;
 }
 .nameAndStatus{
-    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 }

@@ -15,12 +15,19 @@
     cursor: pointer;
     display: flex;
     gap: 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .photo {
     width: 150px;
     height: 150px;
     border-radius: 10px;
+    object-fit: cover;
+}
+
+.userInfo {
+    flex: 1;
 }
 
 .name {
@@ -39,5 +46,5 @@
 
 .nameAndStatus {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 }

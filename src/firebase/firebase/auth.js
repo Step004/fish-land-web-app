@@ -4,8 +4,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "./firebase.js";
-import toast from "react-hot-toast";
-
 
 export const doCreateUserWithEmailAndPassword = async (
   email,
@@ -18,23 +16,33 @@ export const doCreateUserWithEmailAndPassword = async (
       email,
       password
     );
-    const user = userCredential.user;    
+    const user = userCredential.user;
 
     await updateProfile(user, {
       displayName: name,
     });
 
     await user.reload();
-    
+
     return user;
   } catch (error) {
     console.error("Error during registration:", error);
-    toast.error(error);
+    throw new Error("This email is already in use.");
   }
 };
 
-export const doSignInWithEmailAndPassword = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password);
+export const doSignInWithEmailAndPassword = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    return userCredential; // Успішний результат
+  } catch (error) {
+    console.error(error);
+    throw new Error("Incorrect login or password.Try again.");
+  }
 };
 export const doSignOut = () => {
   return auth.signOut();
