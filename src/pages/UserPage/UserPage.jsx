@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import UserSettingsModal from "../../components/UserSettingsModal/UserSettingsModal.jsx";
 import AddPostModal from "../../components/AddPostModal/AddPostModal.jsx";
+import Loader from "../../components/Loader/Loader.jsx";
 
 // import { IoAddSharp } from "react-icons/io5";
 
@@ -48,7 +49,7 @@ export default function UserPage() {
     }
   }, [currentUser]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   const toggleSettings = () => {
     setOpenSetting(!openSetting);

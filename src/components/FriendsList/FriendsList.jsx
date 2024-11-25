@@ -4,6 +4,7 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import css from "./FriendsList.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
+import Loader from "../Loader/Loader.jsx";
 
 export default function FriendsList() {
   const location = useLocation();
@@ -30,7 +31,7 @@ export default function FriendsList() {
     }
   }, [targetUid]);
 
-  if (loading) return <p>Loading...</p>;
+   if (loading) return <Loader />;
   return (
     <div className={css.container}>
       {Object.values(friends).map((user, index) => (

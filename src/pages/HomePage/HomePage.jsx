@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { getFriendsContacts } from "../../firebase/firebase/readData.js";
 import css from "./HomePage.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
+import Loader from "../../components/Loader/Loader.jsx";
+
 
 export default function HomePage() {
   const { userLoggedIn, currentUser } = useAuth();
@@ -49,9 +51,7 @@ export default function HomePage() {
   }, [friends]);
   console.log(memoizedFriends);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+ if (loading) return <Loader />;
 
   return (
     <main className={css.container}>

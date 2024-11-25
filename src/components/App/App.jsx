@@ -1,8 +1,8 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../Layout/Layout.jsx";
-import UsersList from "../UsersList/UsersList.jsx";
-import FriendsList from "../FriendsList/FriendsList.jsx";
+import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import Loader from "../Loader/Loader.jsx";
 
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage.jsx"));
 const UserPage = lazy(() => import("../../pages/UserPage/UserPage.jsx"));
@@ -19,12 +19,18 @@ const MessagePage = lazy(() =>
 );
 
 const MapPage = lazy(() => import("../../pages/MapPage/MapPage.jsx"));
+const UsersList = lazy(() => import("../UsersList/UsersList.jsx"));
+const FriendsList = lazy(() => import("../FriendsList/FriendsList.jsx"));
+const Messages = lazy(() => import("../Messages/Messages.jsx"));
 
 const NotFoundPage = lazy(() =>
   import("../../pages/NotFoundPage/NotFoundPage")
 );
 
 function App() {
+  const { loading } = useAuth();
+  if (loading) return <Loader />;
+
   return (
     <Layout>
       <Suspense fallback={<div>Please wait loading page...</div>}>
@@ -38,7 +44,9 @@ function App() {
             <Route path="friends" element={<FriendsList />} />
             <Route path="users" element={<UsersList />} />
           </Route>
-          <Route path="/message" element={<MessagePage />} />
+          <Route path="/message" element={<MessagePage />}>
+            <Route path="/message/:chatId" element={<Messages />} />
+          </Route>
           <Route path="/map" element={<MapPage />} />
 
           <Route path="*" element={<NotFoundPage />} />

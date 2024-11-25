@@ -12,6 +12,8 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosSend } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
 import { addFriend } from "../../firebase/firebase/writeData.js";
+import { createChat } from "../../firebase/firebase/chats.js";
+import Loader from "../../components/Loader/Loader.jsx";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
@@ -46,13 +48,20 @@ export default function FriendPage() {
     fetchUser();
   }, [friendId, currentUser]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   const handleAddFriend = () => {
     addFriend(currentUser.uid, friendId);
     setIsFriend(true);
   };
-
+  const handleSentMessage = async () => {
+    try {
+      const chatId = await createChat(currentUser.uid, friendId);
+      navigation(`/message/${chatId}`); // Передаємо chatId як частину маршруту
+    } catch (error) {
+      console.error("Failed to create chat:", error);
+    }
+  };
   return (
     <main className={css.container}>
       {user.photo ? (
@@ -81,7 +90,7 @@ export default function FriendPage() {
                 Add to friends
               </button>
             )}
-            <button className={css.publish}>
+            <button className={css.publish} onClick={handleSentMessage}>
               <IoIosSend />
               Send message
             </button>

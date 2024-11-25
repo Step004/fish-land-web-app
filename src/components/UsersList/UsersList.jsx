@@ -4,6 +4,7 @@ import css from "./UsersList.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import Loader from "../Loader/Loader.jsx";
 
 function UsersList() {
   const { currentUser } = useAuth();
@@ -24,7 +25,7 @@ function UsersList() {
     };
     fetchUsers();
   }, []);
-  if (loading) return <p>Loading...</p>;
+   if (loading) return <Loader />;
   console.log(users);
 
   return (
