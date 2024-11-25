@@ -235,8 +235,10 @@
 
 .listPublicationsItem {
     padding: 20px 40px;
-    background-color: rgba(16, 57, 49, 0.4);
+    background-color: rgba(16, 57, 49, 0.078);
     border-radius: 30px;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(220, 220, 220, 0.573)
 }
 
 .titlePost {
@@ -250,7 +252,8 @@
     color: white;
     font-size: 24px;
 }
-.publications{
+
+.publications {
     border-top: 2px solid white;
     padding-top: 10px;
 }

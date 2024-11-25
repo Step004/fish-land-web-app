@@ -1,23 +1,26 @@
 .container {
     margin-top: 20px;
     padding: 40px;
-    background-color: rgba(16, 57, 49, 0.4);
+    /* background-color: rgba(16, 57, 49, 0.4); */
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     gap: 30px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .card {
-    background-color: rgba(16, 57, 49, 0.8);
+    background-color: rgba(0, 0, 0, 0.278);
     border-radius: 30px;
     padding: 40px;
     cursor: pointer;
     display: flex;
     gap: 40px;
     width: 100%;
-    box-sizing: border-box ;
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+    border: 1px solid white;
 }
 
 .photo {
@@ -26,7 +29,8 @@
     border-radius: 10px;
     object-fit: cover;
 }
-.userInfo{
+
+.userInfo {
     flex: 1;
 }
 
@@ -43,7 +47,8 @@
 .offline {
     color: red;
 }
-.nameAndStatus{
+
+.nameAndStatus {
     display: flex;
     justify-content: space-between;
 }

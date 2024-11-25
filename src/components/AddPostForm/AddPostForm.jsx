@@ -18,6 +18,7 @@ export default function AddPostForm({ close }) {
       id: uniqueId,
       title: values.title || "",
       content: values.content || "",
+      createdAt: new Date().toISOString(),
     };
     try {
       addUserPost(currentUser.uid, post);

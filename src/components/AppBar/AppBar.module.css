@@ -5,8 +5,9 @@
   width: 100%;
   padding: 10px 48px;
   box-sizing: border-box;
-  background-color: var(--main);
-  border-radius: 0  0 15px 15px;
+  background-color: rgba(16, 57, 49, 0.288);
+  border-radius: 0 0 15px 15px;
+  backdrop-filter: blur(16px);
 }
 
 .logotype {
@@ -27,4 +28,3 @@
   align-items: center;
   justify-content: space-between;
 }
-

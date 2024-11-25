@@ -129,7 +129,7 @@ export default function FriendPage() {
           <button
             className={css.buttonSeeAll}
             onClick={() => {
-              navigation("/friends/friends");
+              navigation("/friends/friends", { state: { uid: friendId } });
             }}
           >
             See all!

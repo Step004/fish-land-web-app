@@ -3,17 +3,20 @@ import { getFriendsContacts } from "../../firebase/firebase/readData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import css from "./FriendsList.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function FriendsList() {
+  const location = useLocation();
+  const navigation = useNavigate();
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const { currentUser } = useAuth();
+  const targetUid = location.state?.uid || currentUser?.uid;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const friendsContacts = await getFriendsContacts(currentUser.uid);
+        const friendsContacts = await getFriendsContacts(targetUid);
         setFriends(friendsContacts || []);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -22,11 +25,10 @@ export default function FriendsList() {
       }
     };
 
-    if (currentUser?.uid) {
+    if (targetUid) {
       fetchUsers();
     }
-  }, [currentUser?.uid]);
-  console.log(friends);
+  }, [targetUid]);
 
   if (loading) return <p>Loading...</p>;
   return (
