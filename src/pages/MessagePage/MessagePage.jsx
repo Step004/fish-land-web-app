@@ -37,7 +37,11 @@ const MessagePage = () => {
     });
     setValue("");
   };
-
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
   if (loading) return <Loader />;
   return (
     <div className={css.container}>
@@ -76,6 +80,7 @@ const MessagePage = () => {
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button className={css.sendButton} onClick={sendMessage}>
           Send
