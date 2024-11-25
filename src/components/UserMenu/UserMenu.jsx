@@ -19,7 +19,7 @@ export default function UserMenu() {
         setUser(userData);
       } catch (error) {
         console.error("Error fetching users:", error);
-      } 
+      }
     };
     fetchUser();
   }, [currentUser]);
@@ -29,13 +29,12 @@ export default function UserMenu() {
     await doSignOut();
     navigate("/login");
   };
-
   return (
     <div className={css.wrapper}>
       <div className={css.userNameContainer}>
         <FaRegUserCircle className={css.userIcon} />
         <p className={css.username} onClick={() => navigate("/user")}>
-          {user.name}
+          {user?.name || currentUser.displayName}
         </p>
       </div>
 

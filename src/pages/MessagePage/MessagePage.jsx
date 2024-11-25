@@ -16,7 +16,6 @@ import defaultPhoto from "../../img/default-user.jpg";
 const MessagePage = () => {
   const { currentUser } = useAuth();
   const [value, setValue] = useState("");
-
   // Запит Firestore для отримання повідомлень
   const messagesQuery = query(
     collection(firestore, "messages"),
@@ -42,7 +41,8 @@ const MessagePage = () => {
       sendMessage();
     }
   };
-  if (loading) return <Loader />;
+
+  if (loading && !currentUser) return <Loader />;
   return (
     <div className={css.container}>
       <div className={css.containerMsg}>

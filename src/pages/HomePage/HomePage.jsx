@@ -6,7 +6,6 @@ import css from "./HomePage.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
 import Loader from "../../components/Loader/Loader.jsx";
 
-
 export default function HomePage() {
   const { userLoggedIn, currentUser } = useAuth();
   const navigation = useNavigate();
@@ -49,9 +48,8 @@ export default function HomePage() {
       createdAt: friend.createdAt,
     }));
   }, [friends]);
-  console.log(memoizedFriends);
 
- if (loading) return <Loader />;
+  if (loading) return <Loader />;
 
   return (
     <main className={css.container}>
