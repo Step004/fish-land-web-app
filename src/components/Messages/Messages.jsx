@@ -32,7 +32,12 @@ export default function Messages() {
     if (!value.trim()) return;
 
     try {
-      await sendMessage(chatId, currentUser.uid, value);
+      await sendMessage(
+        chatId,
+        currentUser.displayName,
+        currentUser.uid,
+        value
+      );
       setValue("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -44,7 +49,6 @@ export default function Messages() {
       handleSendMessage();
     }
   };
-
 
   return (
     <div className={css.containerMsg}>
@@ -72,7 +76,7 @@ export default function Messages() {
                   alt="UserPhoto"
                   className={css.photo}
                 />
-                <p>{msg.displayName || "Anonymous"}</p>
+                <p>{msg.name || "Anonymous"}</p>
               </div>
               <p>{msg.content}</p>
             </li>

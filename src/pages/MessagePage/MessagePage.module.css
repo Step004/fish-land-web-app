@@ -31,9 +31,24 @@
         flex-direction: column;
         gap: 10px;
 
-        li{
+        li {
             border: 1px solid rgb(184, 184, 184);
             padding: 10px 5px;
         }
     }
+}
+
+.photo {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.photoAndName{
+    display: flex;
+    gap: 5px;
+}
+.nameAndLastMsg{
+    display: flex;
+    flex-direction: column;
+
 }

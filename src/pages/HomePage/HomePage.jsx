@@ -87,7 +87,7 @@ export default function HomePage() {
           </ul>
         ) : (
           <p className={css.pForNothingPublications}>
-            You don’t have publications!
+            Your friends haven`t posted anything yet.
           </p>
         )}
       </div>

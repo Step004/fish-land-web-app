@@ -45,9 +45,9 @@ export const getAllChats = async (currentUserId) => {
   }
 };
 
-export const createChat = async (user1, userId2) => {
+export const createChat = async (userId1, user2) => {
   const db = getFirestore();
-  const chatId = [user1.uid, userId2].sort().join("_");
+  const chatId = [userId1, user2.uid].sort().join("_");
   const chatRef = doc(db, "chats", chatId);
 
   try {
@@ -60,10 +60,10 @@ export const createChat = async (user1, userId2) => {
 
     await setDoc(chatRef, {
       participants: {
-        [user1.uid]: true,
-        [userId2]: true,
+        [userId1]: true,
+        [user2.uid]: true,
       },
-      name: user1.displayName,
+      name: user2.name,
       lastMessage: null,
       updatedAt: serverTimestamp(),
     });
@@ -76,7 +76,7 @@ export const createChat = async (user1, userId2) => {
   }
 };
 
-export const sendMessage = async (chatId, senderId, content) => {
+export const sendMessage = async (chatId, senderName, senderId, content) => {
   const db = getFirestore();
   const chatRef = doc(db, "chats", chatId);
   const messagesRef = collection(chatRef, "messages");
@@ -85,6 +85,7 @@ export const sendMessage = async (chatId, senderId, content) => {
     // Додаємо повідомлення до підколекції `messages`
     await addDoc(messagesRef, {
       senderId: senderId,
+      name:senderName,
       content: content,
       timestamp: serverTimestamp(),
     });

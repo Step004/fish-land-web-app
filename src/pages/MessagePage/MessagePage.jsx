@@ -4,6 +4,8 @@ import css from "./MessagePage.module.css";
 import Loader from "../../components/Loader/Loader.jsx";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getAllChats } from "../../firebase/firebase/chats.js";
+import defaultPhoto from "../../img/default-user.jpg";
+
 
 const MessagePage = () => {
   const navigate = useNavigate();
@@ -32,8 +34,13 @@ const MessagePage = () => {
               onClick={() => navigate(`/message/${chat.chatId}`)}
             >
               <div className={css.photoAndName}>
-                <div>
-                  {/* <span>{chat.name}</span> */}
+                <img
+                  src={chat.photoURL || defaultPhoto}
+                  alt="UserPhoto"
+                  className={css.photo}
+                />
+                <div className={css.nameAndLastMsg}>
+                  <span>{chat.name || "ann"}</span>
                   <span>{chat.lastMessage}</span>
                 </div>
               </div>

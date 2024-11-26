@@ -59,4 +59,10 @@
     text-align: center;
     color: white;
     margin-bottom: 20px;
+    text-decoration: underline;
+}
+.pForNothingPublications{
+    text-align: center;
+    font-size: 24px;
+    color: white;
 }
