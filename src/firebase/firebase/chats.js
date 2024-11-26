@@ -14,8 +14,6 @@ import {
   where,
 } from "firebase/firestore";
 
-
-
 export const getAllChats = async (currentUserId) => {
   const db = getFirestore();
   const chatsRef = collection(db, "chats");
@@ -47,10 +45,9 @@ export const getAllChats = async (currentUserId) => {
   }
 };
 
-
-export const createChat = async (userId1, userId2) => {
+export const createChat = async (user1, userId2) => {
   const db = getFirestore();
-  const chatId = [userId1, userId2].sort().join("_");
+  const chatId = [user1.uid, userId2].sort().join("_");
   const chatRef = doc(db, "chats", chatId);
 
   try {
@@ -63,9 +60,10 @@ export const createChat = async (userId1, userId2) => {
 
     await setDoc(chatRef, {
       participants: {
-        [userId1]: true,
+        [user1.uid]: true,
         [userId2]: true,
       },
+      name: user1.displayName,
       lastMessage: null,
       updatedAt: serverTimestamp(),
     });

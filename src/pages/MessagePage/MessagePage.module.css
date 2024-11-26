@@ -23,5 +23,17 @@
     h2 {
         text-align: center;
         text-decoration: underline;
+        margin-bottom: 15px;
+    }
+
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        li{
+            border: 1px solid rgb(184, 184, 184);
+            padding: 10px 5px;
+        }
     }
 }

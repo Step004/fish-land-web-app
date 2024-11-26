@@ -56,7 +56,7 @@ export default function FriendPage() {
   };
     const handleStartChat = async () => {
       try {
-        const chatId = await createChat(currentUser.uid, friendId);
+        const chatId = await createChat(currentUser, friendId);
         navigate(`/message/${chatId}`); 
       } catch (error) {
         console.error("Failed to create chat:", error);

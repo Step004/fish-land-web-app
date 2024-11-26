@@ -16,7 +16,9 @@ const MessagePage = () => {
     };
     fetchChats();
   }, [currentUser]);
-  console.log(chats);
+  // console.log("currentUser", currentUser.uid);
+
+  // console.log(Object.keys.chats[0].participants);
   if (!currentUser) return <Loader />;
 
   return (
@@ -29,7 +31,7 @@ const MessagePage = () => {
               key={chat.chatId}
               onClick={() => navigate(`/message/${chat.chatId}`)}
             >
-              <div>
+              <div className={css.photoAndName}>
                 <div>
                   {/* <span>{chat.name}</span> */}
                   <span>{chat.lastMessage}</span>
