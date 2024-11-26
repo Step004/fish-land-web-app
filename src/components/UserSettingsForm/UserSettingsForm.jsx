@@ -12,7 +12,6 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
 
 export default function UserSettingsForm({ close, user }) {
-  console.log(user);
   const { updateCurrentUser } = useAuth();
 
   const handleSubmit = async (values, actions) => {
@@ -51,7 +50,7 @@ export default function UserSettingsForm({ close, user }) {
   };
   const validationSchema = Yup.object({
     name: Yup.string(),
-    age: Yup.string().max(100, "Age must be less than or equal to 100"),
+    age: Yup.number().max(100, "Age must be less than or equal to 100"),
     origin: Yup.string(),
     preference: Yup.string(),
     number: Yup.string().matches(

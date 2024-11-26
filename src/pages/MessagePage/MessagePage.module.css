@@ -1,58 +1,27 @@
 .container {
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
+    height: calc(100vh - 76px);
     background-color: rgba(0, 0, 0, 0.741);
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    gap: 10px;
 }
 
-.containerMsg {
-    width: 80%;
+.listOfMess {
+    padding: 10px 20px;
+    width: 200px;
     height: 80vh;
-    border-left: 1px solid white;
-    border-right: 1px solid white;
+    border-left: 2px dashed white;
+    border-right: 2px dashed white;
     border-bottom: 2px dashed white;
     overflow-y: auto;
-}
+    box-sizing: border-box;
+    color: white;
 
-.inputButton {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 80%;
-    margin-bottom: 30px;
-    margin-top: 20px;
-}
-
-.inputMsg {
-    width: 80%;
-    height: 32px;
-    font-size: 24px;
-}
-
-.sendButton {
-    width: 100px;
-    height: 32px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.sendButton:hover {
-    background-color: bisque;
-}
-
-.photo {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
-
-.photoAndName {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin-bottom: 4px;
+    h2 {
+        text-align: center;
+        text-decoration: underline;
+    }
 }

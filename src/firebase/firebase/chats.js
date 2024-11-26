@@ -1,26 +1,44 @@
-import { getDatabase, ref, set, push, onChildAdded, get } from "firebase/database";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  addDoc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+} from "firebase/firestore";
 
-export const getAllChats = async () => {
-  const db = getDatabase();
-  const chatsRef = ref(db, "chats");
+
+
+export const getAllChats = async (currentUserId) => {
+  const db = getFirestore();
+  const chatsRef = collection(db, "chats");
 
   try {
-    // Отримуємо всі чати
-    const snapshot = await get(chatsRef);
+    // Запит Firestore для отримання чатів, у яких поточний користувач є учасником
+    const chatsQuery = query(
+      chatsRef,
+      where(`participants.${currentUserId}`, "==", true)
+    );
 
-    if (snapshot.exists()) {
-      const chats = snapshot.val();
-      console.log("Chats retrieved successfully:", chats);
+    const snapshot = await getDocs(chatsQuery);
 
-      // Перетворюємо об'єкт на масив для зручної роботи
-      const chatList = Object.keys(chats).map((chatId) => ({
-        chatId,
-        ...chats[chatId],
+    if (!snapshot.empty) {
+      const chats = snapshot.docs.map((doc) => ({
+        chatId: doc.id,
+        ...doc.data(),
       }));
 
-      return chatList;
+      console.log("Chats retrieved successfully:", chats);
+      return chats;
     } else {
-      console.log("No chats found.");
+      console.log("No chats found for the current user.");
       return [];
     }
   } catch (error) {
@@ -29,45 +47,27 @@ export const getAllChats = async () => {
   }
 };
 
-// export const createChat = async (userId1, userId2) => {
-//   const db = getDatabase();
-//   const newChatRef = push(ref(db, "chats"));
 
-//   // Створюємо новий чат з учасниками
-//   try {
-//     await set(newChatRef, {
-//       participants: {
-//         [userId1]: true,
-//         [userId2]: true,
-//       },
-//     });
-//     console.log("Chat created!");
-//     return newChatRef.key; // Повертаємо chatId
-//   } catch (error) {
-//     console.error("Error creating chat:", error);
-//     throw error;
-//   }
-// };
 export const createChat = async (userId1, userId2) => {
-  const db = getDatabase();
+  const db = getFirestore();
   const chatId = [userId1, userId2].sort().join("_");
-  const chatRef = ref(db, `chats/${chatId}`);
+  const chatRef = doc(db, "chats", chatId);
 
   try {
-    // Перевіряємо чи існує чат
-    const snapshot = await get(chatRef);
+    const chatSnapshot = await getDoc(chatRef);
 
-    if (snapshot.exists()) {
+    if (chatSnapshot.exists()) {
       console.log("Chat already exists:", chatId);
       return chatId; // Повертаємо існуючий chatId
     }
 
-    // Якщо чат не знайдено, створюємо новий
-    await set(chatRef, {
+    await setDoc(chatRef, {
       participants: {
         [userId1]: true,
         [userId2]: true,
       },
+      lastMessage: null,
+      updatedAt: serverTimestamp(),
     });
 
     console.log("Chat created!");
@@ -78,32 +78,44 @@ export const createChat = async (userId1, userId2) => {
   }
 };
 
-export const sendMessage = (chatId, senderId, content) => {
-  const db = getDatabase();
-  const messagesRef = ref(db, `chats/${chatId}/messages`);
+export const sendMessage = async (chatId, senderId, content) => {
+  const db = getFirestore();
+  const chatRef = doc(db, "chats", chatId);
+  const messagesRef = collection(chatRef, "messages");
 
-  // Додаємо нове повідомлення в чат
-  const newMessageRef = push(messagesRef);
-  set(newMessageRef, {
-    senderId: senderId,
-    content: content,
-    timestamp: new Date().toISOString(),
-  })
-    .then(() => {
-      console.log("Message sent!");
-    })
-    .catch((error) => {
-      console.error("Error sending message:", error);
+  try {
+    // Додаємо повідомлення до підколекції `messages`
+    await addDoc(messagesRef, {
+      senderId: senderId,
+      content: content,
+      timestamp: serverTimestamp(),
     });
-};
-export const listenForMessages = (chatId, onNewMessage) => {
-  const db = getDatabase();
-  const messagesRef = ref(db, `chats/${chatId}/messages`);
 
-  const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
-    const message = snapshot.val();
-    onNewMessage(message);
+    // Оновлюємо останнє повідомлення в чаті
+    await updateDoc(chatRef, {
+      lastMessage: content,
+      updatedAt: serverTimestamp(),
+    });
+
+    console.log("Message sent!");
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
+};
+
+export const listenForMessages = (chatId, onNewMessage) => {
+  const db = getFirestore();
+  const messagesRef = collection(doc(db, "chats", chatId), "messages");
+  const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
+
+  const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        onNewMessage({ id: change.doc.id, ...change.doc.data() });
+      }
+    });
   });
 
-  return () => unsubscribe.off(); // Очищення слухача
+  return unsubscribe; // Повертаємо функцію для зупинки прослуховування
 };

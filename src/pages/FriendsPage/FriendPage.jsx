@@ -23,7 +23,7 @@ export default function FriendPage() {
   const [friends, setFriends] = useState(null);
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -54,14 +54,14 @@ export default function FriendPage() {
     addFriend(currentUser.uid, friendId);
     setIsFriend(true);
   };
-  const handleSentMessage = async () => {
-    try {
-      const chatId = await createChat(currentUser.uid, friendId);
-      navigation(`/message/${chatId}`); // Передаємо chatId як частину маршруту
-    } catch (error) {
-      console.error("Failed to create chat:", error);
-    }
-  };
+    const handleStartChat = async () => {
+      try {
+        const chatId = await createChat(currentUser.uid, friendId);
+        navigate(`/message/${chatId}`); 
+      } catch (error) {
+        console.error("Failed to create chat:", error);
+      }
+    };
   return (
     <main className={css.container}>
       {user.photo ? (
@@ -90,7 +90,7 @@ export default function FriendPage() {
                 Add to friends
               </button>
             )}
-            <button className={css.publish} onClick={handleSentMessage}>
+            <button className={css.publish} onClick={handleStartChat}>
               <IoIosSend />
               Send message
             </button>
