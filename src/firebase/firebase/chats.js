@@ -33,7 +33,6 @@ export const getAllChats = async (currentUserId) => {
         ...doc.data(),
       }));
 
-      console.log("Chats retrieved successfully:", chats);
       return chats;
     } else {
       console.log("No chats found for the current user.");

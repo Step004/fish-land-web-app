@@ -1,7 +1,7 @@
 .wrapper {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
 }
 
 .username {
@@ -13,6 +13,10 @@
     color: #fbfbfb;
     cursor: pointer;
     transition: transform 0.3s ease;
+    width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .username:hover {
@@ -22,7 +26,7 @@
 .userNameContainer {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
 }
 
 .logout {
@@ -58,15 +62,23 @@
     height: 16px;
 }
 
-.logoutSVG {
+.burgerSvg {
     display: none;
     fill: #fbfbfb;
     width: 40px;
     height: 40px;
 }
 
-@media screen and (max-width: 560px) {
-    .wrapper {
+@media screen and (max-width: 768px) {
+    .burgerSvg {
+        display: block;
+    }
+
+    .logout {
+        display: none;
+    }
+
+    /* .wrapper {
         gap: 15px;
     }
 
@@ -80,7 +92,7 @@
 
     .userNameContainer {
         gap: 8px;
-    }
+    } */
 }
 
 @media screen and (max-width: 500px) {
@@ -88,9 +100,7 @@
         gap: 5px;
     }
 
-    .logout {
-        display: none;
-    }
+
 
     .logoutSVG {
         display: block;

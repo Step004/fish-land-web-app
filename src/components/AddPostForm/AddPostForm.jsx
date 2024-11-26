@@ -1,5 +1,5 @@
 import css from "./AddPostForm.module.css";
-import { Field, Formik, Form } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 import { IoClose } from "react-icons/io5";
 import * as Yup from "yup";
 
@@ -32,7 +32,7 @@ export default function AddPostForm({ close }) {
   };
   const validationSchema = Yup.object({
     title: Yup.string(),
-    content: Yup.string(),
+    content: Yup.string().required("This field is required"),
   });
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -71,6 +71,11 @@ export default function AddPostForm({ close }) {
               as="textarea"
               placeholder="Content"
               className={css.fieldContent}
+            />
+            <ErrorMessage
+              name="content"
+              component="span"
+              className={css.errorMsg}
             />
           </div>
         </div>

@@ -3,15 +3,19 @@ import { doSignOut } from "../../firebase/firebase/auth.js";
 import css from "./UserMenu.module.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-import { IoIosLogOut } from "react-icons/io";
 import { useEffect, useState } from "react";
 import { getUserById } from "../../firebase/firebase/readData.js";
 import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
+import { useMediaQuery } from "react-responsive";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 export default function UserMenu() {
   const { currentUser } = useAuth();
   const [user, setUser] = useState(currentUser);
   const navigate = useNavigate();
+  const isTabletScreen = useMediaQuery({ query: "(min-width: 768px)" });
+  const [openBurgerMenu, setOpenBurgerMenu]= useState(false)
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -29,6 +33,9 @@ export default function UserMenu() {
     await doSignOut();
     navigate("/login");
   };
+  const handleBurgerMenuToggle = () => {
+    setOpenBurgerMenu(!openBurgerMenu)
+  }
   return (
     <div className={css.wrapper}>
       <div className={css.userNameContainer}>
@@ -37,11 +44,15 @@ export default function UserMenu() {
           {user?.name || currentUser.displayName}
         </p>
       </div>
-
-      <button className={css.logout} onClick={handleLogout}>
-        Logout
-      </button>
-      <IoIosLogOut className={css.logoutSVG} onClick={handleLogout} />
+      {isTabletScreen && (
+        <button className={css.logout} onClick={handleLogout}>
+          Logout
+        </button>
+      )}
+      <GiHamburgerMenu
+        className={css.burgerSvg}
+        onClick={handleBurgerMenuToggle}
+      />
     </div>
   );
 }

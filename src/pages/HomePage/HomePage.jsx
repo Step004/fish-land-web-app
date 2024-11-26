@@ -63,7 +63,12 @@ export default function HomePage() {
                   key={`${friend.id}-${index}`}
                   className={css.listPublicationsItem}
                 >
-                  <div className={css.nameRow}>
+                  <div
+                    className={css.nameRow}
+                    onClick={()=>navigation(
+                      `/friends/${friend.id}`
+                    )}
+                  >
                     {friend.photo ? (
                       <img
                         src={friend.photo}

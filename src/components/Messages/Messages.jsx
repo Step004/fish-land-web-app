@@ -52,6 +52,7 @@ export default function Messages() {
 
   return (
     <div className={css.containerMsg}>
+      <div></div>
       <div className={css.listMess} ref={listMessRef}>
         <ul>
           {messages.map((msg) => (

@@ -20,9 +20,9 @@ export default function Navigation() {
         <NavLink to="/message" className={buildLinkClass}>
           Message
         </NavLink>
-        <NavLink to="/map" className={buildLinkClass}>
+        {/* <NavLink to="/map" className={buildLinkClass}>
           Map
-        </NavLink>
+        </NavLink> */}
       </nav>
     </>
   );

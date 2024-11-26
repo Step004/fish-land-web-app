@@ -1,10 +1,13 @@
 .photo {
-    width: 320px;
-    height: 320px;
+    max-width: 320px;
+    max-height: 320px;
+    width: 100%;
+    height: auto;
     border: 4px solid black;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 15px;
     margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
 .container {
@@ -43,6 +46,7 @@
 
 .containerForElement {
     background-color: rgba(0, 0, 0, 0.5);
+    max-width: 878px;
     width: 100%;
     padding: 30px 40px;
     border-radius: 15px;
@@ -256,4 +260,65 @@
 .publications {
     border-top: 2px solid white;
     padding-top: 10px;
+}
+
+@media screen and (max-width: 868px) {
+    .container {
+        gap: 20px;
+        padding: 20px 30px;
+    }
+
+    .containerForRecommended {
+        padding: 10px 5px;
+
+        h2 {
+            font-size: 14px;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .userName {
+        font-size: 28px;
+    }
+
+    .desc {
+        font-size: 12px;
+    }
+
+    .forP {
+        font-size: 18px;
+    }
+
+    .textAdd {
+        font-size: 16px;
+    }
+
+    .pointPhoto {
+        font-size: 16px;
+    }
+
+    .friendsP {
+        font-size: 18px;
+    }
+
+    .buttonSeeAll {
+        font-size: 18px;
+    }
+
+    .publicationsText {
+        font-size: 18px;
+    }
+
+    .publish {
+        font-size: 12px;
+        border-radius: 10px;
+        width: 80px;
+        height: 20px;
+    }
+
+    .settingsIcon {
+        width: 30px;
+        height: 30px;
+    }
 }
