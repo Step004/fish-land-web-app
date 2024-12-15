@@ -9,12 +9,15 @@ import toast from "react-hot-toast";
 import defaultPhoto from "../../img/default-user.jpg";
 import { updateUserFields } from "../../firebase/firebase/writeData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-
+import { updateUserDisplayName } from "../../firebase/firebase/auth.js";
 
 export default function UserSettingsForm({ close, user }) {
-  const { updateCurrentUser } = useAuth();
+  const { currentUser, updateCurrentUser } = useAuth();
 
   const handleSubmit = async (values, actions) => {
+    const currentUserUpdatesName =
+      values.name !== undefined ? values.name : user.name;
+
     const updates = {
       name: values.name !== undefined ? values.name : user.name,
       age:
@@ -38,6 +41,7 @@ export default function UserSettingsForm({ close, user }) {
       }
     });
     try {
+      await updateUserDisplayName(currentUserUpdatesName);
       await updateUserFields(user.uid, updates);
       updateCurrentUser(updates);
       toast.success("User information updated successfully!");
@@ -70,8 +74,8 @@ export default function UserSettingsForm({ close, user }) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [close]);
-  const userPhoto = user?.photo ? (
-    <img src={user.photo} alt="UserPhoto" className={css.photo} />
+  const userPhoto = currentUser.photoURL ? (
+    <img src={currentUser.photoURL} alt="UserPhoto" className={css.photo} />
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
   );
@@ -96,8 +100,19 @@ export default function UserSettingsForm({ close, user }) {
           <div className={css.NameAndPhoto}>
             {userPhoto}
             <div className={css.nannyName}>
-              <button className={css.choosePhotoButton} type="button">
-                Choose your photo!
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                // onChange={handlePhotoChange}
+                style={{ display: "none" }} // Приховуємо
+              />
+              <button
+                className={css.choosePhotoButton}
+                type="button"
+                onClick={() => document.getElementById("fileInput").click()}
+              >
+                Change my photo!
               </button>
             </div>
           </div>

@@ -2,8 +2,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "./firebase.js";
+import { updateUserPhoto } from "./writeData.js";
 
 export const doCreateUserWithEmailAndPassword = async (
   email,
@@ -38,7 +41,7 @@ export const doSignInWithEmailAndPassword = async (email, password) => {
       email,
       password
     );
-    return userCredential; // Успішний результат
+    return userCredential;
   } catch (error) {
     console.error(error);
     throw new Error("Incorrect login or password.Try again.");
@@ -46,4 +49,64 @@ export const doSignInWithEmailAndPassword = async (email, password) => {
 };
 export const doSignOut = () => {
   return auth.signOut();
+};
+
+export const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+
+    const user = result.user;
+
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+
+    console.log("Користувач авторизований:", user);
+    console.log("Google Token:", token);
+    await updateUserPhoto(user.uid, user.photoURL);
+    return { user, token };
+  } catch (error) {
+    console.error("Помилка авторизації:", error);
+
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+    throw new Error(`Авторизація не вдалася: ${errorCode} - ${errorMessage}`);
+  }
+};
+
+export const updateUserDisplayName = async (newDisplayName) => {
+  const user = auth.currentUser;
+
+  if (user) {
+    try {
+      await updateProfile(user, {
+        displayName: newDisplayName,
+      });
+    } catch (error) {
+      console.error("Failed to update display name:", error);
+      throw new Error(`Помилка: ${error.message}`);
+    }
+  } else {
+    console.error("No user is signed in.");
+    throw new Error("Користувач не авторизований.");
+  }
+};
+export const updateUserPhotoURL = async (newPhotoURL) => {
+  const user = auth.currentUser;
+
+  if (user) {
+    try {
+      await updateProfile(user, {
+        photoURL: newPhotoURL,
+      });
+    } catch (error) {
+      console.error("Failed to update display name:", error);
+      throw new Error(`Помилка: ${error.message}`);
+    }
+  } else {
+    console.error("No user is signed in.");
+    throw new Error("Користувач не авторизований.");
+  }
 };

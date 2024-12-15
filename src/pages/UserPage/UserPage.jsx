@@ -13,11 +13,16 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import UserSettingsModal from "../../components/UserSettingsModal/UserSettingsModal.jsx";
 import AddPostModal from "../../components/AddPostModal/AddPostModal.jsx";
 import Loader from "../../components/Loader/Loader.jsx";
+import { deleteUserPost } from "../../firebase/firebase/writeData.js";
+import { MdDelete } from "react-icons/md";
+
 
 // import { IoAddSharp } from "react-icons/io5";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
+  console.log(currentUser);
+
   // const [users, setUsers] = useState(null);
   const [friends, setFriends] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,8 +62,18 @@ export default function UserPage() {
   const toggleAddPost = () => {
     setOpenAddPost(!openAddPost);
   };
-  const userPhoto = thisUser.photo ? (
-    <img src={thisUser.photo} alt="UserPhoto" className={css.photo} />
+
+  const handleDeletePost = async (postId) => {
+    try {
+      await deleteUserPost(currentUser.uid, postId);
+    } catch (error) {
+      console.log(error.message);
+      
+    }
+  };
+
+  const userPhoto = currentUser.photoURL ? (
+    <img src={currentUser.photoURL} alt="UserPhoto" className={css.photo} />
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
   );
@@ -186,6 +201,12 @@ export default function UserPage() {
                   <li key={post.id} className={css.listPublicationsItem}>
                     <p className={css.titlePost}>{post.title}</p>
                     <p className={css.contentPost}>{post.content}</p>
+                    <button
+                      className={css.deletePost}
+                      onClick={() => handleDeletePost(post.id)}
+                    >
+                      <MdDelete className={css.deleteIcon} />
+                    </button>
                   </li>
                 ))}
               </ul>

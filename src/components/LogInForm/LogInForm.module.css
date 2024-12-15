@@ -40,7 +40,8 @@
     letter-spacing: -0.02em;
     color: rgb(255, 255, 255);
     margin-bottom: 20px;
-    text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8);}
+    text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8);
+}
 
 .welcomeText {
     font-family: var(--font-family);
@@ -49,7 +50,8 @@
     line-height: 125%;
     color: rgb(255, 255, 255);
     margin-bottom: 40px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);}
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+}
 
 .fields {
     display: flex;
@@ -123,10 +125,32 @@
 .registr {
     cursor: pointer;
     margin: 20px auto;
-    color: rgba(0, 98, 255, 0.8);
-    text-decoration: underline;
     text-align: center;
+    color: white;
 }
+
+.registrLink {
+    color: rgb(8, 101, 250);
+    text-decoration: underline;
+}
+
+.googleIconContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.googleIcon {
+    margin-top: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.googleIcon:hover {
+    transform: scale(1.05);
+}
+
 
 .errorMsgCont {
     display: flex;

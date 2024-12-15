@@ -23,9 +23,9 @@ export function AuthProvider({ children }) {
       setCurrentUser({
         ...user,
         name: user.displayName,
-        origin: "Lviv",
-        photo: null,
-        age: 25,
+        origin: "",
+        photo: user.photoURL || null,
+        age: null,
         number: null,
         preference: null,
         friends: [],

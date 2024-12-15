@@ -3,12 +3,15 @@ import css from "./LogInForm.module.css";
 import { RxEyeOpen } from "react-icons/rx";
 import { GoEyeClosed } from "react-icons/go";
 import { useState } from "react";
-import { doSignInWithEmailAndPassword } from "../../firebase/firebase/auth.js";
+import {
+  doSignInWithEmailAndPassword,
+  signInWithGoogle,
+} from "../../firebase/firebase/auth.js";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { changeOnlineStatusForLogin } from "../../firebase/firebase/writeData.js";
 import toast from "react-hot-toast";
-
+import { FcGoogle } from "react-icons/fc";
 
 export default function LogInForm() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,16 +21,17 @@ export default function LogInForm() {
       setIsLoggedIn(true);
       try {
         await doSignInWithEmailAndPassword(values.email, values.password).then(
-        async (userCredential) => {
-          const userId = userCredential.user.uid;
-          await changeOnlineStatusForLogin(userId);
-          console.log("User logged in and status updated");
-        }
-      );
+          async (userCredential) => {
+            const userId = userCredential.user.uid;
+            await changeOnlineStatusForLogin(userId);
+            console.log("User logged in and status updated");
+            toast.success("Successfully logged in!");
+          }
+        );
       } catch (error) {
         toast.error(error.message);
       }
-      
+
       navigate("/");
     }
     actions.resetForm();
@@ -44,7 +48,26 @@ export default function LogInForm() {
       .min(6, "Password must be at least 6 characters long")
       .required("Password is required"),
   });
+  const handleGoogleLogin = async () => {
+    if (!isLoggedIn) {
+      setIsLoggedIn(true);
+      try {
+        const userCredential = await signInWithGoogle();
+        const userId = userCredential.user.uid;
 
+        await changeOnlineStatusForLogin(userId);
+
+        console.log("User logged in and status updated");
+        toast.success("Вхід виконано успішно!");
+
+        navigate("/");
+      } catch (error) {
+        console.error("Error during login:", error);
+        toast.error(`Помилка авторизації: ${error.message}`);
+        setIsLoggedIn(false);
+      }
+    }
+  };
 
   return (
     <main className={css.container}>
@@ -107,13 +130,22 @@ export default function LogInForm() {
           <button type="submit" className={css.submitButton}>
             Log In
           </button>
-          <p
-            className={css.registr}
-            onClick={() => {
-              navigate("/register");
-            }}
-          >
-            Don`t have an account? Registration
+          <div className={css.googleIconContainer}>
+            <FcGoogle
+              className={css.googleIcon}
+              onClick={() => handleGoogleLogin()}
+            />
+          </div>
+          <p className={css.registr}>
+            Don`t have an account?{" "}
+            <span
+              className={css.registrLink}
+              onClick={() => {
+                navigate("/register");
+              }}
+            >
+              Registration
+            </span>
           </p>
         </Form>
       </Formik>

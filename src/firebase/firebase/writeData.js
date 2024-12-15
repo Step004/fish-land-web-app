@@ -1,6 +1,6 @@
 import { ref, set, getDatabase, update, get } from "firebase/database";
 
-export async function saveUserToDatabase(userId, email, name) {
+export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}`);
   try {
@@ -69,6 +69,24 @@ export async function addUserPost(userId, post) {
     console.error("Error adding user post:", error);
   }
 }
+
+export async function deleteUserPost(userId, postId) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}/posts`);
+
+  try {
+    const snapshot = await get(userRef);
+    const existingPosts = snapshot.val() || [];
+
+    const updatedPosts = existingPosts.filter((post) => post.id !== postId);
+
+    await update(ref(db, `users/${userId}`), { posts: updatedPosts });
+
+  } catch (error) {
+    console.error("Error deleting user post:", error);
+  }
+}
+
 export async function changeOnlineStatusForLogin(userId) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}`);

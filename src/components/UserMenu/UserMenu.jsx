@@ -14,7 +14,7 @@ export default function UserMenu() {
   const [user, setUser] = useState(currentUser);
   const navigate = useNavigate();
   const isTabletScreen = useMediaQuery({ query: "(min-width: 768px)" });
-  const [openBurgerMenu, setOpenBurgerMenu]= useState(false)
+  const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,12 +34,18 @@ export default function UserMenu() {
     navigate("/login");
   };
   const handleBurgerMenuToggle = () => {
-    setOpenBurgerMenu(!openBurgerMenu)
-  }
+    setOpenBurgerMenu(!openBurgerMenu);
+  };
+  const userPhoto = currentUser.photoURL ? (
+    <img src={currentUser.photoURL} alt="UserPhoto" className={css.userIcon} />
+  ) : (
+    <FaRegUserCircle className={css.userIcon} />
+  );
+
   return (
     <div className={css.wrapper}>
       <div className={css.userNameContainer}>
-        <FaRegUserCircle className={css.userIcon} />
+        {userPhoto}
         <p className={css.username} onClick={() => navigate("/user")}>
           {user?.name || currentUser.displayName}
         </p>

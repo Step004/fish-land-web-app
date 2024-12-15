@@ -9,7 +9,7 @@ import {
 } from "../../firebase/firebase/chats.js";
 
 export default function Messages() {
-  const { chatId } = useParams(); // Отримуємо chatId з маршруту
+  const { chatId } = useParams(); 
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [value, setValue] = useState("");
