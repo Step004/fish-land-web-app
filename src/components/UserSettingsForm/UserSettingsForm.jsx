@@ -42,7 +42,7 @@ export default function UserSettingsForm({ close, user }) {
     });
     try {
       await updateUserDisplayName(currentUserUpdatesName);
-      await updateUserFields(user.uid, updates);
+      await updateUserFields(currentUser.uid, updates);
       updateCurrentUser(updates);
       toast.success("User information updated successfully!");
       close();
@@ -83,7 +83,7 @@ export default function UserSettingsForm({ close, user }) {
   return (
     <Formik
       initialValues={{
-        name: user.name,
+        name: currentUser.displayName,
         number: user.number || "",
         age: user.age || "",
         origin: user.origin || "",

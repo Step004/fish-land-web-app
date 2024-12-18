@@ -15,7 +15,7 @@ import AddPostModal from "../../components/AddPostModal/AddPostModal.jsx";
 import Loader from "../../components/Loader/Loader.jsx";
 import { deleteUserPost } from "../../firebase/firebase/writeData.js";
 import { MdDelete } from "react-icons/md";
-
+import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 
 // import { IoAddSharp } from "react-icons/io5";
 
@@ -29,6 +29,8 @@ export default function UserPage() {
   const [openSetting, setOpenSetting] = useState(false);
   const [thisUser, setThisUser] = useState(null);
   const [openAddPost, setOpenAddPost] = useState(false);
+  const [questionOpen, setQuestionOpen] = useState(false);
+  const [question, setQuestion] = useState();
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -62,13 +64,15 @@ export default function UserPage() {
   const toggleAddPost = () => {
     setOpenAddPost(!openAddPost);
   };
+   const toggleQuestion = () => {
+     setQuestionOpen(!questionOpen);
+   };
 
   const handleDeletePost = async (postId) => {
     try {
       await deleteUserPost(currentUser.uid, postId);
     } catch (error) {
       console.log(error.message);
-      
     }
   };
 
@@ -83,17 +87,21 @@ export default function UserPage() {
         {userPhoto}
         <div className={css.containerForRecommended}>
           <h2>Recommendations</h2>
-          <ul>
+          {/* <ul>
             <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-          </ul>
+          </ul> */}
+          <p className={css.descRecommend}>
+            In order to receive recommendations for fishing spots, you need to
+            complete a survey!
+          </p>
+          <button className={css.buttonStart} onClick={() => toggleQuestion()}>
+            Start
+          </button>
         </div>
       </div>
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
-          <h2 className={css.userName}>{thisUser.name}</h2>
+          <h2 className={css.userName}>{currentUser.displayName}</h2>
           <button className={css.buttonSettings} onClick={toggleSettings}>
             <IoSettingsOutline className={css.settingsIcon} />
           </button>
@@ -222,6 +230,7 @@ export default function UserPage() {
         <UserSettingsModal close={toggleSettings} user={thisUser} />
       )}
       {openAddPost && <AddPostModal close={toggleAddPost} />}
+      {questionOpen && <ModalQuestion close={toggleQuestion()} />}
     </main>
   );
 }

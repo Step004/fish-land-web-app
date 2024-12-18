@@ -57,6 +57,7 @@
     padding: 20px 15px;
     box-sizing: border-box;
     border-radius: 15px;
+    text-align: center;
 }
 
 .friendPhoto {
@@ -281,7 +282,13 @@
 .deleteIcon:hover {
     transform: scale(1.1);
 }
-
+.descRecommend{
+    margin-top: 10px;
+    max-width: 209px;
+}
+.buttonStart{
+    margin-top: 15px;
+}
 @media screen and (max-width: 868px) {
     .container {
         gap: 20px;

@@ -13,10 +13,10 @@
     color: #fbfbfb;
     cursor: pointer;
     transition: transform 0.3s ease;
-    width: 90px;
+    /* width: 90px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; */
 }
 
 .username:hover {
