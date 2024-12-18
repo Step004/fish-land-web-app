@@ -5,7 +5,7 @@ export default function ModalQuestion({ close }) {
     <>
       <div className={css.overlay} onClick={close}></div>
       <div className={css.window}>
-        <UserSettingsForm close={close} />
+        sdsd
       </div>
     </>
   );

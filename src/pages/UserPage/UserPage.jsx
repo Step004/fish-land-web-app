@@ -230,7 +230,7 @@ export default function UserPage() {
         <UserSettingsModal close={toggleSettings} user={thisUser} />
       )}
       {openAddPost && <AddPostModal close={toggleAddPost} />}
-      {questionOpen && <ModalQuestion close={toggleQuestion()} />}
+      {questionOpen && <ModalQuestion close={toggleQuestion} />}
     </main>
   );
 }
