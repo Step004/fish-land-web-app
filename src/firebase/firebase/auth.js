@@ -4,9 +4,10 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { auth } from "./firebase.js";
-import { updateUserPhoto } from "./writeData.js";
+import { saveUserToDatabase, updateUserPhoto } from "./writeData.js";
 
 export const doCreateUserWithEmailAndPassword = async (
   email,
@@ -59,12 +60,27 @@ export const signInWithGoogle = async () => {
 
     const user = result.user;
 
+    // Перевірка, чи це новий користувач
+    const additionalUserInfo = getAdditionalUserInfo(result);
+    const isNewUser = additionalUserInfo?.isNewUser;
+
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const token = credential.accessToken;
 
-    console.log("Користувач авторизований:", user);
-    console.log("Google Token:", token);
     await updateUserPhoto(user.uid, user.photoURL);
+
+    console.log(user);
+
+    if (isNewUser) {
+      await saveUserToDatabase(
+        user.uid,
+        user.email,
+        user.displayName,
+        user.photoURL
+      );
+      console.log("Новий користувач збережений до бази даних");
+    }
+
     return { user, token };
   } catch (error) {
     console.error("Помилка авторизації:", error);

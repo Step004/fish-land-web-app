@@ -1,4 +1,4 @@
-import { ref, set, getDatabase, update, get } from "firebase/database";
+import { ref, set, getDatabase, update, get, push } from "firebase/database";
 
 export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
@@ -10,7 +10,7 @@ export async function saveUserToDatabase(userId, email, name, photoURL) {
       name,
       online: true,
       origin: null,
-      photo: null,
+      photo: photoURL || null,
       age: null,
       number: null,
       preference: null,
@@ -49,7 +49,6 @@ export async function updateUserFields(userId, updates) {
   }
 }
 
-
 export async function addUserPost(userId, post) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}/posts`);
@@ -81,7 +80,6 @@ export async function deleteUserPost(userId, postId) {
     const updatedPosts = existingPosts.filter((post) => post.id !== postId);
 
     await update(ref(db, `users/${userId}`), { posts: updatedPosts });
-
   } catch (error) {
     console.error("Error deleting user post:", error);
   }
@@ -132,3 +130,20 @@ export async function addFriend(userId, friendId) {
     console.error("Error adding friend:", error);
   }
 }
+
+export const saveAnswersToDatabase = async (userId, answers) => {
+  try {
+    const db = getDatabase();
+    const userAnswersRef = ref(db, `users/${userId}/answers`);
+
+    await push(userAnswersRef, {
+      answers,
+      completedAt: new Date().toISOString(),
+    });
+
+    console.log("Answers successfully saved to Realtime Database.");
+  } catch (error) {
+    console.error("Error saving answers to Realtime Database:", error);
+    throw error;
+  }
+};
