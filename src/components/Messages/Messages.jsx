@@ -7,9 +7,12 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
+import { FaPhone } from "react-icons/fa";
+import { createCallWithLink } from "../../firebase/firebase/calls.js";
+import { servers } from "../../utils/servers.js";
 
 export default function Messages() {
-  const { chatId } = useParams(); 
+  const { chatId } = useParams();
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [value, setValue] = useState("");
@@ -25,7 +28,10 @@ export default function Messages() {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
-    return () => unsubscribe(); // Відписка при демонтованому компоненті
+    return () => {
+      unsubscribe();
+      setMessages([]);
+    };
   }, [chatId]);
 
   const handleSendMessage = async () => {
@@ -49,10 +55,41 @@ export default function Messages() {
       handleSendMessage();
     }
   };
+  const pc = useRef(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      pc.current = new RTCPeerConnection(servers);
+    }
+    return () => {
+      if (pc.current) {
+        pc.current.close();
+      }
+    };
+  }, []);
+  const handlePhone = async () => {
+    if (!pc.current) {
+      console.error("PeerConnection is not initialized");
+      return;
+    }
 
+    const link = await createCallWithLink(pc.current);
+    console.log(link);
+
+    try {
+      await sendMessage(chatId, currentUser.displayName, currentUser.uid, link);
+      setValue("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+
+    if (link) {
+      console.log("Call created, link:", link);
+    } else {
+      console.error("Failed to create call");
+    }
+  };
   return (
     <div className={css.containerMsg}>
-      <div></div>
       <div className={css.listMess} ref={listMessRef}>
         <ul>
           {messages.map((msg) => (
@@ -95,6 +132,9 @@ export default function Messages() {
         />
         <button className={css.sendButton} onClick={handleSendMessage}>
           Send
+        </button>
+        <button className={css.phoneButton} onClick={handlePhone}>
+          <FaPhone />
         </button>
       </div>
     </div>

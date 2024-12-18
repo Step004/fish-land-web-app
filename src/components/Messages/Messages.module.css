@@ -19,7 +19,7 @@
 }
 
 .inputMsg {
-    width: 80%;
+    width: 70%;
     height: 38px;
     font-size: 24px;
     border-radius: 5px;
@@ -30,6 +30,11 @@
     width: 100px;
     height: 32px;
     font-size: 24px;
+    cursor: pointer;
+}
+
+.phoneButton {
+    height: 32px;
     cursor: pointer;
 }
 

@@ -31,8 +31,10 @@ const MessagePage = () => {
             chats.map((chat) => (
               <li
                 key={chat.chatId}
-                onClick={() => navigate(`/message/${chat.chatId}`)}
-                style={{cursor: 'pointer'}}
+                onClick={() => {
+                  navigate(`/message/${chat.chatId}`);
+                }}
+                style={{ cursor: "pointer" }}
               >
                 <div className={css.photoAndName}>
                   <img
