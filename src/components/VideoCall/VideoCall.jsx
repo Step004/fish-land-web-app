@@ -16,8 +16,11 @@ import { FaMicrophone, FaCamera } from "react-icons/fa";
 import { FaMicrophoneSlash } from "react-icons/fa6";
 
 import css from "./VideoCall.module.css";
+import { sendMessage } from "../../firebase/firebase/chats.js";
+import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
 const VideoCall = ({ link, close, join }) => {
+  const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [callId, setCallId] = useState(link);
@@ -90,38 +93,52 @@ const VideoCall = ({ link, close, join }) => {
       });
     });
   };
-
-  // const answerCall = async () => {
+  // const createCall = async () => {
   //   await startWebcam();
   //   setIsCalling(true);
 
-  //   const callDoc = doc(firestore, "calls", callId);
-  //   const answerCandidates = collection(callDoc, "answerCandidates");
+  //   const callDoc = doc(collection(firestore, "calls")); // Генерується унікальний callId
+  //   const callId = callDoc.id; // Зберігаємо callId
+  //   setCallId(callId);
+
   //   const offerCandidates = collection(callDoc, "offerCandidates");
+  //   const answerCandidates = collection(callDoc, "answerCandidates");
 
   //   pc.current.onicecandidate = (event) => {
   //     if (event.candidate)
-  //       setDoc(doc(answerCandidates), event.candidate.toJSON());
+  //       setDoc(doc(offerCandidates), event.candidate.toJSON());
   //   };
 
-  //   pc.current.onconnectionstatechange = () => {
-  //     if (pc.current.connectionState === "disconnected") {
-  //       handleEndCall();
-  //     }
-  //   };
+  //   const offerDescription = await pc.current.createOffer();
+  //   await pc.current.setLocalDescription(offerDescription);
 
-  //   const callData = (await getDoc(callDoc)).data();
-  //   console.log("Fetched call data:", callData);
-  //   const offerDescription = callData?.offer;
-  //   await pc.current.setRemoteDescription(
-  //     new RTCSessionDescription(offerDescription)
+  //   // Зберігаємо offer у Firestore
+  //   await setDoc(callDoc, { offer: offerDescription });
+
+  //   // Надсилаємо посилання іншому користувачеві
+  //   const callMessage = `Link:${callId}`;
+  //   await sendMessage(
+  //     callId,
+  //     currentUser.displayName,
+  //     currentUser.photoURL,
+  //     currentUser.uid,
+  //     callMessage
   //   );
 
-  //   const answerDescription = await pc.current.createAnswer();
-  //   await pc.current.setLocalDescription(answerDescription);
-  //   await setDoc(callDoc, { answer: answerDescription });
+  //   // Слухаємо зміни документа для answer
+  //   onSnapshot(callDoc, (snapshot) => {
+  //     const data = snapshot.data();
+  //     if (pc.current && data?.answer) {
+  //       pc.current
+  //         .setRemoteDescription(new RTCSessionDescription(data.answer))
+  //         .catch((error) =>
+  //           console.error("Error setting remote description:", error)
+  //         );
+  //     }
+  //   });
 
-  //   onSnapshot(offerCandidates, (snapshot) => {
+  //   // Слухаємо кандидатів answer
+  //   onSnapshot(answerCandidates, (snapshot) => {
   //     snapshot.docChanges().forEach((change) => {
   //       if (change.type === "added") {
   //         const candidate = new RTCIceCandidate(change.doc.data());
@@ -130,50 +147,95 @@ const VideoCall = ({ link, close, join }) => {
   //     });
   //   });
   // };
-const answerCall = async () => {
-  try {
+
+  const answerCall = async () => {
     await startWebcam();
     setIsCalling(true);
 
     const callDoc = doc(firestore, "calls", callId);
     const answerCandidates = collection(callDoc, "answerCandidates");
+    const offerCandidates = collection(callDoc, "offerCandidates");
 
     pc.current.onicecandidate = (event) => {
-      if (event.candidate) {
+      if (event.candidate)
         setDoc(doc(answerCandidates), event.candidate.toJSON());
+    };
+
+    pc.current.onconnectionstatechange = () => {
+      if (pc.current.connectionState === "disconnected") {
+        handleEndCall();
       }
     };
 
-    const callSnap = await getDoc(callDoc);
-    if (!callSnap.exists()) {
-      console.error(`Call document with ID ${callId} does not exist.`);
-      return;
-    }
-
-    const callData = callSnap.data();
+    const callData = (await getDoc(callDoc)).data();
     console.log("Fetched call data:", callData);
-
     const offerDescription = callData?.offer;
-    if (!offerDescription || !offerDescription.type || !offerDescription.sdp) {
-      console.error("Invalid or missing offer description:", offerDescription);
-      return;
-    }
-
     await pc.current.setRemoteDescription(
       new RTCSessionDescription(offerDescription)
     );
-    console.log("Remote description set successfully");
 
     const answerDescription = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answerDescription);
-    console.log("Local description set with answer:", answerDescription);
+    await setDoc(callDoc, { answer: answerDescription });
 
-    await updateDoc(callDoc, { answer: answerDescription });
-    console.log("Answer saved to Firestore");
-  } catch (error) {
-    console.error("Error during answerCall:", error);
-  }
-};
+    onSnapshot(offerCandidates, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const candidate = new RTCIceCandidate(change.doc.data());
+          pc.current.addIceCandidate(candidate);
+        }
+      });
+    });
+  };
+  // const answerCall = async () => {
+  //   try {
+  //     await startWebcam();
+  //     setIsCalling(true);
+
+  //     const callDoc = doc(firestore, "calls", callId);
+  //     const answerCandidates = collection(callDoc, "answerCandidates");
+
+  //     pc.current.onicecandidate = (event) => {
+  //       if (event.candidate) {
+  //         setDoc(doc(answerCandidates), event.candidate.toJSON());
+  //       }
+  //     };
+
+  //     const callSnap = await getDoc(callDoc);
+  //     if (!callSnap.exists()) {
+  //       console.error(`Call document with ID ${callId} does not exist.`);
+  //       return;
+  //     }
+
+  //     const callData = callSnap.data();
+  //     const offerDescription = callData?.offer;
+  //     if (
+  //       !offerDescription ||
+  //       !offerDescription.type ||
+  //       !offerDescription.sdp
+  //     ) {
+  //       console.error(
+  //         "Invalid or missing offer description:",
+  //         offerDescription
+  //       );
+  //       return;
+  //     }
+
+  //     // Встановлюємо offer як remote description
+  //     await pc.current.setRemoteDescription(
+  //       new RTCSessionDescription(offerDescription)
+  //     );
+
+  //     // Створюємо answer
+  //     const answerDescription = await pc.current.createAnswer();
+  //     await pc.current.setLocalDescription(answerDescription);
+
+  //     // Зберігаємо answer у Firestore
+  //     await updateDoc(callDoc, { answer: answerDescription });
+  //   } catch (error) {
+  //     console.error("Error during answerCall:", error);
+  //   }
+  // };
 
   const handleMute = () => {
     // setIsMuted(true)
@@ -294,11 +356,11 @@ const answerCall = async () => {
           End Call
         </button>
 
-        {!isCalling && (
+        {/* {!isCalling && ( */}
           <button className={css.button} onClick={handleAnswering}>
             Join
           </button>
-        )}
+        {/* )} */}
       </div>
     </div>
   );

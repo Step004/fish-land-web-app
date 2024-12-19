@@ -35,6 +35,8 @@ export const deleteCallById = async (callId) => {
 };
 
 export const createCallWithLink = async (pc) => {
+  console.log(pc);
+  
   try {
     const callDoc = doc(collection(firestore, "calls"));
     const offerCandidates = collection(callDoc, "offerCandidates");
