@@ -5,6 +5,7 @@ import {
   setDoc,
   getDoc,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { firestore } from "../../firebase/firebase/firebase.js";
 import VideoDisplay from "../VideoDisplay/VideoDisplay.jsx";
@@ -54,6 +55,7 @@ const VideoCall = ({ link, close, join }) => {
     setIsCalling(true);
 
     const callDoc = doc(firestore, "calls", callId);
+    console.log("Fetched call data:", callDoc);
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
 
@@ -89,44 +91,89 @@ const VideoCall = ({ link, close, join }) => {
     });
   };
 
-  const answerCall = async () => {
+  // const answerCall = async () => {
+  //   await startWebcam();
+  //   setIsCalling(true);
+
+  //   const callDoc = doc(firestore, "calls", callId);
+  //   const answerCandidates = collection(callDoc, "answerCandidates");
+  //   const offerCandidates = collection(callDoc, "offerCandidates");
+
+  //   pc.current.onicecandidate = (event) => {
+  //     if (event.candidate)
+  //       setDoc(doc(answerCandidates), event.candidate.toJSON());
+  //   };
+
+  //   pc.current.onconnectionstatechange = () => {
+  //     if (pc.current.connectionState === "disconnected") {
+  //       handleEndCall();
+  //     }
+  //   };
+
+  //   const callData = (await getDoc(callDoc)).data();
+  //   console.log("Fetched call data:", callData);
+  //   const offerDescription = callData?.offer;
+  //   await pc.current.setRemoteDescription(
+  //     new RTCSessionDescription(offerDescription)
+  //   );
+
+  //   const answerDescription = await pc.current.createAnswer();
+  //   await pc.current.setLocalDescription(answerDescription);
+  //   await setDoc(callDoc, { answer: answerDescription });
+
+  //   onSnapshot(offerCandidates, (snapshot) => {
+  //     snapshot.docChanges().forEach((change) => {
+  //       if (change.type === "added") {
+  //         const candidate = new RTCIceCandidate(change.doc.data());
+  //         pc.current.addIceCandidate(candidate);
+  //       }
+  //     });
+  //   });
+  // };
+const answerCall = async () => {
+  try {
     await startWebcam();
     setIsCalling(true);
 
     const callDoc = doc(firestore, "calls", callId);
     const answerCandidates = collection(callDoc, "answerCandidates");
-    const offerCandidates = collection(callDoc, "offerCandidates");
 
     pc.current.onicecandidate = (event) => {
-      if (event.candidate)
+      if (event.candidate) {
         setDoc(doc(answerCandidates), event.candidate.toJSON());
-    };
-
-    pc.current.onconnectionstatechange = () => {
-      if (pc.current.connectionState === "disconnected") {
-        handleEndCall();
       }
     };
 
-    const callData = (await getDoc(callDoc)).data();
+    const callSnap = await getDoc(callDoc);
+    if (!callSnap.exists()) {
+      console.error(`Call document with ID ${callId} does not exist.`);
+      return;
+    }
+
+    const callData = callSnap.data();
+    console.log("Fetched call data:", callData);
+
     const offerDescription = callData?.offer;
+    if (!offerDescription || !offerDescription.type || !offerDescription.sdp) {
+      console.error("Invalid or missing offer description:", offerDescription);
+      return;
+    }
+
     await pc.current.setRemoteDescription(
       new RTCSessionDescription(offerDescription)
     );
+    console.log("Remote description set successfully");
 
     const answerDescription = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answerDescription);
-    await setDoc(callDoc, { answer: answerDescription });
+    console.log("Local description set with answer:", answerDescription);
 
-    onSnapshot(offerCandidates, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          const candidate = new RTCIceCandidate(change.doc.data());
-          pc.current.addIceCandidate(candidate);
-        }
-      });
-    });
-  };
+    await updateDoc(callDoc, { answer: answerDescription });
+    console.log("Answer saved to Firestore");
+  } catch (error) {
+    console.error("Error during answerCall:", error);
+  }
+};
 
   const handleMute = () => {
     // setIsMuted(true)
