@@ -50,6 +50,7 @@ export default function HomePage() {
   }, [friends]);
 
   if (loading) return <Loader />;
+  console.log(memoizedFriends);
 
   return (
     <main className={css.container}>
@@ -65,9 +66,7 @@ export default function HomePage() {
                 >
                   <div
                     className={css.nameRow}
-                    onClick={()=>navigation(
-                      `/friends/${friend.id}`
-                    )}
+                    onClick={() => navigation(`/friends/${friend.id}`)}
                   >
                     {friend.photo ? (
                       <img
