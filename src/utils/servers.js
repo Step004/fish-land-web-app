@@ -14,5 +14,4 @@ export const servers = {
       username: '28224511:1379330808',
     },
   ],
-  iceCandidatePoolSize: 10,
 };

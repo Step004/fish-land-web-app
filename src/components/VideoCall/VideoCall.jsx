@@ -123,14 +123,14 @@ const VideoCall = ({ link, close, join }) => {
   };
 
   const handleMute = () => {
-    setIsMuted(true)
-    // setIsMuted((prev) => {
-    //   const newMuteState = !prev;
-    //   localStream?.getAudioTracks().forEach((track) => {
-    //     track.enabled = !newMuteState;
-    //   });
-    //   return newMuteState;
-    // });
+    // setIsMuted(true)
+    setIsMuted((prev) => {
+      const newMuteState = !prev;
+      localStream?.getAudioTracks().forEach((track) => {
+        track.enabled = !newMuteState;
+      });
+      return newMuteState;
+    });
   };
 
   const handleEndCall = async () => {
@@ -226,23 +226,21 @@ const VideoCall = ({ link, close, join }) => {
             <FaCamera className={css.icon} />
           </button>
         </div>
-        {!join && (
-          <>
-            <button className={css.button} onClick={createCall}>
-              Start Call
-            </button>
-            <button
-              className={css.button}
-              disabled={!isCalling}
-              onClick={() => {
-                handleEndCall();
-                close();
-              }}
-            >
-              End Call
-            </button>
-          </>
-        )}
+
+        <button className={css.button} onClick={createCall}>
+          Start Call
+        </button>
+        <button
+          className={css.button}
+          disabled={!isCalling}
+          onClick={() => {
+            handleEndCall();
+            close();
+          }}
+        >
+          End Call
+        </button>
+
         {!isCalling && (
           <button className={css.button} onClick={handleAnswering}>
             Join
