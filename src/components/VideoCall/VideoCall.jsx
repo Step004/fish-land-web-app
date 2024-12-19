@@ -11,25 +11,22 @@ import VideoDisplay from "../VideoDisplay/VideoDisplay.js";
 
 import { servers } from "../../utils/servers.js";
 import { deleteCallById } from "../../firebase/firebase/calls.js";
-import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-import { FaMicrophone } from "react-icons/fa";
-import { FaCamera } from "react-icons/fa";
+import { FaMicrophone, FaCamera } from "react-icons/fa";
 import css from "./VideoCall.module.css";
 
 const VideoCall = ({ link, close, join }) => {
-  const { currentUser } = useAuth();
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
   const [callId, setCallId] = useState(link);
   const [isCalling, setIsCalling] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const pc = useRef<RTCPeerConnection | null>(
+  const pc = useRef(
     typeof window !== "undefined" ? new RTCPeerConnection(servers) : null
   );
   const [isJoinCall, setIsJoinCall] = useState(false);
 
-  const webcamVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const webcamVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
 
   const startWebcam = async () => {
     if (typeof window === "undefined") return;
@@ -38,35 +35,33 @@ const VideoCall = ({ link, close, join }) => {
       audio: true,
     });
     const remoteStream = new MediaStream();
-    stream.getTracks().forEach((track) => pc.current!.addTrack(track, stream));
-    pc.current!.ontrack = (event) => {
+    stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
+    pc.current.ontrack = (event) => {
       event.streams[0]
         .getTracks()
         .forEach((track) => remoteStream.addTrack(track));
     };
     setLocalStream(stream);
     setRemoteStream(remoteStream);
-    webcamVideoRef.current!.srcObject = stream;
-    remoteVideoRef.current!.srcObject = remoteStream;
+    if (webcamVideoRef.current) webcamVideoRef.current.srcObject = stream;
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
   };
 
   const createCall = async () => {
     await startWebcam();
-
     setIsCalling(true);
 
     const callDoc = doc(firestore, "calls", callId);
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
-    // setCallId(callDoc.id);
 
-    pc.current!.onicecandidate = (event) => {
+    pc.current.onicecandidate = (event) => {
       if (event.candidate)
         setDoc(doc(offerCandidates), event.candidate.toJSON());
     };
 
-    const offerDescription = await pc.current!.createOffer();
-    await pc.current!.setLocalDescription(offerDescription);
+    const offerDescription = await pc.current.createOffer();
+    await pc.current.setLocalDescription(offerDescription);
     await setDoc(callDoc, { offer: offerDescription });
 
     onSnapshot(callDoc, (snapshot) => {
@@ -80,7 +75,7 @@ const VideoCall = ({ link, close, join }) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           const candidate = new RTCIceCandidate(change.doc.data());
-          pc.current!.addIceCandidate(candidate);
+          pc.current.addIceCandidate(candidate);
         }
       });
     });
@@ -94,32 +89,32 @@ const VideoCall = ({ link, close, join }) => {
     const answerCandidates = collection(callDoc, "answerCandidates");
     const offerCandidates = collection(callDoc, "offerCandidates");
 
-    pc.current!.onicecandidate = (event) => {
+    pc.current.onicecandidate = (event) => {
       if (event.candidate)
         setDoc(doc(answerCandidates), event.candidate.toJSON());
     };
 
-    pc.current!.onconnectionstatechange = () => {
-      if (pc.current!.connectionState === "disconnected") {
+    pc.current.onconnectionstatechange = () => {
+      if (pc.current.connectionState === "disconnected") {
         handleEndCall();
       }
     };
 
     const callData = (await getDoc(callDoc)).data();
     const offerDescription = callData?.offer;
-    await pc.current!.setRemoteDescription(
+    await pc.current.setRemoteDescription(
       new RTCSessionDescription(offerDescription)
     );
 
-    const answerDescription = await pc.current!.createAnswer();
-    await pc.current!.setLocalDescription(answerDescription);
+    const answerDescription = await pc.current.createAnswer();
+    await pc.current.setLocalDescription(answerDescription);
     await setDoc(callDoc, { answer: answerDescription });
 
     onSnapshot(offerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           const candidate = new RTCIceCandidate(change.doc.data());
-          pc.current!.addIceCandidate(candidate);
+          pc.current.addIceCandidate(candidate);
         }
       });
     });
@@ -136,14 +131,13 @@ const VideoCall = ({ link, close, join }) => {
   };
 
   const handleEndCall = async () => {
-    const stopAndRemoveTracks = (stream: MediaStream) => {
+    const stopAndRemoveTracks = (stream) => {
       stream.getTracks().forEach((track) => {
-        track.stop(); // Зупиняє трек (вимикає камеру/мікрофон)
-        stream.removeTrack(track); // Видаляє трек із потоку
+        track.stop();
+        stream.removeTrack(track);
       });
     };
 
-    // Зупинка локального потоку
     if (localStream) {
       stopAndRemoveTracks(localStream);
       setLocalStream(null);
@@ -152,7 +146,6 @@ const VideoCall = ({ link, close, join }) => {
       }
     }
 
-    // Зупинка віддаленого потоку
     if (remoteStream) {
       stopAndRemoveTracks(remoteStream);
       setRemoteStream(null);
@@ -161,32 +154,14 @@ const VideoCall = ({ link, close, join }) => {
       }
     }
 
-    // Закриття RTCPeerConnection
     if (pc.current) {
       pc.current.close();
       pc.current = null;
     }
 
-    // Очищення стану дзвінка
     setIsCalling(false);
-    await deleteCallById(callId); // Видаляє запис дзвінка з Firestore
+    await deleteCallById(callId);
     setCallId("");
-  };
-
-  const signalTrackStateChange = async (isEnabled: boolean) => {
-    const callDoc = doc(firestore, "calls", callId);
-    await setDoc(callDoc, { videoEnabled: isEnabled }, { merge: true });
-  };
-
-  const signalNewTrack = async (track: MediaStreamTrack) => {
-    const callDoc = doc(firestore, "calls", callId);
-
-    const newTrackInfo = {
-      trackId: track.id,
-      trackKind: track.kind,
-      trackLabel: track.label,
-    };
-    await setDoc(callDoc, { newTrack: newTrackInfo }, { merge: true });
   };
 
   const handleVideoToggle = async () => {
@@ -196,18 +171,12 @@ const VideoCall = ({ link, close, join }) => {
         const track = videoTracks[0];
         const isEnabled = track.enabled;
         track.enabled = !isEnabled;
-        await signalTrackStateChange(!isEnabled);
-
-        if (!isEnabled) {
-          await signalNewTrack(track);
-        }
       } else {
         const newStream = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
         const newVideoTrack = newStream.getVideoTracks()[0];
         localStream.addTrack(newVideoTrack);
-        signalNewTrack(newVideoTrack);
       }
     }
   };
@@ -229,6 +198,7 @@ const VideoCall = ({ link, close, join }) => {
     }
     answerCall();
   };
+
   return (
     <div>
       <VideoDisplay
@@ -251,10 +221,7 @@ const VideoCall = ({ link, close, join }) => {
         </div>
         {!join && (
           <>
-            <button
-              className={css.button}
-              onClick={() => createCall()} // Виклик функції при натисканні
-            >
+            <button className={css.button} onClick={createCall}>
               Start Call
             </button>
             <button
@@ -269,8 +236,8 @@ const VideoCall = ({ link, close, join }) => {
             </button>
           </>
         )}
-        {(!isCalling) && (
-          <button className={css.button} onClick={() => handleAnswering()}>
+        {!isCalling && (
+          <button className={css.button} onClick={handleAnswering}>
             Join
           </button>
         )}
