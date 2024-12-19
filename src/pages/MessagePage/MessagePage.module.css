@@ -52,7 +52,15 @@
 .nameAndLastMsg {
     display: flex;
     flex-direction: column;
-
+}
+.lastMsg {
+    width: 120px;
+    white-space: nowrap;
+    /* Текст не переноситься на новий рядок */
+    overflow: hidden;
+    /* Приховує текст, що виходить за межі */
+    text-overflow: ellipsis;
+    /* Додає три крапки, якщо текст обрізаний */
 }
 
 .rightCont {

@@ -44,7 +44,7 @@ const MessagePage = () => {
                   />
                   <div className={css.nameAndLastMsg}>
                     <span>{chat.name || "ann"}</span>
-                    <span>{chat.lastMessage}</span>
+                    <span className={css.lastMsg}>{chat.lastMessage}</span>
                   </div>
                 </div>
               </li>

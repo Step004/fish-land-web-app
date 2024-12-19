@@ -75,7 +75,7 @@ export const createChat = async (userId1, user2) => {
   }
 };
 
-export const sendMessage = async (chatId, senderName, senderId, content) => {
+export const sendMessage = async (chatId, senderName,photo, senderId, content) => {
   const db = getFirestore();
   const chatRef = doc(db, "chats", chatId);
   const messagesRef = collection(chatRef, "messages");
@@ -84,7 +84,8 @@ export const sendMessage = async (chatId, senderName, senderId, content) => {
     // Додаємо повідомлення до підколекції `messages`
     await addDoc(messagesRef, {
       senderId: senderId,
-      name:senderName,
+      name: senderName,
+      photo,
       content: content,
       timestamp: serverTimestamp(),
     });

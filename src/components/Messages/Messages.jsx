@@ -8,13 +8,19 @@ import {
   sendMessage,
 } from "../../firebase/firebase/chats.js";
 import { FaPhone } from "react-icons/fa";
-import { createCallWithLink } from "../../firebase/firebase/calls.js";
+import {
+  createCallWithLink,
+  deleteCallById,
+} from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
+import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 
 export default function Messages() {
   const { chatId } = useParams();
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
+  const [callModal, setCallModal] = useState(false);
+  const [link, setLink] = useState("");
   const [value, setValue] = useState("");
   const listMessRef = useRef(null);
   useEffect(() => {
@@ -41,6 +47,7 @@ export default function Messages() {
       await sendMessage(
         chatId,
         currentUser.displayName,
+        currentUser.photoURL,
         currentUser.uid,
         value
       );
@@ -66,17 +73,31 @@ export default function Messages() {
       }
     };
   }, []);
+  const handleCall = () => {
+    setCallModal(!callModal);
+  };
   const handlePhone = async () => {
     if (!pc.current) {
       console.error("PeerConnection is not initialized");
       return;
     }
+    handleCall();
 
     const link = await createCallWithLink(pc.current);
     console.log(link);
+    setLink(link)
+
+    const callMessage = `Link:${link}`;
+    console.log(callMessage);
 
     try {
-      await sendMessage(chatId, currentUser.displayName, currentUser.uid, link);
+      await sendMessage(
+        chatId,
+        currentUser.displayName,
+        currentUser.photoURL,
+        currentUser.uid,
+        callMessage
+      );
       setValue("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -88,37 +109,99 @@ export default function Messages() {
       console.error("Failed to create call");
     }
   };
+  const callForm = (msg) => {
+    const parts = msg.content.split(":");
+    if (currentUser.uid === msg.senderId) {
+      return (
+        <button
+          onClick={async () => {
+            deleteCallById(parts[1]);
+          }}
+        >
+          Закінчити
+        </button>
+      );
+    }
+    return (
+      <div>
+        <button
+          onClick={async () => {
+            deleteCallById(parts[1]);
+          }}
+        >
+          Відхилити
+        </button>
+        <button>Приєлнатись за поссиланням</button>
+      </div>
+    );
+  };
+
   return (
     <div className={css.containerMsg}>
       <div className={css.listMess} ref={listMessRef}>
         <ul>
-          {messages.map((msg) => (
-            <li
-              key={msg.id}
-              className={css.message}
-              style={{
-                margin: 10,
-                border:
-                  currentUser.uid === msg.senderId
-                    ? "2px solid green"
-                    : "1px dashed red",
-                marginLeft: currentUser.uid === msg.senderId ? "auto" : "10px",
-                width: "fit-content",
-                padding: 5,
-                color: "white",
-              }}
-            >
-              <div className={css.photoAndName}>
-                <img
-                  src={msg.photoURL || defaultPhoto}
-                  alt="UserPhoto"
-                  className={css.photo}
-                />
-                <p>{msg.name || "Anonymous"}</p>
-              </div>
-              <p>{msg.content}</p>
-            </li>
-          ))}
+          {messages.map((msg) => {
+            const parts = msg.content.split(":");
+
+            if (parts[0] === "Link") {
+              return (
+                <li
+                  key={msg.id}
+                  className={css.message}
+                  style={{
+                    margin: 10,
+                    border:
+                      currentUser.uid === msg.senderId
+                        ? "2px solid green"
+                        : "1px dashed red",
+                    marginLeft:
+                      currentUser.uid === msg.senderId ? "auto" : "10px",
+                    width: "fit-content",
+                    padding: 5,
+                    color: "white",
+                  }}
+                >
+                  <div className={css.photoAndName}>
+                    <img
+                      src={msg.photo || defaultPhoto}
+                      alt="UserPhoto"
+                      className={css.photo}
+                    />
+                    <p>{msg.name}</p>
+                  </div>
+                  {callForm(msg)}
+                </li>
+              );
+            }
+            return (
+              <li
+                key={msg.id}
+                className={css.message}
+                style={{
+                  margin: 10,
+                  border:
+                    currentUser.uid === msg.senderId
+                      ? "2px solid green"
+                      : "1px dashed red",
+                  marginLeft:
+                    currentUser.uid === msg.senderId ? "auto" : "10px",
+                  width: "fit-content",
+                  padding: 5,
+                  color: "white",
+                }}
+              >
+                <div className={css.photoAndName}>
+                  <img
+                    src={msg.photo || defaultPhoto}
+                    alt="UserPhoto"
+                    className={css.photo}
+                  />
+                  <p>{msg.name}</p>
+                </div>
+                <p>{msg.content}</p>
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className={css.inputButton}>
@@ -137,6 +220,7 @@ export default function Messages() {
           <FaPhone />
         </button>
       </div>
+      {callModal && <ModalVideoCall close={handleCall} link={link} />}
     </div>
   );
 }

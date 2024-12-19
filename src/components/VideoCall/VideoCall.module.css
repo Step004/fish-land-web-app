@@ -1,0 +1,22 @@
+.controlButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    background: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}
+.icon{
+    width: 24px;
+    height: 24px;
+}

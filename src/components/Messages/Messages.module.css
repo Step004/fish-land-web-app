@@ -44,7 +44,7 @@
 
 .listMess {
     width: 100%;
-    height: 70vh;
+    height: 75vh;
     border: 2px dashed white;
     overflow-y: auto;
     margin-top: 20px;
