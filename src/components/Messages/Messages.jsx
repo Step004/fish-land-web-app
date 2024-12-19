@@ -22,6 +22,7 @@ export default function Messages() {
   const [callModal, setCallModal] = useState(false);
   const [link, setLink] = useState("");
   const [value, setValue] = useState("");
+  const [join, setJoin] = useState(false);
   const listMessRef = useRef(null);
   useEffect(() => {
     if (listMessRef.current) {
@@ -85,7 +86,7 @@ export default function Messages() {
 
     const link = await createCallWithLink(pc.current);
     console.log(link);
-    setLink(link)
+    setLink(link);
 
     const callMessage = `Link:${link}`;
     console.log(callMessage);
@@ -131,7 +132,14 @@ export default function Messages() {
         >
           Відхилити
         </button>
-        <button>Приєлнатись за поссиланням</button>
+        <button
+          onClick={() => {
+            handleCall();
+            setJoin(true)
+          }}
+        >
+          Приєлнатись за поссиланням
+        </button>
       </div>
     );
   };
@@ -220,7 +228,9 @@ export default function Messages() {
           <FaPhone />
         </button>
       </div>
-      {callModal && <ModalVideoCall close={handleCall} link={link} />}
+      {callModal && (
+        <ModalVideoCall close={handleCall} link={link} join={join} />
+      )}
     </div>
   );
 }

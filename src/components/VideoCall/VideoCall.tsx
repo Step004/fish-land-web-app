@@ -16,7 +16,7 @@ import { FaMicrophone } from "react-icons/fa";
 import { FaCamera } from "react-icons/fa";
 import css from "./VideoCall.module.css";
 
-const VideoCall = ({ link, close }) => {
+const VideoCall = ({ link, close, join }) => {
   const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -249,21 +249,27 @@ const VideoCall = ({ link, close }) => {
             <FaCamera className={css.icon} />
           </button>
         </div>
-
-        <button
-          className={css.button}
-          onClick={() => {
-            if (isCalling) {
-              handleEndCall();
-              close();
-            } else {
-              createCall();
-            }
-          }}
-        >
-          {isCalling ? "End Call" : "Start Call"}
-        </button>
-        {!isCalling && (
+        {!join && (
+          <>
+            <button
+              className={css.button}
+              onClick={() => createCall()} // Виклик функції при натисканні
+            >
+              Start Call
+            </button>
+            <button
+              className={css.button}
+              disabled={!isCalling}
+              onClick={() => {
+                handleEndCall();
+                close();
+              }}
+            >
+              End Call
+            </button>
+          </>
+        )}
+        {(!isCalling) && (
           <button className={css.button} onClick={() => handleAnswering()}>
             Join
           </button>
