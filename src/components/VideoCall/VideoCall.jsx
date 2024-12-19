@@ -66,12 +66,18 @@ const VideoCall = ({ link, close, join }) => {
     await pc.current.setLocalDescription(offerDescription);
     await setDoc(callDoc, { offer: offerDescription });
 
-    onSnapshot(callDoc, (snapshot) => {
-      const data = snapshot.data();
-      if (pc.current && !pc.current.currentRemoteDescription && data?.answer) {
-        pc.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-      }
-    });
+  onSnapshot(callDoc, (snapshot) => {
+    const data = snapshot.data();
+    console.log("Firestore snapshot data:", data);
+    if (pc.current && data?.answer) {
+      pc.current
+        .setRemoteDescription(new RTCSessionDescription(data.answer))
+        .then(() => console.log("Remote description set successfully"))
+        .catch((error) =>
+          console.error("Error setting remote description:", error)
+        );
+    }
+  });
 
     onSnapshot(answerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
