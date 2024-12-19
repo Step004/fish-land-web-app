@@ -7,11 +7,13 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { firestore } from "../../firebase/firebase/firebase.js";
-import VideoDisplay from "../VideoDisplay/VideoDisplay.js";
+import VideoDisplay from "../VideoDisplay/VideoDisplay.jsx";
 
 import { servers } from "../../utils/servers.js";
 import { deleteCallById } from "../../firebase/firebase/calls.js";
 import { FaMicrophone, FaCamera } from "react-icons/fa";
+import { FaMicrophoneSlash } from "react-icons/fa6";
+
 import css from "./VideoCall.module.css";
 
 const VideoCall = ({ link, close, join }) => {
@@ -121,13 +123,14 @@ const VideoCall = ({ link, close, join }) => {
   };
 
   const handleMute = () => {
-    setIsMuted((prev) => {
-      const newMuteState = !prev;
-      localStream?.getAudioTracks().forEach((track) => {
-        track.enabled = !newMuteState;
-      });
-      return newMuteState;
-    });
+    setIsMuted(true)
+    // setIsMuted((prev) => {
+    //   const newMuteState = !prev;
+    //   localStream?.getAudioTracks().forEach((track) => {
+    //     track.enabled = !newMuteState;
+    //   });
+    //   return newMuteState;
+    // });
   };
 
   const handleEndCall = async () => {
@@ -209,7 +212,11 @@ const VideoCall = ({ link, close, join }) => {
       <div className={css.controlButtons}>
         <div className={css.buttons}>
           <button className={css.button} onClick={handleMute}>
-            <FaMicrophone className={css.icon} />
+            {!isMuted ? (
+              <FaMicrophone className={css.icon} />
+            ) : (
+              <FaMicrophoneSlash className={css.icon} />
+            )}
           </button>
           <button
             className={css.button}

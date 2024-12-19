@@ -1,4 +1,4 @@
-import VideoCall from "../VideoCall/VideoCall.tsx";
+import VideoCall from "../VideoCall/VideoCall.jsx";
 import css from "./ModalVideoCall.module.css";
 import { IoClose } from "react-icons/io5";
 
