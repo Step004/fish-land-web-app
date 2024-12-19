@@ -44,7 +44,7 @@ export default function HomePage() {
       id: friend.uid,
       name: friend.name,
       photo: friend.photo,
-      posts: friend.posts,
+      posts: Array.isArray(friend.posts) ? friend.posts : [],
       createdAt: friend.createdAt,
     }));
   }, [friends]);
