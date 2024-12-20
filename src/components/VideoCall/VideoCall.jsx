@@ -181,7 +181,7 @@ const VideoCall = ({ link, close, join }) => {
 
     const answerDescription = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answerDescription);
-    await setDoc(callDoc, { answer: answerDescription });
+    await updateDoc(callDoc, { answer: answerDescription });
 
     onSnapshot(offerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
