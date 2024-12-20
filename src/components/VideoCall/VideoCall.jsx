@@ -20,6 +20,8 @@ import { sendMessage } from "../../firebase/firebase/chats.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
 const VideoCall = ({ link, close, join }) => {
+  console.log(link);
+  
   const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -56,9 +58,10 @@ const VideoCall = ({ link, close, join }) => {
   const createCall = async () => {
     await startWebcam();
     setIsCalling(true);
+    console.log("createCall: ", callId);
 
     const callDoc = doc(firestore, "calls", callId);
-    console.log("Fetched call data:", callDoc);
+    // console.log("Fetched call data:", callDoc);
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
 
@@ -71,18 +74,18 @@ const VideoCall = ({ link, close, join }) => {
     await pc.current.setLocalDescription(offerDescription);
     await setDoc(callDoc, { offer: offerDescription });
 
-  onSnapshot(callDoc, (snapshot) => {
-    const data = snapshot.data();
-    console.log("Firestore snapshot data:", data);
-    if (pc.current && data?.answer) {
-      pc.current
-        .setRemoteDescription(new RTCSessionDescription(data.answer))
-        .then(() => console.log("Remote description set successfully"))
-        .catch((error) =>
-          console.error("Error setting remote description:", error)
-        );
-    }
-  });
+    onSnapshot(callDoc, (snapshot) => {
+      const data = snapshot.data();
+      console.log("Firestore snapshot data:", data);
+      if (pc.current && data?.answer) {
+        pc.current
+          .setRemoteDescription(new RTCSessionDescription(data.answer))
+          .then(() => console.log("Remote description set successfully"))
+          .catch((error) =>
+            console.error("Error setting remote description:", error)
+          );
+      }
+    });
 
     onSnapshot(answerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
@@ -151,6 +154,8 @@ const VideoCall = ({ link, close, join }) => {
   const answerCall = async () => {
     await startWebcam();
     setIsCalling(true);
+
+    console.log("answerCall: ", callId);
 
     const callDoc = doc(firestore, "calls", callId);
     const answerCandidates = collection(callDoc, "answerCandidates");
@@ -281,7 +286,21 @@ const VideoCall = ({ link, close, join }) => {
     await deleteCallById(callId);
     setCallId("");
   };
+    const signalTrackStateChange = async (isEnabled) => {
+      const callDoc = doc(firestore, "calls", callId);
+      await setDoc(callDoc, { videoEnabled: isEnabled }, { merge: true });
+    };
 
+    const signalNewTrack = async (track) => {
+      const callDoc = doc(firestore, "calls", callId);
+
+      const newTrackInfo = {
+        trackId: track.id,
+        trackKind: track.kind,
+        trackLabel: track.label,
+      };
+      await setDoc(callDoc, { newTrack: newTrackInfo }, { merge: true });
+  };
   const handleVideoToggle = async () => {
     if (localStream) {
       const videoTracks = localStream.getVideoTracks();
@@ -289,15 +308,40 @@ const VideoCall = ({ link, close, join }) => {
         const track = videoTracks[0];
         const isEnabled = track.enabled;
         track.enabled = !isEnabled;
+        await signalTrackStateChange(!isEnabled);
+
+        if (!isEnabled) {
+          await signalNewTrack(track);
+        }
       } else {
         const newStream = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
         const newVideoTrack = newStream.getVideoTracks()[0];
         localStream.addTrack(newVideoTrack);
+        signalNewTrack(newVideoTrack);
+        // updateVideoSources(localStream);
       }
     }
   };
+
+
+  // const handleVideoToggle = async () => {
+  //   if (localStream) {
+  //     const videoTracks = localStream.getVideoTracks();
+  //     if (videoTracks.length > 0) {
+  //       const track = videoTracks[0];
+  //       const isEnabled = track.enabled;
+  //       track.enabled = !isEnabled;
+  //     } else {
+  //       const newStream = await navigator.mediaDevices.getUserMedia({
+  //         video: true,
+  //       });
+  //       const newVideoTrack = newStream.getVideoTracks()[0];
+  //       localStream.addTrack(newVideoTrack);
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     let unsubscribe = () => {};
@@ -341,7 +385,6 @@ const VideoCall = ({ link, close, join }) => {
             <FaCamera className={css.icon} />
           </button>
         </div>
-
         <button className={css.button} onClick={createCall}>
           Start Call
         </button>
@@ -355,11 +398,16 @@ const VideoCall = ({ link, close, join }) => {
         >
           End Call
         </button>
-
         {/* {!isCalling && ( */}
-          <button className={css.button} onClick={handleAnswering}>
-            Join
-          </button>
+        <input
+          value={callId}
+          onChange={(e) => setCallId(e.target.value)}
+          placeholder="Enter Call ID"
+          className="input_text h-[43px] text-secondary w-full bg-white border border-light-gray"
+        />
+        <button className={css.button} onClick={handleAnswering}>
+          Join
+        </button>
         {/* )} */}
       </div>
     </div>

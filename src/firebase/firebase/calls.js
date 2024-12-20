@@ -17,7 +17,6 @@ const deleteCollection = async (parentDoc, subcollection) => {
 
 export const deleteCallById = async (callId) => {
   try {
-    console.log(`Document with ID ${callId} will be deleted in 2 min.`);
 
     const callDocRef = doc(firestore, "calls", callId);
 
@@ -34,9 +33,7 @@ export const deleteCallById = async (callId) => {
   }
 };
 
-export const createCallWithLink = async (pc) => {
-  console.log(pc);
-  
+export const createCallWithLink = async (pc) => {  
   try {
     const callDoc = doc(collection(firestore, "calls"));
     const offerCandidates = collection(callDoc, "offerCandidates");

@@ -135,7 +135,7 @@ export default function Messages() {
         <button
           onClick={() => {
             handleCall();
-            setJoin(true)
+            setJoin(true);
           }}
         >
           Приєлнатись за поссиланням
