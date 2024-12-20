@@ -60,7 +60,7 @@ const VideoCall = ({ link, close, join }) => {
     setIsCalling(true);
     // console.log("createCall: ", callId);
 
-    const callDoc = doc(firestore, "calls");
+    const callDoc = doc(collection(firestore, "calls"));
     const callId = callDoc.id; // console.log("Fetched call data:", callDoc);
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
