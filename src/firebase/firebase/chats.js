@@ -75,7 +75,13 @@ export const createChat = async (userId1, user2) => {
   }
 };
 
-export const sendMessage = async (chatId, senderName,photo, senderId, content) => {
+export const sendMessage = async (
+  chatId,
+  senderName,
+  photo,
+  senderId,
+  content
+) => {
   const db = getFirestore();
   const chatRef = doc(db, "chats", chatId);
   const messagesRef = collection(chatRef, "messages");
@@ -85,7 +91,7 @@ export const sendMessage = async (chatId, senderName,photo, senderId, content) =
     await addDoc(messagesRef, {
       senderId: senderId,
       name: senderName,
-      photo,
+      photo: photo || null,
       content: content,
       timestamp: serverTimestamp(),
     });
@@ -116,5 +122,5 @@ export const listenForMessages = (chatId, onNewMessage) => {
     });
   });
 
-  return unsubscribe; // Повертаємо функцію для зупинки прослуховування
+  return unsubscribe; 
 };

@@ -9,7 +9,6 @@ import {
 } from "../../firebase/firebase/chats.js";
 import { FaPhone } from "react-icons/fa";
 import {
-  createCallWithLink,
   deleteCallById,
 } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
@@ -17,6 +16,7 @@ import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 
 export default function Messages() {
   const { chatId } = useParams();
+
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [callModal, setCallModal] = useState(false);
@@ -110,6 +110,14 @@ export default function Messages() {
     //   console.error("Failed to create call");
     // }
   };
+    const isLastLink = (msg) => {
+      const linkMessages = messages.filter((message) =>
+        message.content.startsWith("Link:")
+      );
+      return (
+        linkMessages.length > 0 && linkMessages[linkMessages.length - 1] === msg
+      );
+    };
   const callForm = (msg) => {
     const parts = msg.content.split(":");
     if (currentUser.uid === msg.senderId) {
@@ -136,9 +144,10 @@ export default function Messages() {
           onClick={() => {
             handleCall();
             setJoin(true);
+            setLink(parts[1]);
           }}
         >
-          Приєлнатись за поссиланням
+          Приєднатись
         </button>
       </div>
     );
@@ -149,38 +158,38 @@ export default function Messages() {
       <div className={css.listMess} ref={listMessRef}>
         <ul>
           {messages.map((msg) => {
-            // const parts = msg.content.split(":");
+            const parts = msg.content.split(":");
 
-            // if (parts[0] === "Link") {
-            //   return (
-            //     <li
-            //       key={msg.id}
-            //       className={css.message}
-            //       style={{
-            //         margin: 10,
-            //         border:
-            //           currentUser.uid === msg.senderId
-            //             ? "2px solid green"
-            //             : "1px dashed red",
-            //         marginLeft:
-            //           currentUser.uid === msg.senderId ? "auto" : "10px",
-            //         width: "fit-content",
-            //         padding: 5,
-            //         color: "white",
-            //       }}
-            //     >
-            //       <div className={css.photoAndName}>
-            //         <img
-            //           src={msg.photo || defaultPhoto}
-            //           alt="UserPhoto"
-            //           className={css.photo}
-            //         />
-            //         <p>{msg.name}</p>
-            //       </div>
-            //       {callForm(msg)}
-            //     </li>
-            //   );
-            // }
+            if (parts[0] === "Link") {
+              return (
+                <li
+                  key={msg.id}
+                  className={css.message}
+                  style={{
+                    margin: 10,
+                    border:
+                      currentUser.uid === msg.senderId
+                        ? "2px solid green"
+                        : "1px dashed red",
+                    marginLeft:
+                      currentUser.uid === msg.senderId ? "auto" : "10px",
+                    width: "fit-content",
+                    padding: 5,
+                    color: "white",
+                  }}
+                >
+                  <div className={css.photoAndName}>
+                    <img
+                      src={msg.photo || defaultPhoto}
+                      alt="UserPhoto"
+                      className={css.photo}
+                    />
+                    <p>{msg.name}</p>
+                  </div>
+                  {isLastLink(msg) ? callForm(msg) : "Call ended"}
+                </li>
+              );
+            }
             return (
               <li
                 key={msg.id}
@@ -229,7 +238,12 @@ export default function Messages() {
         </button>
       </div>
       {callModal && (
-        <ModalVideoCall close={handleCall} link={link} join={join} />
+        <ModalVideoCall
+          chatId={chatId}
+          link={link}
+          close={handleCall}
+          join={join}
+        />
       )}
     </div>
   );

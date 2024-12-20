@@ -19,8 +19,8 @@ import css from "./VideoCall.module.css";
 import { sendMessage } from "../../firebase/firebase/chats.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
-const VideoCall = ({ link, close, join }) => {
-  console.log(link);
+const VideoCall = ({ chatId, link, close, join }) => {
+  console.log(chatId);
 
   const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState(null);
@@ -58,19 +58,19 @@ const VideoCall = ({ link, close, join }) => {
   const createCall = async () => {
     await startWebcam();
     setIsCalling(true);
-    // console.log("createCall: ", callId);
 
     const callDoc = doc(collection(firestore, "calls"));
-    const callId = callDoc.id; // console.log("Fetched call data:", callDoc);
+    const callId = callDoc.id;
+    console.log("62ssssssssss:", callId);
+
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
     setCallId(callId);
     const callMessage = `Link:${callId}`;
-    console.log(callMessage);
 
     try {
       await sendMessage(
-        callId,
+        chatId,
         currentUser.displayName,
         currentUser.photoURL,
         currentUser.uid,
@@ -91,7 +91,6 @@ const VideoCall = ({ link, close, join }) => {
 
     onSnapshot(callDoc, (snapshot) => {
       const data = snapshot.data();
-      console.log("Firestore snapshot data:", data);
       if (pc.current && data?.answer) {
         pc.current
           .setRemoteDescription(new RTCSessionDescription(data.answer))
@@ -413,7 +412,7 @@ const VideoCall = ({ link, close, join }) => {
           End Call
         </button>
         <input
-          value={callId}
+          value={link}
           onChange={(e) => setCallId(e.target.value)}
           placeholder="Enter Call ID"
         />
