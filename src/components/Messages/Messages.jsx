@@ -84,31 +84,31 @@ export default function Messages() {
     }
     handleCall();
 
-    const link = await createCallWithLink(pc.current);
-    console.log(link);
-    setLink(link);
+    // const link = await createCallWithLink(pc.current);
+    // console.log(link);
+    // setLink(link);
 
-    const callMessage = `Link:${link}`;
-    console.log(callMessage);
+    // const callMessage = `Link:${link}`;
+    // console.log(callMessage);
 
-    try {
-      await sendMessage(
-        chatId,
-        currentUser.displayName,
-        currentUser.photoURL,
-        currentUser.uid,
-        callMessage
-      );
-      setValue("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
+    // try {
+    //   await sendMessage(
+    //     chatId,
+    //     currentUser.displayName,
+    //     currentUser.photoURL,
+    //     currentUser.uid,
+    //     callMessage
+    //   );
+    //   setValue("");
+    // } catch (error) {
+    //   console.error("Failed to send message:", error);
+    // }
 
-    if (link) {
-      console.log("Call created, link:", link);
-    } else {
-      console.error("Failed to create call");
-    }
+    // if (link) {
+    //   console.log("Call created, link:", link);
+    // } else {
+    //   console.error("Failed to create call");
+    // }
   };
   const callForm = (msg) => {
     const parts = msg.content.split(":");
@@ -149,38 +149,38 @@ export default function Messages() {
       <div className={css.listMess} ref={listMessRef}>
         <ul>
           {messages.map((msg) => {
-            const parts = msg.content.split(":");
+            // const parts = msg.content.split(":");
 
-            if (parts[0] === "Link") {
-              return (
-                <li
-                  key={msg.id}
-                  className={css.message}
-                  style={{
-                    margin: 10,
-                    border:
-                      currentUser.uid === msg.senderId
-                        ? "2px solid green"
-                        : "1px dashed red",
-                    marginLeft:
-                      currentUser.uid === msg.senderId ? "auto" : "10px",
-                    width: "fit-content",
-                    padding: 5,
-                    color: "white",
-                  }}
-                >
-                  <div className={css.photoAndName}>
-                    <img
-                      src={msg.photo || defaultPhoto}
-                      alt="UserPhoto"
-                      className={css.photo}
-                    />
-                    <p>{msg.name}</p>
-                  </div>
-                  {callForm(msg)}
-                </li>
-              );
-            }
+            // if (parts[0] === "Link") {
+            //   return (
+            //     <li
+            //       key={msg.id}
+            //       className={css.message}
+            //       style={{
+            //         margin: 10,
+            //         border:
+            //           currentUser.uid === msg.senderId
+            //             ? "2px solid green"
+            //             : "1px dashed red",
+            //         marginLeft:
+            //           currentUser.uid === msg.senderId ? "auto" : "10px",
+            //         width: "fit-content",
+            //         padding: 5,
+            //         color: "white",
+            //       }}
+            //     >
+            //       <div className={css.photoAndName}>
+            //         <img
+            //           src={msg.photo || defaultPhoto}
+            //           alt="UserPhoto"
+            //           className={css.photo}
+            //         />
+            //         <p>{msg.name}</p>
+            //       </div>
+            //       {callForm(msg)}
+            //     </li>
+            //   );
+            // }
             return (
               <li
                 key={msg.id}
