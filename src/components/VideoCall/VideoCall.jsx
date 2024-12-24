@@ -36,36 +36,69 @@ const VideoCall = ({ chatId, link, close, join }) => {
   const webcamVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
+  // const startWebcam = async () => {
+  //   if (typeof window === "undefined") return;
+  //   const stream = await navigator.mediaDevices.getUserMedia({
+  //     video: true,
+  //     audio: true,
+  //   });
+  //   const remoteStream = new MediaStream();
+
+  //   stream.getTracks().forEach((track) => {
+  //     console.log("Adding track:", track); // Для дебагу
+  //     pc.current.addTrack(track, stream);
+  //   });
+
+  //   stream.getAudioTracks().forEach((track) => {
+  //     console.log("Adding audio track:", track);
+  //   });
+  //   // stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
+  //   pc.current.ontrack = (event) => {
+  //     console.log("Received track:", event.track.kind);
+  //     event.streams[0]
+  //       .getTracks()
+  //       .forEach((track) => remoteStream.addTrack(track));
+  //   };
+  //   setLocalStream(stream);
+  //   setRemoteStream(remoteStream);
+
+  //   if (webcamVideoRef.current) webcamVideoRef.current.srcObject = stream;
+  //   if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
+  // };
   const startWebcam = async () => {
     if (typeof window === "undefined") return;
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
     });
     const remoteStream = new MediaStream();
 
     stream.getTracks().forEach((track) => {
-      console.log("Adding track:", track); // Для дебагу
       pc.current.addTrack(track, stream);
     });
 
-    stream.getAudioTracks().forEach((track) => {
-      console.log("Adding audio track:", track);
-    });
-    // stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
     pc.current.ontrack = (event) => {
-      console.log("Received track:", event.track.kind);
-      event.streams[0]
-        .getTracks()
-        .forEach((track) => remoteStream.addTrack(track));
+      event.streams[0].getTracks().forEach((track) => {
+        if (track.kind === "audio" || track.kind === "video") {
+          remoteStream.addTrack(track);
+        }
+      });
     };
+
     setLocalStream(stream);
     setRemoteStream(remoteStream);
 
-    if (webcamVideoRef.current) webcamVideoRef.current.srcObject = stream;
-    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
+    if (webcamVideoRef.current) {
+      webcamVideoRef.current.srcObject = stream;
+      webcamVideoRef.current.muted = true; // Уникаємо дублювання звуку
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
   };
-
   const createCall = async () => {
     await startWebcam();
     setIsCalling(true);
