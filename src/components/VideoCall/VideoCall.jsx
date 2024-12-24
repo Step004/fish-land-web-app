@@ -19,7 +19,7 @@ import css from "./VideoCall.module.css";
 import { sendMessage } from "../../firebase/firebase/chats.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
-const VideoCall = ({ chatId, link, close, join, callModal }) => {
+const VideoCall = ({ chatId, link, close }) => {
   const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -29,42 +29,9 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
   const pc = useRef(
     typeof window !== "undefined" ? new RTCPeerConnection(servers) : null
   );
-  const [isJoinCall, setIsJoinCall] = useState(false);
-
   const webcamVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
-  // const startWebcam = async () => {
-  //   if (typeof window === "undefined") return;
-  //   const stream = await navigator.mediaDevices.getUserMedia({
-  //     video: true,
-  //     audio: {
-  //       echoCancellation: true,
-  //       noiseSuppression: true,
-  //     },
-  //   });
-  //   const remoteStream = new MediaStream();
-
-  //   stream.getTracks().forEach((track) => {
-  //     console.log("Adding track:", track); // Для дебагу
-  //     pc.current.addTrack(track, stream);
-  //   });
-
-  //   stream.getAudioTracks().forEach((track) => {
-  //     console.log("Adding audio track:", track);
-  //   });
-  //   pc.current.ontrack = (event) => {
-  //     console.log("Received track:", event.track.kind);
-  //     event.streams[0]
-  //       .getTracks()
-  //       .forEach((track) => remoteStream.addTrack(track));
-  //   };
-  //   setLocalStream(stream);
-  //   setRemoteStream(remoteStream);
-
-  //   if (webcamVideoRef.current) webcamVideoRef.current.srcObject = stream;
-  //   if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
-  // };
   const startWebcam = async () => {
     if (typeof window === "undefined") return;
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -88,10 +55,8 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
     }
 
     pc.current.ontrack = (event) => {
-      console.log("Received track:", event.track.kind, event.track.id);
       event.streams[0].getTracks().forEach((track) => {
         if (track.kind === "audio" || track.kind === "video") {
-          console.log(`Adding ${track.kind} track:`, track.id);
           remoteStream.addTrack(track);
         }
       });
@@ -133,7 +98,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
     }
 
     pc.current.onicecandidate = (event) => {
-      // if (event.candidate) console.log("ICE Candidate:", event.candidate);
       setDoc(doc(offerCandidates), event.candidate.toJSON());
     };
 
@@ -146,7 +110,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
       if (pc.current && data?.answer) {
         pc.current
           .setRemoteDescription(new RTCSessionDescription(data.answer))
-          .then(() => console.log("Remote description set successfully"))
           .catch((error) =>
             console.error("Error setting remote description:", error)
           );
@@ -167,8 +130,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
     await startWebcam();
     setIsCalling(true);
 
-    console.log("answerCall: ", callId);
-
     const callDoc = doc(firestore, "calls", callId);
     const answerCandidates = collection(callDoc, "answerCandidates");
     const offerCandidates = collection(callDoc, "offerCandidates");
@@ -185,7 +146,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
     };
 
     const callData = (await getDoc(callDoc)).data();
-    console.log("Fetched call data:", callData);
     const offerDescription = callData?.offer;
     await pc.current.setRemoteDescription(
       new RTCSessionDescription(offerDescription)
@@ -198,7 +158,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
     onSnapshot(offerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
-          console.log("Adding ICE Candidate:", change.doc.data());
           const candidate = new RTCIceCandidate(change.doc.data());
           pc.current.addIceCandidate(candidate);
         }
@@ -284,7 +243,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
         const newVideoTrack = newStream.getVideoTracks()[0];
         localStream.addTrack(newVideoTrack);
         signalNewTrack(newVideoTrack);
-        // updateVideoSources(localStream);
       }
     }
   };
@@ -299,13 +257,6 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
 
     return unsubscribe;
   }, [callId]);
-
-  const handleAnswering = (link) => {
-    if (setIsJoinCall) {
-      setIsJoinCall(false);
-    }
-    answerCall(link);
-  };
 
   return (
     <div>
@@ -357,7 +308,7 @@ const VideoCall = ({ chatId, link, close, join, callModal }) => {
             <button
               className={css.button}
               onClick={() => {
-                handleAnswering(link);
+                answerCall(link);
               }}
             >
               Join
