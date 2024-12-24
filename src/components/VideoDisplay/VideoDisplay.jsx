@@ -8,7 +8,6 @@ const VideoDisplay = ({ webcamVideoRef, remoteVideoRef }) => {
         ref={webcamVideoRef}
         controls={false}
         autoPlay
-        muted
         playsInline
         className={css.video}
       />
