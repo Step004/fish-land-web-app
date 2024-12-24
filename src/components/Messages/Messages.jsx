@@ -8,15 +8,12 @@ import {
   sendMessage,
 } from "../../firebase/firebase/chats.js";
 import { FaPhone } from "react-icons/fa";
-import {
-  deleteCallById,
-} from "../../firebase/firebase/calls.js";
+import { deleteCallById } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 
 export default function Messages() {
   const { chatId } = useParams();
-
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [callModal, setCallModal] = useState(false);
@@ -24,6 +21,8 @@ export default function Messages() {
   const [value, setValue] = useState("");
   const [join, setJoin] = useState(false);
   const listMessRef = useRef(null);
+  
+
   useEffect(() => {
     if (listMessRef.current) {
       listMessRef.current.scrollTop = listMessRef.current.scrollHeight;
@@ -84,14 +83,14 @@ export default function Messages() {
     }
     handleCall();
   };
-    const isLastLink = (msg) => {
-      const linkMessages = messages.filter((message) =>
-        message.content.startsWith("Link:")
-      );
-      return (
-        linkMessages.length > 0 && linkMessages[linkMessages.length - 1] === msg
-      );
-    };
+  const isLastLink = (msg) => {
+    const linkMessages = messages.filter((message) =>
+      message.content.startsWith("Link:")
+    );
+    return (
+      linkMessages.length > 0 && linkMessages[linkMessages.length - 1] === msg
+    );
+  };
   const callForm = (msg) => {
     const parts = msg.content.split(":");
     if (currentUser.uid === msg.senderId) {
@@ -120,7 +119,6 @@ export default function Messages() {
             setJoin(true);
             setLink(parts[1]);
           }}
-        
         >
           Приєднатись
         </button>
@@ -208,7 +206,12 @@ export default function Messages() {
         <button className={css.sendButton} onClick={handleSendMessage}>
           Send
         </button>
-        <button className={css.phoneButton} onClick={handlePhone}>
+        <button
+          className={css.phoneButton}
+          onClick={() => {
+            handlePhone();
+          }}
+        >
           <FaPhone />
         </button>
       </div>
@@ -218,6 +221,7 @@ export default function Messages() {
           link={link}
           close={handleCall}
           join={join}
+          callModal={callModal}
         />
       )}
     </div>

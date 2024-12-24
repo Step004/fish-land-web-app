@@ -1,9 +1,9 @@
 import {
   collection,
   getDocs,
-  setDoc,
   deleteDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { firestore } from "./firebase.js";
 import { query, where } from "firebase/firestore";
@@ -17,7 +17,6 @@ const deleteCollection = async (parentDoc, subcollection) => {
 
 export const deleteCallById = async (callId) => {
   try {
-
     const callDocRef = doc(firestore, "calls", callId);
 
     await deleteCollection(callDocRef, "offerCandidates");
@@ -32,34 +31,22 @@ export const deleteCallById = async (callId) => {
     );
   }
 };
-
-export const createCallWithLink = async (pc) => {  
+export const findCallById = async (callId) => {
   try {
-    const callDoc = doc(collection(firestore, "calls"));
-    const offerCandidates = collection(callDoc, "offerCandidates");
+    const callDocRef = doc(firestore, "calls", callId);
 
-    const callId = callDoc.id;
+    const callDoc = await getDoc(callDocRef);
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        setDoc(doc(offerCandidates), event.candidate.toJSON());
-      }
-    };
-
-    const offerDescription = await pc.createOffer();
-    await pc.setLocalDescription(offerDescription);
-
-    const callData = {
-      offer: offerDescription,
-      createdAt: new Date().toISOString(),
-    };
-
-    await setDoc(callDoc, callData);
-
-    return callId;
+    if (callDoc.exists()) {
+      console.log(`Document with ID ${callId} found successfully.`);
+      return callDoc.data();
+    } else {
+      console.warn(`No document found with ID ${callId}.`);
+      return null; 
+    }
   } catch (error) {
-    console.error("Error creating call:", error);
-    return null;
+    console.error(`Error fetching document with ID ${callId}:`, error);
+    throw error; 
   }
 };
 
@@ -91,4 +78,3 @@ export const getUserCalls = async (uid) => {
     return [];
   }
 };
-

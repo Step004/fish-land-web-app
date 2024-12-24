@@ -19,9 +19,7 @@ import css from "./VideoCall.module.css";
 import { sendMessage } from "../../firebase/firebase/chats.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 
-const VideoCall = ({ chatId, link, close, join }) => {
-  console.log(chatId);
-
+const VideoCall = ({ chatId, link, close, join, callModal }) => {
   const { currentUser } = useAuth();
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -333,10 +331,11 @@ const VideoCall = ({ chatId, link, close, join }) => {
             <FaCamera className={css.icon} />
           </button>
         </div>
-
-        <button className={css.button} onClick={createCall}>
-          Start Call
-        </button>
+        {!link && (
+          <button className={css.button} onClick={createCall}>
+            Start Call
+          </button>
+        )}
 
         <button
           className={css.button}
@@ -348,20 +347,23 @@ const VideoCall = ({ chatId, link, close, join }) => {
         >
           End Call
         </button>
-        <input
-          value={link}
-          onChange={(e) => setCallId(e.target.value)}
-          placeholder="Enter Call ID"
-        />
-        <button
-          className={css.button}
-          onClick={() => {
-            handleAnswering(link);
-            console.log(link);
-          }}
-        >
-          Join
-        </button>
+        {link && (
+          <>
+            <input
+              value={link}
+              onChange={(e) => setCallId(e.target.value)}
+              placeholder="Enter Call ID"
+            />
+            <button
+              className={css.button}
+              onClick={() => {
+                handleAnswering(link);
+              }}
+            >
+              Join
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
