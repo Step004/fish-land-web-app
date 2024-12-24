@@ -83,32 +83,6 @@ export default function Messages() {
       return;
     }
     handleCall();
-
-    // const link = await createCallWithLink(pc.current);
-    // console.log(link);
-    // setLink(link);
-
-    // const callMessage = `Link:${link}`;
-    // console.log(callMessage);
-
-    // try {
-    //   await sendMessage(
-    //     chatId,
-    //     currentUser.displayName,
-    //     currentUser.photoURL,
-    //     currentUser.uid,
-    //     callMessage
-    //   );
-    //   setValue("");
-    // } catch (error) {
-    //   console.error("Failed to send message:", error);
-    // }
-
-    // if (link) {
-    //   console.log("Call created, link:", link);
-    // } else {
-    //   console.error("Failed to create call");
-    // }
   };
     const isLastLink = (msg) => {
       const linkMessages = messages.filter((message) =>
@@ -146,6 +120,7 @@ export default function Messages() {
             setJoin(true);
             setLink(parts[1]);
           }}
+        
         >
           Приєднатись
         </button>

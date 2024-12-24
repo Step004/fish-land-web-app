@@ -43,14 +43,25 @@ const VideoCall = ({ chatId, link, close, join }) => {
       audio: true,
     });
     const remoteStream = new MediaStream();
-    stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
+
+    stream.getTracks().forEach((track) => {
+      console.log("Adding track:", track); // Для дебагу
+      pc.current.addTrack(track, stream);
+    });
+
+    stream.getAudioTracks().forEach((track) => {
+      console.log("Adding audio track:", track);
+    });
+    // stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
     pc.current.ontrack = (event) => {
+      console.log("Received track:", event.track.kind);
       event.streams[0]
         .getTracks()
         .forEach((track) => remoteStream.addTrack(track));
     };
     setLocalStream(stream);
     setRemoteStream(remoteStream);
+
     if (webcamVideoRef.current) webcamVideoRef.current.srcObject = stream;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
   };
@@ -61,7 +72,6 @@ const VideoCall = ({ chatId, link, close, join }) => {
 
     const callDoc = doc(collection(firestore, "calls"));
     const callId = callDoc.id;
-    console.log("62ssssssssss:", callId);
 
     const offerCandidates = collection(callDoc, "offerCandidates");
     const answerCandidates = collection(callDoc, "answerCandidates");
@@ -81,8 +91,8 @@ const VideoCall = ({ chatId, link, close, join }) => {
     }
 
     pc.current.onicecandidate = (event) => {
-      if (event.candidate)
-        setDoc(doc(offerCandidates), event.candidate.toJSON());
+      // if (event.candidate) console.log("ICE Candidate:", event.candidate);
+      setDoc(doc(offerCandidates), event.candidate.toJSON());
     };
 
     const offerDescription = await pc.current.createOffer();
@@ -110,60 +120,6 @@ const VideoCall = ({ chatId, link, close, join }) => {
       });
     });
   };
-  // const createCall = async () => {
-  //   await startWebcam();
-  //   setIsCalling(true);
-
-  //   const callDoc = doc(collection(firestore, "calls")); // Генерується унікальний callId
-  //   const callId = callDoc.id; // Зберігаємо callId
-  //   setCallId(callId);
-
-  //   const offerCandidates = collection(callDoc, "offerCandidates");
-  //   const answerCandidates = collection(callDoc, "answerCandidates");
-
-  //   pc.current.onicecandidate = (event) => {
-  //     if (event.candidate)
-  //       setDoc(doc(offerCandidates), event.candidate.toJSON());
-  //   };
-
-  //   const offerDescription = await pc.current.createOffer();
-  //   await pc.current.setLocalDescription(offerDescription);
-
-  //   // Зберігаємо offer у Firestore
-  //   await setDoc(callDoc, { offer: offerDescription });
-
-  //   // Надсилаємо посилання іншому користувачеві
-  //   const callMessage = `Link:${callId}`;
-  //   await sendMessage(
-  //     callId,
-  //     currentUser.displayName,
-  //     currentUser.photoURL,
-  //     currentUser.uid,
-  //     callMessage
-  //   );
-
-  //   // Слухаємо зміни документа для answer
-  //   onSnapshot(callDoc, (snapshot) => {
-  //     const data = snapshot.data();
-  //     if (pc.current && data?.answer) {
-  //       pc.current
-  //         .setRemoteDescription(new RTCSessionDescription(data.answer))
-  //         .catch((error) =>
-  //           console.error("Error setting remote description:", error)
-  //         );
-  //     }
-  //   });
-
-  //   // Слухаємо кандидатів answer
-  //   onSnapshot(answerCandidates, (snapshot) => {
-  //     snapshot.docChanges().forEach((change) => {
-  //       if (change.type === "added") {
-  //         const candidate = new RTCIceCandidate(change.doc.data());
-  //         pc.current.addIceCandidate(candidate);
-  //       }
-  //     });
-  //   });
-  // };
 
   const answerCall = async (callId) => {
     await startWebcam();
@@ -200,61 +156,13 @@ const VideoCall = ({ chatId, link, close, join }) => {
     onSnapshot(offerCandidates, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
+          console.log("Adding ICE Candidate:", change.doc.data());
           const candidate = new RTCIceCandidate(change.doc.data());
           pc.current.addIceCandidate(candidate);
         }
       });
     });
   };
-  // const answerCall = async () => {
-  //   try {
-  //     await startWebcam();
-  //     setIsCalling(true);
-
-  //     const callDoc = doc(firestore, "calls", callId);
-  //     const answerCandidates = collection(callDoc, "answerCandidates");
-
-  //     pc.current.onicecandidate = (event) => {
-  //       if (event.candidate) {
-  //         setDoc(doc(answerCandidates), event.candidate.toJSON());
-  //       }
-  //     };
-
-  //     const callSnap = await getDoc(callDoc);
-  //     if (!callSnap.exists()) {
-  //       console.error(`Call document with ID ${callId} does not exist.`);
-  //       return;
-  //     }
-
-  //     const callData = callSnap.data();
-  //     const offerDescription = callData?.offer;
-  //     if (
-  //       !offerDescription ||
-  //       !offerDescription.type ||
-  //       !offerDescription.sdp
-  //     ) {
-  //       console.error(
-  //         "Invalid or missing offer description:",
-  //         offerDescription
-  //       );
-  //       return;
-  //     }
-
-  //     // Встановлюємо offer як remote description
-  //     await pc.current.setRemoteDescription(
-  //       new RTCSessionDescription(offerDescription)
-  //     );
-
-  //     // Створюємо answer
-  //     const answerDescription = await pc.current.createAnswer();
-  //     await pc.current.setLocalDescription(answerDescription);
-
-  //     // Зберігаємо answer у Firestore
-  //     await updateDoc(callDoc, { answer: answerDescription });
-  //   } catch (error) {
-  //     console.error("Error during answerCall:", error);
-  //   }
-  // };
 
   const handleMute = () => {
     // setIsMuted(true)
@@ -339,23 +247,6 @@ const VideoCall = ({ chatId, link, close, join }) => {
     }
   };
 
-  // const handleVideoToggle = async () => {
-  //   if (localStream) {
-  //     const videoTracks = localStream.getVideoTracks();
-  //     if (videoTracks.length > 0) {
-  //       const track = videoTracks[0];
-  //       const isEnabled = track.enabled;
-  //       track.enabled = !isEnabled;
-  //     } else {
-  //       const newStream = await navigator.mediaDevices.getUserMedia({
-  //         video: true,
-  //       });
-  //       const newVideoTrack = newStream.getVideoTracks()[0];
-  //       localStream.addTrack(newVideoTrack);
-  //     }
-  //   }
-  // };
-
   useEffect(() => {
     let unsubscribe = () => {};
 
@@ -398,9 +289,11 @@ const VideoCall = ({ chatId, link, close, join }) => {
             <FaCamera className={css.icon} />
           </button>
         </div>
+
         <button className={css.button} onClick={createCall}>
           Start Call
         </button>
+
         <button
           className={css.button}
           disabled={!isCalling}
