@@ -165,7 +165,7 @@ const VideoCall = ({ chatId, link, close, join }) => {
   //   });
   // };
 
-  const answerCall = async () => {
+  const answerCall = async (callId) => {
     await startWebcam();
     setIsCalling(true);
 
@@ -367,11 +367,11 @@ const VideoCall = ({ chatId, link, close, join }) => {
     return unsubscribe;
   }, [callId]);
 
-  const handleAnswering = () => {
+  const handleAnswering = (link) => {
     if (setIsJoinCall) {
       setIsJoinCall(false);
     }
-    answerCall();
+    answerCall(link);
   };
 
   return (
@@ -416,7 +416,13 @@ const VideoCall = ({ chatId, link, close, join }) => {
           onChange={(e) => setCallId(e.target.value)}
           placeholder="Enter Call ID"
         />
-        <button className={css.button} onClick={handleAnswering}>
+        <button
+          className={css.button}
+          onClick={() => {
+            handleAnswering(link);
+            console.log(link);
+          }}
+        >
           Join
         </button>
       </div>
