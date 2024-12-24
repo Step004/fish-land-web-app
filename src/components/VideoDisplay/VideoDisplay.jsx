@@ -8,6 +8,7 @@ const VideoDisplay = ({ webcamVideoRef, remoteVideoRef }) => {
         ref={webcamVideoRef}
         controls={false}
         autoPlay
+        muted
         playsInline
         className={css.video}
       />
@@ -17,7 +18,6 @@ const VideoDisplay = ({ webcamVideoRef, remoteVideoRef }) => {
           ref={remoteVideoRef}
           controls={false}
           autoPlay
-          muted
           playsInline
           className={css.friendVideo}
         />

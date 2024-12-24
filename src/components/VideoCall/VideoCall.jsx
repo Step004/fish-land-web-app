@@ -40,7 +40,10 @@ const VideoCall = ({ chatId, link, close, join }) => {
   //   if (typeof window === "undefined") return;
   //   const stream = await navigator.mediaDevices.getUserMedia({
   //     video: true,
-  //     audio: true,
+  //     audio: {
+  //       echoCancellation: true,
+  //       noiseSuppression: true,
+  //     },
   //   });
   //   const remoteStream = new MediaStream();
 
@@ -52,7 +55,6 @@ const VideoCall = ({ chatId, link, close, join }) => {
   //   stream.getAudioTracks().forEach((track) => {
   //     console.log("Adding audio track:", track);
   //   });
-  //   // stream.getTracks().forEach((track) => pc.current.addTrack(track, stream));
   //   pc.current.ontrack = (event) => {
   //     console.log("Received track:", event.track.kind);
   //     event.streams[0]
@@ -79,10 +81,19 @@ const VideoCall = ({ chatId, link, close, join }) => {
     stream.getTracks().forEach((track) => {
       pc.current.addTrack(track, stream);
     });
+    // Прив'язка віддаленого потоку до відео
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStream;
+      remoteVideoRef.current.onloadedmetadata = () => {
+        remoteVideoRef.current.play();
+      };
+    }
 
     pc.current.ontrack = (event) => {
+      console.log("Received track:", event.track.kind, event.track.id);
       event.streams[0].getTracks().forEach((track) => {
         if (track.kind === "audio" || track.kind === "video") {
+          console.log(`Adding ${track.kind} track:`, track.id);
           remoteStream.addTrack(track);
         }
       });
