@@ -283,7 +283,11 @@ const VideoCall = ({ chatId, link, close }) => {
           </button>
         </div>
         {!link && (
-          <button className={css.button} onClick={createCall}>
+          <button
+            className={css.button}
+            disabled={isCalling}
+            onClick={createCall}
+          >
             Start Call
           </button>
         )}

@@ -19,9 +19,8 @@ export default function Messages() {
   const [callModal, setCallModal] = useState(false);
   const [link, setLink] = useState("");
   const [value, setValue] = useState("");
-  const [join, setJoin] = useState(false);
+  const [answerCall, setAnswerCall] = useState(true);
   const listMessRef = useRef(null);
-  
 
   useEffect(() => {
     if (listMessRef.current) {
@@ -105,23 +104,29 @@ export default function Messages() {
       );
     }
     return (
-      <div>
-        <button
-          onClick={async () => {
-            deleteCallById(parts[1]);
-          }}
-        >
-          Відхилити
-        </button>
-        <button
-          onClick={() => {
-            handleCall();
-            setJoin(true);
-            setLink(parts[1]);
-          }}
-        >
-          Приєднатись
-        </button>
+      <div className={css.answersOnCall}>
+        {answerCall ? (
+          <>
+            <button
+              onClick={async () => {
+                deleteCallById(parts[1]);
+                setAnswerCall(false);
+              }}
+            >
+              Відхилити
+            </button>
+            <button
+              onClick={() => {
+                handleCall();
+                setLink(parts[1]);
+              }}
+            >
+              Приєднатись
+            </button>
+          </>
+        ) : (
+          <p>Call ended</p>
+        )}
       </div>
     );
   };
@@ -216,13 +221,7 @@ export default function Messages() {
         </button>
       </div>
       {callModal && (
-        <ModalVideoCall
-          chatId={chatId}
-          link={link}
-          close={handleCall}
-          join={join}
-          callModal={callModal}
-        />
+        <ModalVideoCall chatId={chatId} link={link} close={handleCall} />
       )}
     </div>
   );

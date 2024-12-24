@@ -10,6 +10,7 @@
     border-radius: 1rem;
     background-color: black;
     object-fit: cover;
+    transform: scaleX(-1);
 }
 
 .friendVideoCont {
@@ -24,4 +25,5 @@
     height: 100%;
     border-radius: 1rem;
     object-fit: cover;
+    transform: scaleX(-1);
 }
