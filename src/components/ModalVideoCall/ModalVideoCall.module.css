@@ -41,3 +41,17 @@
     cursor: pointer;
     fill: #11101c;
 }
+
+@media screen and (max-width: 768px) {
+    .window {
+        padding: 16px 24px;
+        max-height: 90%;
+        height: 100%;
+
+    }
+
+    .closeBtn {
+        top: 5px;
+        right: 10px;
+    }
+}
