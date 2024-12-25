@@ -8,6 +8,7 @@ import { getUserById } from "../../firebase/firebase/readData.js";
 import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
 import { useMediaQuery } from "react-responsive";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { BurgerMenu } from "../BurgerMenu/BurgerMenu.jsx";
 
 export default function UserMenu() {
   const { currentUser } = useAuth();
@@ -59,6 +60,9 @@ export default function UserMenu() {
         className={css.burgerSvg}
         onClick={handleBurgerMenuToggle}
       />
+      {openBurgerMenu && (
+        <BurgerMenu isOpen={openBurgerMenu} close={handleBurgerMenuToggle} />
+      )}
     </div>
   );
 }

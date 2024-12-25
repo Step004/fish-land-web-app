@@ -13,10 +13,6 @@
     color: #fbfbfb;
     cursor: pointer;
     transition: transform 0.3s ease;
-    /* width: 90px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; */
 }
 
 .username:hover {
@@ -68,7 +64,9 @@
     fill: #fbfbfb;
     width: 40px;
     height: 40px;
+    cursor: pointer;
 }
+
 
 @media screen and (max-width: 768px) {
     .burgerSvg {
@@ -79,26 +77,15 @@
         display: none;
     }
 
-    /* .wrapper {
-        gap: 15px;
-    }
-
-    .username {
-        font-size: 16px;
-        width: 50px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .userNameContainer {
-        gap: 8px;
-    } */
 }
 
 @media screen and (max-width: 500px) {
     .wrapper {
         gap: 5px;
+    }
+
+    .userNameContainer {
+        display: none;
     }
 
 
@@ -111,7 +98,5 @@
 }
 
 @media screen and (max-width: 355px) {
-    .userIcon {
-        display: none;
-    }
+   
 }

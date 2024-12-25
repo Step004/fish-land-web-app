@@ -12,19 +12,12 @@ export default function AppBar() {
   const isLoggedIn = userLoggedIn;
   const navigate = useNavigate();
   const isTabletScreen = useMediaQuery({ query: "(min-width: 769px)" });
-  const isSmallScreen = useMediaQuery({ query: "(max-width: 410px)" });
 
   return (
     <header className={css.header}>
-      {isSmallScreen ? (
-        <p className={css.logotype} onClick={() => navigate("/")}>
-          F L
-        </p>
-      ) : (
-        <p className={css.logotype} onClick={() => navigate("/")}>
-          Fish Land
-        </p>
-      )}
+      <p className={css.logotype} onClick={() => navigate("/")}>
+        Fish Land
+      </p>
 
       {isLoggedIn && isTabletScreen && <Navigation />}
       {isLoggedIn ? <UserMenu /> : <AuthNav />}

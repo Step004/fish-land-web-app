@@ -16,12 +16,22 @@ import Loader from "../../components/Loader/Loader.jsx";
 import { deleteUserPost } from "../../firebase/firebase/writeData.js";
 import { MdDelete } from "react-icons/md";
 import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
+import { useMediaQuery } from "react-responsive";
 
 // import { IoAddSharp } from "react-icons/io5";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
-  console.log(currentUser);
+
+  const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
+  let value = 6;
+  if (isTabletScreen) {
+    value = 4;
+  }
+  if (isSmallScreen) {
+    value = 3;
+  }
 
   // const [users, setUsers] = useState(null);
   const [friends, setFriends] = useState(null);
@@ -64,9 +74,9 @@ export default function UserPage() {
   const toggleAddPost = () => {
     setOpenAddPost(!openAddPost);
   };
-   const toggleQuestion = () => {
-     setQuestionOpen(!questionOpen);
-   };
+  const toggleQuestion = () => {
+    setQuestionOpen(!questionOpen);
+  };
 
   const handleDeletePost = async (postId) => {
     try {
@@ -83,17 +93,19 @@ export default function UserPage() {
   );
   return (
     <main className={css.container}>
-      <div>
+      <div className={css.containerForImgAndRecommendation}>
         {userPhoto}
         <div className={css.containerForRecommended}>
           <h2>Recommendations</h2>
           {/* <ul>
             <li>1</li>
           </ul> */}
-          <p className={css.descRecommend}>
-            In order to receive recommendations for fishing spots, you need to
-            complete a survey!
-          </p>
+          <div className={css.containerForDescRecommend}>
+            <p className={css.descRecommend}>
+              In order to receive recommendations for fishing spots, you need to
+              complete a survey!
+            </p>
+          </div>
           <button className={css.buttonStart} onClick={() => toggleQuestion()}>
             Start
           </button>
@@ -163,7 +175,7 @@ export default function UserPage() {
         {friends ? (
           <ul className={css.friendList}>
             {Object.keys(friends)
-              .slice(0, 6)
+              .slice(0, value)
               .map((userId) => (
                 <li
                   key={userId}

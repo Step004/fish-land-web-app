@@ -22,6 +22,7 @@ body {
     margin: 0;
     background-image: url("../src/img/background-fish.jpg");
     background-attachment: fixed;
+    background-position: 75% center;
     background-size: cover;
     position: relative;
 }

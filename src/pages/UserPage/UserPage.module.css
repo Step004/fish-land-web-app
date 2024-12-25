@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 .photo {
     max-width: 320px;
     max-height: 320px;
@@ -50,6 +54,7 @@
     width: 100%;
     padding: 30px 40px;
     border-radius: 15px;
+    box-sizing: border-box;
 }
 
 .containerForRecommended {
@@ -61,14 +66,15 @@
 }
 
 .friendPhoto {
-    width: 90px;
-    height: 90px;
+    max-width: 90px;
+    width: 100%;
 }
 
 .friendList {
     display: flex;
+    justify-content: space-between;
     margin-bottom: 40px;
-    gap: 51.6px;
+    gap: 5px;
 }
 
 .friendItem {
@@ -282,13 +288,17 @@
 .deleteIcon:hover {
     transform: scale(1.1);
 }
-.descRecommend{
+
+.descRecommend {
     margin-top: 10px;
     max-width: 209px;
+    text-align: center;
 }
-.buttonStart{
+
+.buttonStart {
     margin-top: 15px;
 }
+
 @media screen and (max-width: 868px) {
     .container {
         gap: 20px;
@@ -305,6 +315,28 @@
 }
 
 @media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .containerForImgAndRecommendation {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+
+    .containerForDescRecommend {
+        display: flex;
+        justify-content: center;
+    }
+
+    .containerForRecommended {
+        width: 100%;
+    }
+
     .userName {
         font-size: 28px;
     }
@@ -347,5 +379,38 @@
     .settingsIcon {
         width: 30px;
         height: 30px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .containerForElement {
+        padding: 30px 20px;
+    }
+
+    .friendItem {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        max-width: 60px;
+        width: 100%;
+    }
+
+    .friendPhoto {
+        max-width: 60px;
+        width: 100%;
+    }
+
+    .friendName {
+        color: aliceblue;
+        font-size: 14px;
+        width: 60px;
+        text-align: center;
+    }
+
+    .listPublicationsItem {
+        padding: 20px 10px;
     }
 }

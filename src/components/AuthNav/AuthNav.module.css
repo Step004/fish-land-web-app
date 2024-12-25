@@ -46,3 +46,13 @@
     color: var(--hover);
     transform: scale(1.05);
 }
+
+@media screen and (max-width: 768px) {
+    .regButton {
+        padding: 10px 10px;
+    }
+
+    .logButton {
+        padding: 10px 10px;
+    }
+}

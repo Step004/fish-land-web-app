@@ -14,6 +14,7 @@ import { IoMdAdd } from "react-icons/io";
 import { addFriend } from "../../firebase/firebase/writeData.js";
 import { createChat } from "../../firebase/firebase/chats.js";
 import Loader from "../../components/Loader/Loader.jsx";
+import { useMediaQuery } from "react-responsive";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
@@ -24,6 +25,16 @@ export default function FriendPage() {
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
+   const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
+   let value = 6;
+   if (isTabletScreen) {
+     value = 4;
+   }
+   if (isSmallScreen) {
+     value = 3;
+   }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -148,7 +159,7 @@ export default function FriendPage() {
         {friends ? (
           <ul className={css.friendList}>
             {Object.keys(friends)
-              .slice(0, 6)
+              .slice(0, value)
               .map((userId) => (
                 <li
                   key={userId}

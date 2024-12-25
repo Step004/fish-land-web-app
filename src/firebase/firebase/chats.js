@@ -12,6 +12,7 @@ import {
   query,
   orderBy,
   where,
+  deleteDoc,
 } from "firebase/firestore";
 
 export const getAllChats = async (currentUserId) => {
@@ -43,6 +44,24 @@ export const getAllChats = async (currentUserId) => {
     throw error;
   }
 };
+export const getChatById = async (chatId) => {
+  const db = getFirestore();
+  const chatRef = doc(db, "chats", chatId);
+
+  try {
+    const chatDoc = await getDoc(chatRef);
+
+    if (chatDoc.exists()) {
+      return { chatId: chatDoc.id, ...chatDoc.data() };
+    } else {
+      console.log(`Chat with ID ${chatId} not found.`);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error retrieving chat by ID:", error);
+    throw error;
+  }
+};
 
 export const createChat = async (userId1, user2) => {
   const db = getFirestore();
@@ -63,6 +82,7 @@ export const createChat = async (userId1, user2) => {
         [user2.uid]: true,
       },
       name: user2.name,
+      photo: user2.photo || null,
       lastMessage: null,
       updatedAt: serverTimestamp(),
     });
@@ -122,5 +142,18 @@ export const listenForMessages = (chatId, onNewMessage) => {
     });
   });
 
-  return unsubscribe; 
+  return unsubscribe;
+};
+
+export const deleteChat = async (chatId) => {
+  const db = getFirestore();
+  const chatRef = doc(db, "chats", chatId);
+
+  try {
+    await deleteDoc(chatRef);
+    console.log("Chat deleted:", chatId);
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    throw error;
+  }
 };

@@ -12,7 +12,8 @@
 
 .listOfMess {
     padding: 10px 20px;
-    width: 200px;
+    max-width: 220px;
+    width: 100%;
     height: calc(100vh - 76px);
     border-left: 2px dashed white;
     border-right: 2px dashed white;
@@ -44,6 +45,11 @@
     border-radius: 50%;
 }
 
+.chatItem {
+    cursor: pointer;
+    width: 100%;
+}
+
 .photoAndName {
     display: flex;
     gap: 5px;
@@ -52,17 +58,50 @@
 .nameAndLastMsg {
     display: flex;
     flex-direction: column;
-}
-.lastMsg {
-    width: 120px;
-    white-space: nowrap;
-    /* Текст не переноситься на новий рядок */
-    overflow: hidden;
-    /* Приховує текст, що виходить за межі */
-    text-overflow: ellipsis;
-    /* Додає три крапки, якщо текст обрізаний */
+    width: calc(100%-30px);
 }
 
-.rightCont {
-    border: 1px soled white;
+
+.lastMsg {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+
+.listChats {
+    width: 100%;
+    height: 75vh;
+    border: 2px dashed white;
+    overflow-y: auto;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 28px;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 0;
+    }
+
+    .listOfMess {
+        padding: 10px 10px;
+        box-sizing: border-box;
+    }
+}
+
+@media screen and (max-width: 570px) {
+    .listOfMess {
+        padding: 10px 20px;
+        max-width: 300px;
+        width: 100%;
+
+        margin-left: auto;
+        margin-right: auto;
+    }
 }

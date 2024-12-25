@@ -1,9 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import css from "./Messages.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { useEffect, useRef, useState } from "react";
 import {
+  deleteChat,
+  getChatById,
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
@@ -11,6 +13,10 @@ import { FaPhone } from "react-icons/fa";
 import { deleteCallById } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
+import { IoArrowBackSharp } from "react-icons/io5";
+import Loader from "../Loader/Loader.jsx";
+import { IoMdMore } from "react-icons/io";
+import toast from "react-hot-toast";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -20,8 +26,33 @@ export default function Messages() {
   const [link, setLink] = useState("");
   const [value, setValue] = useState("");
   const [answerCall, setAnswerCall] = useState(true);
+  const [currentChat, setCurrentChat] = useState("");
   const listMessRef = useRef(null);
+  const [isOpenMore, setIsOpenMore] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchChat = async (chatId) => {
+      try {
+        const chat = await getChatById(chatId);
+        if (chat) {
+          setCurrentChat(chat);
+          console.log(chat);
+        } else {
+          console.log("Chat not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching chat:", error);
+      }
+    };
+    fetchChat(chatId);
+  }, [chatId]);
 
+  const handleOpenMore = () => {
+    setIsOpenMore(!isOpenMore);
+  };
+  if (currentChat) {
+    <Loader />;
+  }
   useEffect(() => {
     if (listMessRef.current) {
       listMessRef.current.scrollTop = listMessRef.current.scrollHeight;
@@ -105,28 +136,28 @@ export default function Messages() {
     }
     return (
       <div className={css.answersOnCall}>
-        {answerCall ? (
-          <>
-            <button
-              onClick={async () => {
-                deleteCallById(parts[1]);
-                setAnswerCall(false);
-              }}
-            >
-              Відхилити
-            </button>
-            <button
-              onClick={() => {
-                handleCall();
-                setLink(parts[1]);
-              }}
-            >
-              Приєднатись
-            </button>
-          </>
-        ) : (
+        {/* {answerCall ? ( */}
+        <>
+          <button
+            onClick={async () => {
+              deleteCallById(parts[1]);
+              setAnswerCall(false);
+            }}
+          >
+            Відхилити
+          </button>
+          <button
+            onClick={() => {
+              handleCall();
+              setLink(parts[1]);
+            }}
+          >
+            Приєднатись
+          </button>
+        </>
+        {/* ) : (
           <p>Call ended</p>
-        )}
+        )} */}
       </div>
     );
   };
@@ -134,6 +165,48 @@ export default function Messages() {
   return (
     <div className={css.containerMsg}>
       <div className={css.listMess} ref={listMessRef}>
+        <div className={css.settings}>
+          <button
+            className={css.buttonBack}
+            onClick={() => navigate("/message")}
+          >
+            <IoArrowBackSharp className={css.iconBack} />
+          </button>
+          <div className={css.nameAndPhoto}>
+            <div
+              className={css.nameAndPhoto}
+              onClick={() => {
+                const keys = Object.keys(currentChat.participants);
+                if (currentUser.uid === keys[0]) {
+                  navigate(`/friends/${keys[1]}`);
+                } else navigate(`/friends/${keys[1]}`);
+              }}
+            >
+              <p>{currentChat.name}</p>
+              <img
+                src={currentChat.photo || defaultPhoto}
+                alt="UserPhoto"
+                className={css.photo}
+              />
+            </div>
+            <IoMdMore className={css.iconMore} onClick={handleOpenMore} />
+            {isOpenMore && (
+              <div className={css.menu}>
+                <ul>
+                  <li
+                    onClick={() => {
+                      handleOpenMore();
+                      deleteChat(currentChat.chatId)
+                      toast("Chat successfully deleted!")
+                    }}
+                  >
+                    Delete chat
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
         <ul>
           {messages.map((msg) => {
             const parts = msg.content.split(":");
@@ -193,7 +266,7 @@ export default function Messages() {
                   />
                   <p>{msg.name}</p>
                 </div>
-                <p>{msg.content}</p>
+                <p className={css.msgContent}>{msg.content}</p>
               </li>
             );
           })}

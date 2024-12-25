@@ -124,9 +124,13 @@
 .registr {
     cursor: pointer;
     margin: 20px auto;
-    color: rgba(0, 98, 255, 0.8);
-    text-decoration: underline;
     text-align: center;
+    color: white;
+}
+
+.registrLink {
+    color: rgb(8, 101, 250);
+    text-decoration: underline;
 }
 
 .errorMsg {
@@ -138,4 +142,30 @@
 .errorMsgCont {
     display: flex;
     flex-direction: column;
+}
+
+@media screen and (max-width: 768px) {
+    .form {
+        margin: 0 auto;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .window {
+        padding: 32px;
+    }
+
+    .logInText {
+        font-size: 30px;
+    }
+
+    .welcomeText {
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .fields {
+        gap: 16px;
+        margin-bottom: 30px;
+    }
 }

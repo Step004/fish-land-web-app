@@ -16,8 +16,8 @@
 .friendVideoCont {
     width: 50%;
     background-color: #2d3748;
-    padding: 0.25rem;
     border-radius: 1rem;
+    border: 2px solid black;
 }
 
 .friendVideo {

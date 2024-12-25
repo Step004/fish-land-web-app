@@ -29,3 +29,8 @@
   z-index: 999;
 }
 
+@media screen and (max-width: 768px) {
+  .window {
+    padding: 32px 24px;
+  }
+}

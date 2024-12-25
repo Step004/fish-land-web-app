@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { saveUserToDatabase } from "../../firebase/firebase/writeData.js";
 import toast from "react-hot-toast";
 
-
 export default function RegisterForm() {
   const navigate = useNavigate();
 
@@ -123,13 +122,17 @@ export default function RegisterForm() {
           <button type="submit" className={css.submitButton}>
             Sign Up
           </button>
-          <p
-            className={css.registr}
-            onClick={() => {
-              navigate("/login");
-            }}
-          >
-            Do you have an account? Log in
+        
+          <p className={css.registr}>
+            Do you have an account?{" "}
+            <span
+              className={css.registrLink}
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Log in
+            </span>
           </p>
         </Form>
       </Formik>
