@@ -1,11 +1,21 @@
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import css from "./BurgerMenu.module.css";
 import { IoClose } from "react-icons/io5";
 import clsx from "clsx";
+import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
+import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import { doSignOut } from "../../firebase/firebase/auth.js";
 
 export const BurgerMenu = ({ isOpen, close }) => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const buildLinkClass = ({ isActive }) => {
     return clsx(css.link, isActive && css.active);
+  };
+  const handleLogout = async () => {
+    changeOnlineStatusForLogOut(currentUser.uid);
+    await doSignOut();
+    navigate("/login");
   };
   return (
     isOpen && (
@@ -33,6 +43,15 @@ export const BurgerMenu = ({ isOpen, close }) => {
               My profile
             </NavLink>
           </nav>
+          <button
+            className={css.logout}
+            onClick={() => {
+              handleLogout();
+              close();
+            }}
+          >
+            Logout
+          </button>
         </div>
       </>
     )

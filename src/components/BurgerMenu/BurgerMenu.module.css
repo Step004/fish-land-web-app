@@ -20,6 +20,7 @@
     z-index: 1000;
     color: white;
     display: flex;
+    gap: 35px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -86,4 +87,13 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
+}
+
+.logout {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 15px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
 }
