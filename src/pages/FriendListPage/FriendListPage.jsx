@@ -20,7 +20,9 @@ export default function FriendListPage() {
           </NavLink>
         </li>
       </ul>
-      <Outlet />
+      <div className={css.outletCont}>
+        <Outlet />
+      </div>
     </section>
   );
 }

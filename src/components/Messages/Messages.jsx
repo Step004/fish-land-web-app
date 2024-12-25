@@ -36,7 +36,6 @@ export default function Messages() {
         const chat = await getChatById(chatId);
         if (chat) {
           setCurrentChat(chat);
-          console.log(chat);
         } else {
           console.log("Chat not found.");
         }

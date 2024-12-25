@@ -7,7 +7,7 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 
-export default function AppBar() {
+export default function AppBar({ handleBurgerMenuToggle }) {
   const { userLoggedIn } = useAuth();
   const isLoggedIn = userLoggedIn;
   const navigate = useNavigate();
@@ -20,7 +20,11 @@ export default function AppBar() {
       </p>
 
       {isLoggedIn && isTabletScreen && <Navigation />}
-      {isLoggedIn ? <UserMenu /> : <AuthNav />}
+      {isLoggedIn ? (
+        <UserMenu handleBurgerMenuToggle={handleBurgerMenuToggle} />
+      ) : (
+        <AuthNav />
+      )}
     </header>
   );
 }

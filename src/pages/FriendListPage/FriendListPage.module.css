@@ -7,6 +7,10 @@
     box-sizing: border-box;
 }
 
+.outletCont {
+    position: relative;
+}
+
 .listNav {
     display: flex;
     justify-content: center;

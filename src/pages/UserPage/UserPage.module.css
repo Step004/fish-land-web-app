@@ -383,6 +383,11 @@
 }
 
 @media screen and (max-width: 420px) {
+    .photo {
+        max-width: 220px;
+        max-height: 220px;
+    }
+
     .containerForElement {
         padding: 30px 20px;
     }

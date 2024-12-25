@@ -8,14 +8,12 @@ import { getUserById } from "../../firebase/firebase/readData.js";
 import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
 import { useMediaQuery } from "react-responsive";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { BurgerMenu } from "../BurgerMenu/BurgerMenu.jsx";
 
-export default function UserMenu() {
+export default function UserMenu({ handleBurgerMenuToggle }) {
   const { currentUser } = useAuth();
   const [user, setUser] = useState(currentUser);
   const navigate = useNavigate();
   const isTabletScreen = useMediaQuery({ query: "(min-width: 768px)" });
-  const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,9 +32,7 @@ export default function UserMenu() {
     await doSignOut();
     navigate("/login");
   };
-  const handleBurgerMenuToggle = () => {
-    setOpenBurgerMenu(!openBurgerMenu);
-  };
+
   const userPhoto = currentUser.photoURL ? (
     <img src={currentUser.photoURL} alt="UserPhoto" className={css.userIcon} />
   ) : (
@@ -60,9 +56,6 @@ export default function UserMenu() {
         className={css.burgerSvg}
         onClick={handleBurgerMenuToggle}
       />
-      {openBurgerMenu && (
-        <BurgerMenu isOpen={openBurgerMenu} close={handleBurgerMenuToggle} />
-      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 .container {
     margin-top: 20px;
     padding: 40px;
-    /* background-color: rgba(16, 57, 49, 0.4); */
     border-radius: 30px;
     display: flex;
     flex-direction: column;
@@ -51,4 +50,21 @@
 .nameAndStatus {
     display: flex;
     justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        margin-top: 20px;
+        padding: 0;
+    }
+
+    .card {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .photo {
+        width: 75px;
+        height: 75px;
+    }
 }
