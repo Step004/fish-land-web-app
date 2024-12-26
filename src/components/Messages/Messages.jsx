@@ -24,6 +24,8 @@ import { MdAddIcCall } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
+import { doc, onSnapshot } from "firebase/firestore";
+import { firestore } from "../../firebase/firebase/firebase.js";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -41,20 +43,31 @@ export default function Messages() {
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   useEffect(() => {
-    const fetchCall = async () => {
-      const data = await findCallById(link);
-      console.log(data);
-      
-      setStatusCall(data.status);
-    };
-    if (link) {
-      fetchCall();
-    }
+    if (!link) return;
+
+    const callDocRef = doc(firestore, "calls", link);
+
+    // Підписка на зміни документа
+    const unsubscribe = onSnapshot(callDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        console.log("Call data updated:", data);
+
+        // Оновлення статусу дзвінка
+        setStatusCall(data.status);
+      } else {
+        console.log("Call document does not exist.");
+        setStatusCall(null);
+      }
+    });
+
+    // Очистка підписки при демонтажі компонента
+    return () => unsubscribe();
   }, [link]);
   console.log(link);
-  
+
   // console.log(statusCall);
-  
+
   useEffect(() => {
     const fetchChat = async (chatId) => {
       try {
@@ -164,31 +177,31 @@ export default function Messages() {
     }
     return (
       <div className={css.answersOnCall}>
-        {/* {link ? ( */}
-        <>
-          <button
-            className={css.rejectCall}
-            onClick={async () => {
-              deleteCallById(parts[1]);
-              endCall(link);
-              setLink("");
-            }}
-          >
-            <MdAddIcCall className={css.rejectCallIcon} />
-          </button>
-          <button
-            className={css.joinToCall}
-            onClick={() => {
-              handleCall();
-              setLink(parts[1]);
-            }}
-          >
-            <FiPhoneCall className={css.joinToCallIcon} />
-          </button>
-        </>
-        {/* ) : (
+        {statusCall === "active" ? (
+          <>
+            <button
+              className={css.rejectCall}
+              onClick={async () => {
+                deleteCallById(parts[1]);
+                endCall(link);
+                setLink("");
+              }}
+            >
+              <MdAddIcCall className={css.rejectCallIcon} />
+            </button>
+            <button
+              className={css.joinToCall}
+              onClick={() => {
+                handleCall();
+                setLink(parts[1]);
+              }}
+            >
+              <FiPhoneCall className={css.joinToCallIcon} />
+            </button>
+          </>
+        ) : (
           <p>Call ended</p>
-        )} */}
+        )}
       </div>
     );
   };
