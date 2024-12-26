@@ -49,8 +49,6 @@ export default function Messages() {
     const unsubscribe = onSnapshot(callDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         const data = docSnapshot.data();
-        console.log("Call data updated:", data);
-
         setStatusCall(data.status);
       } else {
         console.log("Call document does not exist.");
@@ -60,7 +58,6 @@ export default function Messages() {
 
     return () => unsubscribe();
   }, [link]);
-  console.log(statusCall);
 
   useEffect(() => {
     const fetchChat = async (chatId) => {

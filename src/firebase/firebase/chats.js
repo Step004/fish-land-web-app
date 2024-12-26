@@ -148,12 +148,21 @@ export const listenForMessages = (chatId, onNewMessage) => {
 export const deleteChat = async (chatId) => {
   const db = getFirestore();
   const chatRef = doc(db, "chats", chatId);
+  const messagesRef = collection(chatRef, "messages");
 
   try {
+    const messagesSnapshot = await getDocs(messagesRef);
+
+    const deletePromises = messagesSnapshot.docs.map((messageDoc) =>
+      deleteDoc(messageDoc.ref)
+    );
+    await Promise.all(deletePromises);
+
     await deleteDoc(chatRef);
-    console.log("Chat deleted:", chatId);
+
+    console.log("Chat and all messages deleted:", chatId);
   } catch (error) {
-    console.error("Error deleting chat:", error);
+    console.error("Error deleting chat and messages:", error);
     throw error;
   }
 };

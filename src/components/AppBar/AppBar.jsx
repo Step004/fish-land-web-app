@@ -6,6 +6,7 @@ import css from "./AppBar.module.css";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import logo from "../../img/logo.svg";
 
 export default function AppBar({ handleBurgerMenuToggle }) {
   const { userLoggedIn } = useAuth();
@@ -18,7 +19,7 @@ export default function AppBar({ handleBurgerMenuToggle }) {
       <p className={css.logotype} onClick={() => navigate("/")}>
         Fish Land
       </p>
-
+      {/* <img className={css.logotype} src={logo} alt="" /> */}
       {isLoggedIn && isTabletScreen && <Navigation />}
       {isLoggedIn ? (
         <UserMenu handleBurgerMenuToggle={handleBurgerMenuToggle} />
