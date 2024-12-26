@@ -166,7 +166,6 @@ const VideoCall = ({ chatId, link, close }) => {
   };
 
   const handleMute = () => {
-    // setIsMuted(true)
     setIsMuted((prev) => {
       const newMuteState = !prev;
       localStream?.getAudioTracks().forEach((track) => {
@@ -304,11 +303,6 @@ const VideoCall = ({ chatId, link, close }) => {
         </button>
         {link && (
           <>
-            {/* <input
-              value={link}
-              onChange={(e) => setCallId(e.target.value)}
-              placeholder="Enter Call ID"
-            /> */}
             <button
               className={css.button}
               onClick={() => {

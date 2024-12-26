@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import css from "./UserPage.module.css";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import {
-  // getAllUsers,
   getFriendsContacts,
   getUserById,
 } from "../../firebase/firebase/readData.js";
@@ -19,7 +18,6 @@ import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 import { useMediaQuery } from "react-responsive";
 import toast from "react-hot-toast";
 
-// import { IoAddSharp } from "react-icons/io5";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
@@ -34,7 +32,6 @@ export default function UserPage() {
     value = 3;
   }
 
-  // const [users, setUsers] = useState(null);
   const [friends, setFriends] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openSetting, setOpenSetting] = useState(false);
@@ -49,12 +46,10 @@ export default function UserPage() {
       try {
         const friendsContacts = await getFriendsContacts(currentUser.uid);
 
-        // const usersData = await getAllUsers();
         const user = await getUserById(currentUser.uid);
         setFriends(friendsContacts);
 
         setThisUser(user);
-        // setUsers(usersData);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {

@@ -9,7 +9,6 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import { FaPhone } from "react-icons/fa";
 import { deleteCallById } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
@@ -17,6 +16,10 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import Loader from "../Loader/Loader.jsx";
 import { IoMdMore } from "react-icons/io";
 import toast from "react-hot-toast";
+import { MdAddIcCall } from "react-icons/md";
+import { FiPhoneCall } from "react-icons/fi";
+import { useMediaQuery } from "react-responsive";
+import { IoSendSharp } from "react-icons/io5";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -30,6 +33,9 @@ export default function Messages() {
   const listMessRef = useRef(null);
   const [isOpenMore, setIsOpenMore] = useState(false);
   const navigate = useNavigate();
+
+  const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
+
   useEffect(() => {
     const fetchChat = async (chatId) => {
       try {
@@ -129,7 +135,7 @@ export default function Messages() {
             deleteCallById(parts[1]);
           }}
         >
-          Закінчити
+          End call!
         </button>
       );
     }
@@ -138,20 +144,22 @@ export default function Messages() {
         {/* {answerCall ? ( */}
         <>
           <button
+            className={css.rejectCall}
             onClick={async () => {
               deleteCallById(parts[1]);
               setAnswerCall(false);
             }}
           >
-            Відхилити
+            <MdAddIcCall className={css.rejectCallIcon} />
           </button>
           <button
+            className={css.joinToCall}
             onClick={() => {
               handleCall();
               setLink(parts[1]);
             }}
           >
-            Приєднатись
+            <FiPhoneCall className={css.joinToCallIcon} />
           </button>
         </>
         {/* ) : (
@@ -171,7 +179,7 @@ export default function Messages() {
           >
             <IoArrowBackSharp className={css.iconBack} />
           </button>
-          <div className={css.nameAndPhoto}>
+          <div className={css.nameAndPhotoCont}>
             <div
               className={css.nameAndPhoto}
               onClick={() => {
@@ -195,8 +203,8 @@ export default function Messages() {
                   <li
                     onClick={() => {
                       handleOpenMore();
-                      deleteChat(currentChat.chatId)
-                      toast("Chat successfully deleted!")
+                      deleteChat(currentChat.chatId);
+                      toast("Chat successfully deleted!");
                     }}
                   >
                     Delete chat
@@ -281,15 +289,15 @@ export default function Messages() {
           placeholder="Your text..."
         />
         <button className={css.sendButton} onClick={handleSendMessage}>
-          Send
+          {isTabletScreen ? <IoSendSharp /> : "Send"}
         </button>
         <button
-          className={css.phoneButton}
+          className={css.joinToCall}
           onClick={() => {
             handlePhone();
           }}
         >
-          <FaPhone />
+          <FiPhoneCall className={css.joinToCallIcon} />
         </button>
       </div>
       {callModal && (

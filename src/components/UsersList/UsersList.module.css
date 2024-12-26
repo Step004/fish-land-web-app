@@ -85,6 +85,14 @@
     /* Трохи темніший відтінок при ховері */
 }
 
+.descriptions {
+    color: white;
+}
+
+.fromLocal {
+    color: white;
+}
+
 @media screen and (max-width: 768px) {
     .container {
         margin-top: 20px;

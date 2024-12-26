@@ -295,6 +295,11 @@
     text-align: center;
 }
 
+.containerForDescRecommend {
+    display: flex;
+    justify-content: center;
+}
+
 .buttonStart {
     margin-top: 15px;
 }
@@ -324,13 +329,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-
-
-    .containerForDescRecommend {
-        display: flex;
-        justify-content: center;
     }
 
     .containerForRecommended {
