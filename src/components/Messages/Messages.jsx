@@ -20,7 +20,6 @@ import { MdAddIcCall } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
-import { use } from "react";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -148,14 +147,21 @@ export default function Messages() {
   const callForm = (msg) => {
     const parts = msg.content.split(":");
     if (currentUser.uid === msg.senderId) {
+      
       return (
-        <button
-          onClick={async () => {
-            deleteCallById(parts[1]);
-          }}
-        >
-          End call!
-        </button>
+        <div>
+          {answerCall ? (
+            "Call ended"
+          ) : (
+            <button
+              onClick={async () => {
+                await deleteCallById(parts[1]);
+              }}
+            >
+              End call!
+            </button>
+          )}
+        </div>
       );
     }
     return (
