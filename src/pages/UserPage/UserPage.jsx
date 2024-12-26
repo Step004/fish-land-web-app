@@ -3,6 +3,7 @@ import css from "./UserPage.module.css";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import {
   getFriendsContacts,
+  getUserAnswers,
   getUserById,
 } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
@@ -17,7 +18,7 @@ import { MdDelete } from "react-icons/md";
 import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 import { useMediaQuery } from "react-responsive";
 import toast from "react-hot-toast";
-
+import { Recommendations } from "../../components/Recommendations/Recommendations.jsx";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
@@ -38,14 +39,16 @@ export default function UserPage() {
   const [thisUser, setThisUser] = useState(null);
   const [openAddPost, setOpenAddPost] = useState(false);
   const [questionOpen, setQuestionOpen] = useState(false);
-  // const [question, setQuestion] = useState();
+  const [answers, setAnswers] = useState();
+
   const navigation = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const friendsContacts = await getFriendsContacts(currentUser.uid);
-
+        const answers = await getUserAnswers(currentUser.uid);
+        setAnswers(answers);
         const user = await getUserById(currentUser.uid);
         setFriends(friendsContacts);
 
@@ -92,24 +95,31 @@ export default function UserPage() {
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
   );
+
   return (
     <main className={css.container}>
       <div className={css.containerForImgAndRecommendation}>
         {userPhoto}
         <div className={css.containerForRecommended}>
           <h2>Recommendations</h2>
-          {/* <ul>
-            <li>1</li>
-          </ul> */}
-          <div className={css.containerForDescRecommend}>
-            <p className={css.descRecommend}>
-              In order to receive recommendations for fishing spots, you need to
-              complete a survey!
-            </p>
-          </div>
-          <button className={css.buttonStart} onClick={() => toggleQuestion()}>
-            Start
-          </button>
+          {answers.length == 0 ? (
+            <>
+              <div className={css.containerForDescRecommend}>
+                <p className={css.descRecommend}>
+                  In order to receive recommendations for fishing spots, you
+                  need to complete a survey!
+                </p>
+              </div>
+              <button
+                className={css.buttonStart}
+                onClick={() => toggleQuestion()}
+              >
+                Start
+              </button>
+            </>
+          ) : (
+            <Recommendations answers={answers} />
+          )}
         </div>
       </div>
       <div className={css.containerForElement}>

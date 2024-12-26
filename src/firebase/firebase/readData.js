@@ -56,10 +56,9 @@ export const getUserById = async (userId) => {
     }
   } catch (error) {
     console.error(`Error fetching user with ID ${userId}:`, error);
-    throw error; 
+    throw error;
   }
 };
-
 
 export const getFriendsContacts = async (userId) => {
   const db = database;
@@ -94,6 +93,25 @@ export const getFriendsContacts = async (userId) => {
       `Error fetching friends' contacts for user with ID ${userId}:`,
       error
     );
+    throw error;
+  }
+};
+export const getUserAnswers = async (userId) => {
+  const db = database;
+  const dbRef = ref(db, "/");
+
+  try {
+    // Отримати дані користувача
+    const userSnapshot = await get(child(dbRef, `users/${userId}`));
+    if (!userSnapshot.exists()) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    const userData = userSnapshot.val();
+
+    return userData.answers || [];
+  } catch (error) {
+    console.error(`Error fetching answers for user with ID ${userId}:`, error);
     throw error;
   }
 };

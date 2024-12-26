@@ -171,62 +171,6 @@ export const deleteChat = async (chatId) => {
   }
 };
 
-// export const subscribeToChatsAndMessages = (currentUserId) => {
-//   const db = getFirestore();
-//   const chatsRef = collection(db, "chats");
-
-//   // Запит на чати, де поточний користувач є учасником
-//   const chatsQuery = query(
-//     chatsRef,
-//     where(`participants.${currentUserId}`, "==", true)
-//   );
-
-//   // Підписка на зміни в чатах
-//   const unsubscribeChats = onSnapshot(chatsQuery, (snapshot) => {
-//     snapshot.docChanges().forEach((change) => {
-//       if (change.type === "added" || change.type === "modified") {
-//         const chatId = change.doc.id;
-
-//         // Підписка на нові повідомлення у підколекції `messages`
-//         const messagesRef = collection(db, "chats", chatId, "messages");
-//         const messagesQuery = query(
-//           messagesRef,
-//           orderBy("timestamp", "desc"),
-//           limit(1)
-//         ); // Беремо лише останнє повідомлення
-
-//         const unsubscribeMessages = onSnapshot(
-//           messagesQuery,
-//           (messageSnapshot) => {
-//             if (!messageSnapshot.empty) {
-//               const lastMessageDoc = messageSnapshot.docs[0];
-//               const lastMessageData = lastMessageDoc.data();
-
-//               // Перевірка, чи повідомлення не від поточного користувача
-//               if (lastMessageData.senderId !== currentUserId) {
-//                 toast(`${lastMessageData.name}: ${lastMessageData.content}`, {
-//                   position: "top-right",
-//                   autoClose: 5000,
-//                   hideProgressBar: false,
-//                   closeOnClick: true,
-//                   pauseOnHover: true,
-//                   draggable: true,
-//                   progress: undefined,
-//                 });
-//               }
-//             }
-//           }
-//         );
-
-//         // Повертати функцію для відписки
-//         return unsubscribeMessages;
-//       }
-//     });
-//   });
-
-//   return unsubscribeChats;
-// };
-
 export const subscribeToChatsAndMessages = (currentUserId) => {
   const db = getFirestore();
   const chatsRef = collection(db, "chats");
@@ -269,15 +213,18 @@ export const subscribeToChatsAndMessages = (currentUserId) => {
 
               // Перевірка, чи повідомлення не від поточного користувача
               if (lastMessageData.senderId !== currentUserId) {
-                toast(`New message from ${lastMessageData.name}: ${lastMessageData.content}`, {
-                  position: "top-right",
-                  autoClose: 8000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                });
+                toast(
+                  `New message from ${lastMessageData.name}: ${lastMessageData.content}`,
+                  {
+                    position: "top-right",
+                    autoClose: 8000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  }
+                );
               }
             }
           }

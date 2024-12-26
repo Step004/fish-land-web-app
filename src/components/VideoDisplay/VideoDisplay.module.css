@@ -39,19 +39,28 @@
     .video {
         position: absolute;
         z-index: 100;
-        bottom: 0;
-        right: 0;
+        bottom: 3%;
+        right: 3%;
         width: 25%;
         border-radius: 1rem;
         background-color: black;
         object-fit: cover;
         transform: scaleX(-1);
+        border: 2px solid white
     }
 
     .friendVideoCont {
         width: 100%;
         background-color: #2d3748;
-        border-radius: 1rem;
+        border-radius: 2rem;
         border: 2px solid black;
+    }
+
+    .friendVideo {
+        width: 100%;
+        height: 100%;
+        border-radius: 2rem;
+        object-fit: cover;
+        transform: scaleX(-1);
     }
 }
