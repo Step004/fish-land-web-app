@@ -47,13 +47,11 @@ export default function Messages() {
 
     const callDocRef = doc(firestore, "calls", link);
 
-    // Підписка на зміни документа
     const unsubscribe = onSnapshot(callDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         const data = docSnapshot.data();
         console.log("Call data updated:", data);
 
-        // Оновлення статусу дзвінка
         setStatusCall(data.status);
       } else {
         console.log("Call document does not exist.");
@@ -61,12 +59,9 @@ export default function Messages() {
       }
     });
 
-    // Очистка підписки при демонтажі компонента
     return () => unsubscribe();
   }, [link]);
-  console.log(link);
-
-  // console.log(statusCall);
+  console.log(statusCall);
 
   useEffect(() => {
     const fetchChat = async (chatId) => {
@@ -177,7 +172,7 @@ export default function Messages() {
     }
     return (
       <div className={css.answersOnCall}>
-        {statusCall === "active" ? (
+        {statusCall === "active" || statusCall == null ? (
           <>
             <button
               className={css.rejectCall}
