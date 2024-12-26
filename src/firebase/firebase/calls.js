@@ -38,9 +38,6 @@ export const findCallById = async (callId) => {
   }
   return null;
 };
-export const deleteCallStatusById = async (callId) => {
-  await firestore.collection("calls").doc(callId).update({ status: "ended" });
-};
 
 export const getUserCalls = async (uid) => {
   try {

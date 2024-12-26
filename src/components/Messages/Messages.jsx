@@ -9,10 +9,7 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import {
-  deleteCallById,
-  deleteCallStatusById,
-} from "../../firebase/firebase/calls.js";
+import { deleteCallById } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -55,25 +52,7 @@ export default function Messages() {
     };
     fetchChat(chatId);
   }, [chatId]);
-  //////////////////////////////////////////////
-  useEffect(() => {
-    if (!link) return;
 
-    const unsubscribe = firestore
-      .collection("calls")
-      .doc(link)
-      .onSnapshot((doc) => {
-        if (doc.exists) {
-          const data = doc.data();
-          setAnswerCall(data.status === "active");
-        } else {
-          setAnswerCall(false);
-        }
-      });
-
-    return () => unsubscribe();
-  }, [link]);
-  //////////////////////////////////////////
   const handleOpenMore = () => {
     setIsOpenMore(!isOpenMore);
   };
@@ -166,13 +145,12 @@ export default function Messages() {
     }
     return (
       <div className={css.answersOnCall}>
-        {link ? (
+        {/* {link ? ( */}
           <>
             <button
               className={css.rejectCall}
               onClick={async () => {
                 deleteCallById(parts[1]);
-                deleteCallStatusById(parts[1]);
                 setAnswerCall(false);
                 setLink("");
               }}
@@ -189,12 +167,24 @@ export default function Messages() {
               <FiPhoneCall className={css.joinToCallIcon} />
             </button>
           </>
-        ) : (
+        {/* ) : (
           <p>Call ended</p>
-        )}
+        )} */}
       </div>
     );
   };
+  // const lastLinkMessage = messages
+  //   .filter((msg) => msg.content.startsWith("Link:"))
+  //   .pop();
+
+  // const linkForSettings = lastLinkMessage
+  //   ? lastLinkMessage.content.split(":")[1]
+  //   : null;
+
+  // // useEffect(() => {
+  // //   setLink(linkForSettings);
+  // // }, [linkForSettings]);
+  // console.log(linkForSettings);
 
   return (
     <div className={css.containerMsg}>
