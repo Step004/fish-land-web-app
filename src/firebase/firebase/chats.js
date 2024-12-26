@@ -13,6 +13,7 @@ import {
   orderBy,
   where,
   deleteDoc,
+  limit,
 } from "firebase/firestore";
 import toast from "react-hot-toast";
 
@@ -169,6 +170,7 @@ export const deleteChat = async (chatId) => {
     throw error;
   }
 };
+
 // export const subscribeToChatsAndMessages = (currentUserId) => {
 //   const db = getFirestore();
 //   const chatsRef = collection(db, "chats");
@@ -182,23 +184,27 @@ export const deleteChat = async (chatId) => {
 //   // Підписка на зміни в чатах
 //   const unsubscribeChats = onSnapshot(chatsQuery, (snapshot) => {
 //     snapshot.docChanges().forEach((change) => {
-//       const chatId = change.doc.id;
-//       // const chatData = change.doc.data();
+//       if (change.type === "added" || change.type === "modified") {
+//         const chatId = change.doc.id;
 
-//       // Підписка на нові повідомлення у підколекції `messages`
-//       const messagesRef = collection(db, "chats", chatId, "messages");
-//       const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
+//         // Підписка на нові повідомлення у підколекції `messages`
+//         const messagesRef = collection(db, "chats", chatId, "messages");
+//         const messagesQuery = query(
+//           messagesRef,
+//           orderBy("timestamp", "desc"),
+//           limit(1)
+//         ); // Беремо лише останнє повідомлення
 
-//       const unsubscribeMessages = onSnapshot(
-//         messagesQuery,
-//         (messageSnapshot) => {
-//           messageSnapshot.docChanges().forEach((messageChange) => {
-//             if (messageChange.type === "added") {
-//               const messageData = messageChange.doc.data();
-//               const lastMessage = messageData[messageData.length - 1];
+//         const unsubscribeMessages = onSnapshot(
+//           messagesQuery,
+//           (messageSnapshot) => {
+//             if (!messageSnapshot.empty) {
+//               const lastMessageDoc = messageSnapshot.docs[0];
+//               const lastMessageData = lastMessageDoc.data();
 
-//               if (lastMessage && lastMessage.senderId !== currentUserId) {
-//                 toast(`${lastMessage.name}: ${lastMessage.content}`, {
+//               // Перевірка, чи повідомлення не від поточного користувача
+//               if (lastMessageData.senderId !== currentUserId) {
+//                 toast(`${lastMessageData.name}: ${lastMessageData.content}`, {
 //                   position: "top-right",
 //                   autoClose: 5000,
 //                   hideProgressBar: false,
@@ -207,23 +213,26 @@ export const deleteChat = async (chatId) => {
 //                   draggable: true,
 //                   progress: undefined,
 //                 });
-//                 console.log(lastMessage.name, lastMessage.content);
 //               }
 //             }
-//           });
-//         }
-//       );
+//           }
+//         );
 
-//       // Повертати функцію для відписки
-//       return unsubscribeMessages;
+//         // Повертати функцію для відписки
+//         return unsubscribeMessages;
+//       }
 //     });
 //   });
 
 //   return unsubscribeChats;
 // };
+
 export const subscribeToChatsAndMessages = (currentUserId) => {
   const db = getFirestore();
   const chatsRef = collection(db, "chats");
+
+  // Зберігаємо посилання на функції відписки для чатів та повідомлень
+  const unsubscribeMessagesMap = new Map();
 
   // Запит на чати, де поточний користувач є учасником
   const chatsQuery = query(
@@ -234,43 +243,62 @@ export const subscribeToChatsAndMessages = (currentUserId) => {
   // Підписка на зміни в чатах
   const unsubscribeChats = onSnapshot(chatsQuery, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
+      const chatId = change.doc.id;
+
       if (change.type === "added" || change.type === "modified") {
-        const chatId = change.doc.id;
+        // Перевіряємо, чи є активна підписка на цей чат, і скасовуємо її
+        if (unsubscribeMessagesMap.has(chatId)) {
+          const unsubscribePrevious = unsubscribeMessagesMap.get(chatId);
+          unsubscribePrevious(); // Скасовуємо попередню підписку
+        }
 
         // Підписка на нові повідомлення у підколекції `messages`
         const messagesRef = collection(db, "chats", chatId, "messages");
-        const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
+        const messagesQuery = query(
+          messagesRef,
+          orderBy("timestamp", "desc"),
+          limit(1) // Беремо лише останнє повідомлення
+        );
 
         const unsubscribeMessages = onSnapshot(
           messagesQuery,
           (messageSnapshot) => {
-            messageSnapshot.docChanges().forEach((messageChange) => {
-              if (messageChange.type === "added") {
-                const messageData = messageChange.doc.data();
+            if (!messageSnapshot.empty) {
+              const lastMessageDoc = messageSnapshot.docs[0];
+              const lastMessageData = lastMessageDoc.data();
 
-                const lastMessage = messageData[messageData.length - 1];
-
-                if (lastMessage && lastMessage.senderId !== currentUserId) {
-                  toast(`${lastMessage.name}: ${lastMessage.content}`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                  });
-                  console.log(lastMessage.name, lastMessage.content);
-                }
+              // Перевірка, чи повідомлення не від поточного користувача
+              if (lastMessageData.senderId !== currentUserId) {
+                toast(`New message from ${lastMessageData.name}: ${lastMessageData.content}`, {
+                  position: "top-right",
+                  autoClose: 8000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
               }
-            });
+            }
           }
         );
 
-        return unsubscribeMessages;
+        // Зберігаємо нову підписку для цього чату
+        unsubscribeMessagesMap.set(chatId, unsubscribeMessages);
+      }
+
+      // Якщо чат видалено, скасовуємо відповідну підписку
+      if (change.type === "removed" && unsubscribeMessagesMap.has(chatId)) {
+        const unsubscribePrevious = unsubscribeMessagesMap.get(chatId);
+        unsubscribePrevious(); // Скасовуємо підписку
+        unsubscribeMessagesMap.delete(chatId); // Видаляємо з мапи
       }
     });
   });
 
-  return unsubscribeChats;
+  return () => {
+    // Відписка від усіх чатів та повідомлень
+    unsubscribeChats();
+    unsubscribeMessagesMap.forEach((unsubscribe) => unsubscribe());
+  };
 };
