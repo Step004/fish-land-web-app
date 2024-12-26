@@ -49,6 +49,9 @@
         max-height: 95%;
         height: 100%;
         max-width: 95%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .closeBtn {
