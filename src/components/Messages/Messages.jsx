@@ -149,10 +149,10 @@ export default function Messages() {
     if (currentUser.uid === msg.senderId) {
       
       return (
-        <div>
-          {answerCall ? (
-            "Call ended"
-          ) : (
+        // <div>
+        //   {answerCall ? (
+        //     "Call ended"
+        //   ) : (
             <button
               onClick={async () => {
                 await deleteCallById(parts[1]);
@@ -160,13 +160,13 @@ export default function Messages() {
             >
               End call!
             </button>
-          )}
-        </div>
+        //   )}
+        // </div>
       );
     }
     return (
       <div className={css.answersOnCall}>
-        {answerCall ? (
+        {/* {answerCall ? ( */}
           <>
             <button
               className={css.rejectCall}
@@ -187,9 +187,9 @@ export default function Messages() {
               <FiPhoneCall className={css.joinToCallIcon} />
             </button>
           </>
-        ) : (
+        {/* ) : (
           <p>Call ended</p>
-        )}
+        )} */}
       </div>
     );
   };
