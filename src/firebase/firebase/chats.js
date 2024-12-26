@@ -14,6 +14,7 @@ import {
   where,
   deleteDoc,
 } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 export const getAllChats = async (currentUserId) => {
   const db = getFirestore();
@@ -73,7 +74,7 @@ export const createChat = async (user1, user2) => {
 
     if (chatSnapshot.exists()) {
       console.log("Chat already exists:", chatId);
-      return chatId; // Повертаємо існуючий chatId
+      return chatId;
     }
 
     await setDoc(chatRef, {
@@ -167,4 +168,109 @@ export const deleteChat = async (chatId) => {
     console.error("Error deleting chat and messages:", error);
     throw error;
   }
+};
+// export const subscribeToChatsAndMessages = (currentUserId) => {
+//   const db = getFirestore();
+//   const chatsRef = collection(db, "chats");
+
+//   // Запит на чати, де поточний користувач є учасником
+//   const chatsQuery = query(
+//     chatsRef,
+//     where(`participants.${currentUserId}`, "==", true)
+//   );
+
+//   // Підписка на зміни в чатах
+//   const unsubscribeChats = onSnapshot(chatsQuery, (snapshot) => {
+//     snapshot.docChanges().forEach((change) => {
+//       const chatId = change.doc.id;
+//       // const chatData = change.doc.data();
+
+//       // Підписка на нові повідомлення у підколекції `messages`
+//       const messagesRef = collection(db, "chats", chatId, "messages");
+//       const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
+
+//       const unsubscribeMessages = onSnapshot(
+//         messagesQuery,
+//         (messageSnapshot) => {
+//           messageSnapshot.docChanges().forEach((messageChange) => {
+//             if (messageChange.type === "added") {
+//               const messageData = messageChange.doc.data();
+//               const lastMessage = messageData[messageData.length - 1];
+
+//               if (lastMessage && lastMessage.senderId !== currentUserId) {
+//                 toast(`${lastMessage.name}: ${lastMessage.content}`, {
+//                   position: "top-right",
+//                   autoClose: 5000,
+//                   hideProgressBar: false,
+//                   closeOnClick: true,
+//                   pauseOnHover: true,
+//                   draggable: true,
+//                   progress: undefined,
+//                 });
+//                 console.log(lastMessage.name, lastMessage.content);
+//               }
+//             }
+//           });
+//         }
+//       );
+
+//       // Повертати функцію для відписки
+//       return unsubscribeMessages;
+//     });
+//   });
+
+//   return unsubscribeChats;
+// };
+export const subscribeToChatsAndMessages = (currentUserId) => {
+  const db = getFirestore();
+  const chatsRef = collection(db, "chats");
+
+  // Запит на чати, де поточний користувач є учасником
+  const chatsQuery = query(
+    chatsRef,
+    where(`participants.${currentUserId}`, "==", true)
+  );
+
+  // Підписка на зміни в чатах
+  const unsubscribeChats = onSnapshot(chatsQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added" || change.type === "modified") {
+        const chatId = change.doc.id;
+
+        // Підписка на нові повідомлення у підколекції `messages`
+        const messagesRef = collection(db, "chats", chatId, "messages");
+        const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
+
+        const unsubscribeMessages = onSnapshot(
+          messagesQuery,
+          (messageSnapshot) => {
+            messageSnapshot.docChanges().forEach((messageChange) => {
+              if (messageChange.type === "added") {
+                const messageData = messageChange.doc.data();
+
+                const lastMessage = messageData[messageData.length - 1];
+
+                if (lastMessage && lastMessage.senderId !== currentUserId) {
+                  toast(`${lastMessage.name}: ${lastMessage.content}`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  });
+                  console.log(lastMessage.name, lastMessage.content);
+                }
+              }
+            });
+          }
+        );
+
+        return unsubscribeMessages;
+      }
+    });
+  });
+
+  return unsubscribeChats;
 };
