@@ -50,7 +50,6 @@ export default function HomePage() {
   }, [friends]);
 
   if (loading) return <Loader />;
-  console.log(memoizedFriends);
 
   return (
     <main className={css.container}>

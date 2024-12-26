@@ -9,10 +9,7 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import {
-  deleteCallById,
-  endCall,
-} from "../../firebase/firebase/calls.js";
+import { deleteCallById, endCall } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -217,9 +214,17 @@ export default function Messages() {
                 } else navigate(`/friends/${keys[1]}`);
               }}
             >
-              <p>{currentChat.name}</p>
+              <p>
+                {currentUser.displayName === currentChat.name1
+                  ? currentChat.name2
+                  : currentChat.name1}
+              </p>
               <img
-                src={currentChat.photo || defaultPhoto}
+                src={
+                  (currentUser.displayName === currentChat.name1
+                    ? currentChat.photo
+                    : currentChat.photoUrl) || defaultPhoto
+                }
                 alt="UserPhoto"
                 className={css.photo}
               />

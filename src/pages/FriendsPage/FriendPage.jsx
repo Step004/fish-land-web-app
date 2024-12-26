@@ -22,7 +22,6 @@ export default function FriendPage() {
   const { currentUser } = useAuth();
   const { friendId } = useParams();
   const [user, setUser] = useState(null);
-  // const [users, setUsers] = useState(null);
   const [friends, setFriends] = useState(null);
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,10 +44,8 @@ export default function FriendPage() {
         const userData = await getUserById(friendId);
         const usersData = await getAllUsers();
         setFriends(friendsContacts);
-        // setUsers(usersData);
         setUser(userData);
 
-        // Перевірити, чи друг уже є в списку друзів
         if (usersData[currentUser?.uid]?.friends?.[friendId]) {
           setIsFriend(true);
         }
@@ -70,7 +67,7 @@ export default function FriendPage() {
   
     const handleStartChat = async () => {
       try {
-        const chatId = await createChat(currentUser.uid, user);
+        const chatId = await createChat(currentUser, user);
         navigate(`/message/${chatId}`); 
       } catch (error) {
         console.error("Failed to create chat:", error);

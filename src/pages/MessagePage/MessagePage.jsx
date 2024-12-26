@@ -48,7 +48,11 @@ const MessagePage = () => {
                         className={css.photo}
                       />
                       <div className={css.nameAndLastMsg}>
-                        <span>{chat.name}</span>
+                        <span>
+                          {currentUser.displayName === chat.name1
+                            ? chat.name2
+                            : chat.name1}
+                        </span>
                         {/* <span className={css.lastMsg}>{chat.lastMessage}</span> */}
                       </div>
                     </div>
@@ -82,12 +86,20 @@ const MessagePage = () => {
                     >
                       <div className={css.photoAndName}>
                         <img
-                          src={chat.photo || defaultPhoto}
+                          src={
+                            (currentUser.displayName === chat.name1
+                              ? chat.photo
+                              : chat.photoUrl) || defaultPhoto
+                          }
                           alt="UserPhoto"
                           className={css.photo}
                         />
                         <div className={css.nameAndLastMsg}>
-                          <span>{chat.name}</span>
+                          <span>
+                            {currentUser.displayName === chat.name1
+                              ? chat.name2
+                              : chat.name1}
+                          </span>
                           {/* <span className={css.lastMsg}>{chat.lastMessage}</span> */}
                         </div>
                       </div>

@@ -63,9 +63,9 @@ export const getChatById = async (chatId) => {
   }
 };
 
-export const createChat = async (userId1, user2) => {
+export const createChat = async (user1, user2) => {
   const db = getFirestore();
-  const chatId = [userId1, user2.uid].sort().join("_");
+  const chatId = [user1.uid, user2.uid].sort().join("_");
   const chatRef = doc(db, "chats", chatId);
 
   try {
@@ -78,10 +78,12 @@ export const createChat = async (userId1, user2) => {
 
     await setDoc(chatRef, {
       participants: {
-        [userId1]: true,
+        [user1.uid]: true,
         [user2.uid]: true,
       },
-      name: user2.name,
+      name1: user1.displayName,
+      name2: user2.name,
+      photoUrl: user1.photoUrl,
       photo: user2.photo || null,
       lastMessage: null,
       updatedAt: serverTimestamp(),
