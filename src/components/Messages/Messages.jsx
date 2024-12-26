@@ -9,7 +9,11 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import { deleteCallById } from "../../firebase/firebase/calls.js";
+import {
+  deleteCallById,
+  endCall,
+  findCallById,
+} from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -20,7 +24,6 @@ import { MdAddIcCall } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
-import { firestore } from "../../firebase/firebase/firebase.js";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -29,7 +32,7 @@ export default function Messages() {
   const [callModal, setCallModal] = useState(false);
   const [link, setLink] = useState("");
   const [value, setValue] = useState("");
-  const [answerCall, setAnswerCall] = useState(true);
+  const [statusCall, setStatusCall] = useState(true);
   const [currentChat, setCurrentChat] = useState("");
   const listMessRef = useRef(null);
   const [isOpenMore, setIsOpenMore] = useState(false);
@@ -37,6 +40,21 @@ export default function Messages() {
 
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
+  useEffect(() => {
+    const fetchCall = async () => {
+      const data = await findCallById(link);
+      console.log(data);
+      
+      setStatusCall(data.status);
+    };
+    if (link) {
+      fetchCall();
+    }
+  }, [link]);
+  console.log(link);
+  
+  // console.log(statusCall);
+  
   useEffect(() => {
     const fetchChat = async (chatId) => {
       try {
@@ -134,6 +152,7 @@ export default function Messages() {
         <button
           onClick={async () => {
             await deleteCallById(parts[1]);
+            endCall(link);
             setLink("");
           }}
         >
@@ -146,45 +165,33 @@ export default function Messages() {
     return (
       <div className={css.answersOnCall}>
         {/* {link ? ( */}
-          <>
-            <button
-              className={css.rejectCall}
-              onClick={async () => {
-                deleteCallById(parts[1]);
-                setAnswerCall(false);
-                setLink("");
-              }}
-            >
-              <MdAddIcCall className={css.rejectCallIcon} />
-            </button>
-            <button
-              className={css.joinToCall}
-              onClick={() => {
-                handleCall();
-                setLink(parts[1]);
-              }}
-            >
-              <FiPhoneCall className={css.joinToCallIcon} />
-            </button>
-          </>
+        <>
+          <button
+            className={css.rejectCall}
+            onClick={async () => {
+              deleteCallById(parts[1]);
+              endCall(link);
+              setLink("");
+            }}
+          >
+            <MdAddIcCall className={css.rejectCallIcon} />
+          </button>
+          <button
+            className={css.joinToCall}
+            onClick={() => {
+              handleCall();
+              setLink(parts[1]);
+            }}
+          >
+            <FiPhoneCall className={css.joinToCallIcon} />
+          </button>
+        </>
         {/* ) : (
           <p>Call ended</p>
         )} */}
       </div>
     );
   };
-  // const lastLinkMessage = messages
-  //   .filter((msg) => msg.content.startsWith("Link:"))
-  //   .pop();
-
-  // const linkForSettings = lastLinkMessage
-  //   ? lastLinkMessage.content.split(":")[1]
-  //   : null;
-
-  // // useEffect(() => {
-  // //   setLink(linkForSettings);
-  // // }, [linkForSettings]);
-  // console.log(linkForSettings);
 
   return (
     <div className={css.containerMsg}>

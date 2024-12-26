@@ -3,6 +3,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 import { firestore } from "./firebase.js";
 import { query, where } from "firebase/firestore";
@@ -18,11 +19,13 @@ export const deleteCallById = async (callId) => {
   try {
     const callDocRef = doc(firestore, "calls", callId);
 
-    await deleteCollection(callDocRef, "offerCandidates");
-    await deleteCollection(callDocRef, "answerCandidates");
-    await deleteDoc(callDocRef);
+    setTimeout(async () => {
+      await deleteCollection(callDocRef, "offerCandidates");
+      await deleteCollection(callDocRef, "answerCandidates");
+      await deleteDoc(callDocRef);
 
-    console.log(`Document with ID ${callId} deleted successfully.`);
+      console.log(`Document with ID ${callId} deleted successfully.`);
+    }, 60 * 60 * 1000);
   } catch (error) {
     console.error(
       `Error scheduling deletion for document with ID ${callId}:`,
@@ -34,9 +37,14 @@ export const findCallById = async (callId) => {
   const callDoc = await firestore.collection("calls").doc(callId).get();
   if (callDoc.exists) {
     const callData = callDoc.data();
-    return callData.status === "active" ? callData : null;
+    return callData;
   }
   return null;
+};
+export const endCall = async (callId) => {
+  const callDoc = doc(firestore, "calls", callId);
+  await updateDoc(callDoc, { status: "ended" });
+  console.log("Call ended successfully.");
 };
 
 export const getUserCalls = async (uid) => {

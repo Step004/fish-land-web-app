@@ -11,9 +11,7 @@ import { firestore } from "../../firebase/firebase/firebase.js";
 import VideoDisplay from "../VideoDisplay/VideoDisplay.jsx";
 
 import { servers } from "../../utils/servers.js";
-import {
-  deleteCallById,
-} from "../../firebase/firebase/calls.js";
+import { deleteCallById, endCall } from "../../firebase/firebase/calls.js";
 import { FaMicrophone, FaCamera } from "react-icons/fa";
 import { FaMicrophoneSlash } from "react-icons/fa6";
 
@@ -105,8 +103,10 @@ const VideoCall = ({ chatId, link, close }) => {
 
     const offerDescription = await pc.current.createOffer();
     await pc.current.setLocalDescription(offerDescription);
-    await setDoc(callDoc, { offer: offerDescription });
-
+    await setDoc(callDoc, {
+      offer: offerDescription,
+      status: "active",
+    });
     onSnapshot(callDoc, (snapshot) => {
       const data = snapshot.data();
       if (pc.current && data?.answer) {
@@ -299,6 +299,7 @@ const VideoCall = ({ chatId, link, close }) => {
           onClick={() => {
             handleEndCall();
             close();
+            endCall(callId);
           }}
         >
           End Call
