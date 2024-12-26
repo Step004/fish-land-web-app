@@ -11,7 +11,10 @@ import { firestore } from "../../firebase/firebase/firebase.js";
 import VideoDisplay from "../VideoDisplay/VideoDisplay.jsx";
 
 import { servers } from "../../utils/servers.js";
-import { deleteCallById } from "../../firebase/firebase/calls.js";
+import {
+  deleteCallById,
+  deleteCallStatusById,
+} from "../../firebase/firebase/calls.js";
 import { FaMicrophone, FaCamera } from "react-icons/fa";
 import { FaMicrophoneSlash } from "react-icons/fa6";
 
@@ -206,6 +209,7 @@ const VideoCall = ({ chatId, link, close }) => {
 
     setIsCalling(false);
     await deleteCallById(callId);
+    await deleteCallStatusById(callId);
     setCallId("");
   };
   const signalTrackStateChange = async (isEnabled) => {

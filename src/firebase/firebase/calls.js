@@ -3,7 +3,6 @@ import {
   getDocs,
   deleteDoc,
   doc,
-  getDoc,
 } from "firebase/firestore";
 import { firestore } from "./firebase.js";
 import { query, where } from "firebase/firestore";
@@ -32,22 +31,15 @@ export const deleteCallById = async (callId) => {
   }
 };
 export const findCallById = async (callId) => {
-  try {
-    const callDocRef = doc(firestore, "calls", callId);
-
-    const callDoc = await getDoc(callDocRef);
-
-    if (callDoc.exists()) {
-      console.log(`Document with ID ${callId} found successfully.`);
-      return callDoc.data();
-    } else {
-      console.warn(`No document found with ID ${callId}.`);
-      return null; 
-    }
-  } catch (error) {
-    console.error(`Error fetching document with ID ${callId}:`, error);
-    throw error; 
+  const callDoc = await firestore.collection("calls").doc(callId).get();
+  if (callDoc.exists) {
+    const callData = callDoc.data();
+    return callData.status === "active" ? callData : null;
   }
+  return null;
+};
+export const deleteCallStatusById = async (callId) => {
+  await firestore.collection("calls").doc(callId).update({ status: "ended" });
 };
 
 export const getUserCalls = async (uid) => {

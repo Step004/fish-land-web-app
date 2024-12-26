@@ -9,7 +9,10 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import { deleteCallById, findCallById } from "../../firebase/firebase/calls.js";
+import {
+  deleteCallById,
+  deleteCallStatusById,
+} from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -20,6 +23,7 @@ import { MdAddIcCall } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
+import { firestore } from "../../firebase/firebase/firebase.js";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -51,25 +55,25 @@ export default function Messages() {
     };
     fetchChat(chatId);
   }, [chatId]);
+  //////////////////////////////////////////////
   useEffect(() => {
-    const handleCall = async () => {
-      if (!link) {
-        setAnswerCall(false);
-        return;
-      }
+    if (!link) return;
 
-      try {
-        const call = await findCallById(link);
-        setAnswerCall(!!call);
-      } catch (error) {
-        console.error("Error finding call:", error);
-        setAnswerCall(false);
-      }
-    };
+    const unsubscribe = firestore
+      .collection("calls")
+      .doc(link)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          setAnswerCall(data.status === "active");
+        } else {
+          setAnswerCall(false);
+        }
+      });
 
-    handleCall();
+    return () => unsubscribe();
   }, [link]);
-
+  //////////////////////////////////////////
   const handleOpenMore = () => {
     setIsOpenMore(!isOpenMore);
   };
@@ -147,32 +151,30 @@ export default function Messages() {
   const callForm = (msg) => {
     const parts = msg.content.split(":");
     if (currentUser.uid === msg.senderId) {
-      
-      return (
-        // <div>
-        //   {answerCall ? (
-        //     "Call ended"
-        //   ) : (
-            <button
-              onClick={async () => {
-                await deleteCallById(parts[1]);
-              }}
-            >
-              End call!
-            </button>
-        //   )}
-        // </div>
+      return link ? (
+        <button
+          onClick={async () => {
+            await deleteCallById(parts[1]);
+            setLink("");
+          }}
+        >
+          End call!
+        </button>
+      ) : (
+        <p>Call ended</p>
       );
     }
     return (
       <div className={css.answersOnCall}>
-        {/* {answerCall ? ( */}
+        {link ? (
           <>
             <button
               className={css.rejectCall}
               onClick={async () => {
                 deleteCallById(parts[1]);
+                deleteCallStatusById(parts[1]);
                 setAnswerCall(false);
+                setLink("");
               }}
             >
               <MdAddIcCall className={css.rejectCallIcon} />
@@ -187,9 +189,9 @@ export default function Messages() {
               <FiPhoneCall className={css.joinToCallIcon} />
             </button>
           </>
-        {/* ) : (
+        ) : (
           <p>Call ended</p>
-        )} */}
+        )}
       </div>
     );
   };
