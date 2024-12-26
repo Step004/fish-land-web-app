@@ -83,7 +83,7 @@ export const createChat = async (user1, user2) => {
       },
       name1: user1.displayName,
       name2: user2.name,
-      photoUrl: user1.photoUrl,
+      photoUrl: user1.photoURL,
       photo: user2.photo || null,
       lastMessage: null,
       updatedAt: serverTimestamp(),

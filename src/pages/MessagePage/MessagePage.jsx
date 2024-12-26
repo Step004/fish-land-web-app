@@ -15,6 +15,8 @@ const MessagePage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [chats, setChats] = useState([]);
+  console.log(currentUser);
+
   useEffect(() => {
     const fetchChats = async () => {
       const chats = await getAllChats(currentUser.uid);
