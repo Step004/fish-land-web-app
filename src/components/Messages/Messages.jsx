@@ -12,7 +12,6 @@ import {
 import {
   deleteCallById,
   endCall,
-  findCallById,
 } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
@@ -34,7 +33,7 @@ export default function Messages() {
   const [callModal, setCallModal] = useState(false);
   const [link, setLink] = useState("");
   const [value, setValue] = useState("");
-  const [statusCall, setStatusCall] = useState(true);
+  const [statusCall, setStatusCall] = useState(null);
   const [currentChat, setCurrentChat] = useState("");
   const listMessRef = useRef(null);
   const [isOpenMore, setIsOpenMore] = useState(false);

@@ -33,14 +33,14 @@ export const deleteCallById = async (callId) => {
     );
   }
 };
-export const findCallById = async (callId) => {
-  const callDoc = await firestore.collection("calls").doc(callId).get();
-  if (callDoc.exists) {
-    const callData = callDoc.data();
-    return callData;
-  }
-  return null;
-};
+// export const findCallById = async (callId) => {
+//   const callDoc = await firestore.collection("calls").doc(callId).get();
+//   if (callDoc.exists) {
+//     const callData = callDoc.data();
+//     return callData;
+//   }
+//   return null;
+// };
 export const endCall = async (callId) => {
   const callDoc = doc(firestore, "calls", callId);
   await updateDoc(callDoc, { status: "ended" });
