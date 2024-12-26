@@ -130,6 +130,31 @@ export async function addFriend(userId, friendId) {
     console.error("Error adding friend:", error);
   }
 }
+export async function removeFriend(userId, friendId) {
+  const db = getDatabase();
+  const userRef = ref(db, `users/${userId}/friends`);
+
+  try {
+    const snapshot = await get(userRef);
+    const friends = snapshot.val() || {};
+
+    // Перевірити, чи друг є у списку
+    if (!friends[friendId]) {
+      console.log("Friend not found in the list.");
+      return;
+    }
+
+    // Видалити друга з об'єкта
+    const { [friendId]: _, ...updatedFriends } = friends;
+
+    // Оновити список друзів у базі даних
+    await update(ref(db, `users/${userId}`), { friends: updatedFriends });
+
+    console.log("Friend removed successfully.");
+  } catch (error) {
+    console.error("Error removing friend:", error);
+  }
+}
 
 export const saveAnswersToDatabase = async (userId, answers) => {
   try {

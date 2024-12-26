@@ -8,15 +8,17 @@ import Loader from "../Loader/Loader.jsx";
 
 function UsersList() {
   const { currentUser } = useAuth();
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const navigation = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const usersData = await getAllUsers();
-        setUsers(usersData);
+        setUsers(usersData ? Object.values(usersData) : []);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -25,12 +27,22 @@ function UsersList() {
     };
     fetchUsers();
   }, []);
-   if (loading) return <Loader />;
+  const filteredUsers = users.filter((user) =>
+    user.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  if (loading) return <Loader />;
   console.log(users);
 
   return (
     <div className={css.container}>
-      {Object.values(users).map((user, index) => (
+      <input
+        type="text"
+        placeholder="Search friends by name..."
+        className={css.searchInput}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      {filteredUsers?.map((user, index) => (
         <div
           key={index}
           className={css.card}

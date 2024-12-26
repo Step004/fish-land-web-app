@@ -17,6 +17,7 @@ import { deleteUserPost } from "../../firebase/firebase/writeData.js";
 import { MdDelete } from "react-icons/md";
 import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 import { useMediaQuery } from "react-responsive";
+import toast from "react-hot-toast";
 
 // import { IoAddSharp } from "react-icons/io5";
 
@@ -40,7 +41,7 @@ export default function UserPage() {
   const [thisUser, setThisUser] = useState(null);
   const [openAddPost, setOpenAddPost] = useState(false);
   const [questionOpen, setQuestionOpen] = useState(false);
-  const [question, setQuestion] = useState();
+  // const [question, setQuestion] = useState();
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -81,6 +82,11 @@ export default function UserPage() {
   const handleDeletePost = async (postId) => {
     try {
       await deleteUserPost(currentUser.uid, postId);
+      setThisUser((prevUser) => ({
+        ...prevUser,
+        posts: prevUser.posts.filter((post) => post.id !== postId),
+      }));
+      toast.success(`Post deleted successfully`);
     } catch (error) {
       console.log(error.message);
     }
@@ -241,7 +247,9 @@ export default function UserPage() {
       {openSetting && (
         <UserSettingsModal close={toggleSettings} user={thisUser} />
       )}
-      {openAddPost && <AddPostModal close={toggleAddPost} />}
+      {openAddPost && (
+        <AddPostModal close={toggleAddPost} handleAddPost={setThisUser} />
+      )}
       {questionOpen && <ModalQuestion close={toggleQuestion} />}
     </main>
   );

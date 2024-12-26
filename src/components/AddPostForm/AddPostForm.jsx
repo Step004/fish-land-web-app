@@ -9,7 +9,7 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { nanoid } from "nanoid";
 import { addUserPost } from "../../firebase/firebase/writeData.js";
 
-export default function AddPostForm({ close }) {
+export default function AddPostForm({ close, handleAddPost }) {
   const { currentUser } = useAuth();
   const uniqueId = nanoid();
 
@@ -20,8 +20,13 @@ export default function AddPostForm({ close }) {
       content: values.content || "",
       createdAt: new Date().toISOString(),
     };
+
     try {
       addUserPost(currentUser.uid, post);
+      handleAddPost((prevUser) => ({
+        ...prevUser,
+        posts: [post, ...prevUser.posts],
+      }));
       toast.success("Post added successfully!");
       close();
       actions.resetForm();

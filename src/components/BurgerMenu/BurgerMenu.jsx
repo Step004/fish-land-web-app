@@ -1,4 +1,4 @@
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import css from "./BurgerMenu.module.css";
 import { IoClose } from "react-icons/io5";
 import clsx from "clsx";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import AppBar from "../AppBar/AppBar.jsx";
 import { Toaster } from "react-hot-toast";
 import { BurgerMenu } from "../BurgerMenu/BurgerMenu.jsx";
-
+import UserStatus from "../UserStatus/UserStatus.jsx";
 
 export default function Layout({ children }) {
   const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
@@ -13,6 +13,7 @@ export default function Layout({ children }) {
   return (
     <div className="container">
       <AppBar handleBurgerMenuToggle={handleBurgerMenuToggle} />
+      <UserStatus />
       {children}
       <Toaster position="top-center" reverseOrder={false} />
       {openBurgerMenu && (

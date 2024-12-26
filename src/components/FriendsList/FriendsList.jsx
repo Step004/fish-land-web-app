@@ -11,6 +11,7 @@ export default function FriendsList() {
   const navigation = useNavigate();
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const { currentUser } = useAuth();
   const targetUid = location.state?.uid || currentUser?.uid;
 
@@ -30,11 +31,21 @@ export default function FriendsList() {
       fetchUsers();
     }
   }, [targetUid]);
+  const filteredFriends = friends.filter((user) =>
+    user.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-   if (loading) return <Loader />;
+  if (loading) return <Loader />;
   return (
     <div className={css.container}>
-      {Object.values(friends).map((user, index) => (
+      <input
+        type="text"
+        placeholder="Search friends by name..."
+        className={css.searchInput}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      {filteredFriends?.map((user, index) => (
         <div
           key={index}
           className={css.card}

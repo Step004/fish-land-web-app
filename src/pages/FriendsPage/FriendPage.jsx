@@ -11,10 +11,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosSend } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
-import { addFriend } from "../../firebase/firebase/writeData.js";
+import { addFriend, removeFriend } from "../../firebase/firebase/writeData.js";
 import { createChat } from "../../firebase/firebase/chats.js";
 import Loader from "../../components/Loader/Loader.jsx";
 import { useMediaQuery } from "react-responsive";
+import { MdDelete } from "react-icons/md";
+import toast from "react-hot-toast";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
@@ -95,7 +97,20 @@ export default function FriendPage() {
           </div>
           <div className={css.buttonsFriend}>
             {isFriend ? (
-              <p className={css.online}>We are friends.</p>
+              <p className={css.online}>
+                We are friends.{" "}
+                <MdDelete
+                  className={css.deleteIcon}
+                  onClick={async () => {
+                    try {
+                      await removeFriend(currentUser.uid, user.uid);
+                      toast.success("Friend deleted successfully");
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  }}
+                />
+              </p>
             ) : (
               <button className={css.publish} onClick={handleAddFriend}>
                 <IoMdAdd />
