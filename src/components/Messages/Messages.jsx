@@ -9,7 +9,7 @@ import {
   listenForMessages,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
-import { deleteCallById } from "../../firebase/firebase/calls.js";
+import { deleteCallById, findCallById } from "../../firebase/firebase/calls.js";
 import { servers } from "../../utils/servers.js";
 import { ModalVideoCall } from "../ModalVideoCall/ModalVideoCall.jsx";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -20,6 +20,7 @@ import { MdAddIcCall } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
+import { use } from "react";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -51,6 +52,24 @@ export default function Messages() {
     };
     fetchChat(chatId);
   }, [chatId]);
+  useEffect(() => {
+    const handleCall = async () => {
+      if (!link) {
+        setAnswerCall(false);
+        return;
+      }
+
+      try {
+        const call = await findCallById(link);
+        setAnswerCall(!!call);
+      } catch (error) {
+        console.error("Error finding call:", error);
+        setAnswerCall(false);
+      }
+    };
+
+    handleCall();
+  }, [link]);
 
   const handleOpenMore = () => {
     setIsOpenMore(!isOpenMore);
@@ -141,30 +160,30 @@ export default function Messages() {
     }
     return (
       <div className={css.answersOnCall}>
-        {/* {answerCall ? ( */}
-        <>
-          <button
-            className={css.rejectCall}
-            onClick={async () => {
-              deleteCallById(parts[1]);
-              setAnswerCall(false);
-            }}
-          >
-            <MdAddIcCall className={css.rejectCallIcon} />
-          </button>
-          <button
-            className={css.joinToCall}
-            onClick={() => {
-              handleCall();
-              setLink(parts[1]);
-            }}
-          >
-            <FiPhoneCall className={css.joinToCallIcon} />
-          </button>
-        </>
-        {/* ) : (
+        {answerCall ? (
+          <>
+            <button
+              className={css.rejectCall}
+              onClick={async () => {
+                deleteCallById(parts[1]);
+                setAnswerCall(false);
+              }}
+            >
+              <MdAddIcCall className={css.rejectCallIcon} />
+            </button>
+            <button
+              className={css.joinToCall}
+              onClick={() => {
+                handleCall();
+                setLink(parts[1]);
+              }}
+            >
+              <FiPhoneCall className={css.joinToCallIcon} />
+            </button>
+          </>
+        ) : (
           <p>Call ended</p>
-        )} */}
+        )}
       </div>
     );
   };
