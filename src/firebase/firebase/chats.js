@@ -125,6 +125,7 @@ export const sendMessage = async (
     await updateDoc(chatRef, {
       lastMessage: content,
       updatedAt: serverTimestamp(),
+      hasUnread: true,
     });
 
     console.log("Message sent!");
@@ -133,7 +134,13 @@ export const sendMessage = async (
     throw error;
   }
 };
-export const markAllMessagesAsRead = async (chatId) => {
+const markChatAsRead = async (chatId) => {
+  const db = getFirestore();
+  const chatRef = doc(db, "chats", chatId);
+
+  await updateDoc(chatRef, { hasUnread: false });
+};
+export const markAllMessagesAsRead = async (chatId, currentUserId) => {
   const db = getFirestore();
   const messagesRef = collection(db, "chats", chatId, "messages");
 
@@ -141,7 +148,8 @@ export const markAllMessagesAsRead = async (chatId) => {
     // Отримуємо всі непрочитані повідомлення
     const unreadMessagesQuery = query(
       messagesRef,
-      where("status", "==", "unread")
+      where("status", "==", "unread"),
+      where("senderId", "!=", currentUserId)
     );
     const querySnapshot = await getDocs(unreadMessagesQuery);
 
@@ -149,6 +157,7 @@ export const markAllMessagesAsRead = async (chatId) => {
     const updatePromises = querySnapshot.docs.map((docSnap) =>
       updateDoc(docSnap.ref, { status: "read" })
     );
+    markChatAsRead(chatId);
 
     await Promise.all(updatePromises);
     console.log("All messages marked as read!");
@@ -225,7 +234,7 @@ export const subscribeToChatsAndMessages = (currentUserId) => {
         const messagesQuery = query(
           messagesRef,
           where("status", "==", "unread"),
-          orderBy("timestamp", "desc"),
+          // orderBy("timestamp", "desc"),
           limit(1)
         );
 
@@ -273,4 +282,27 @@ export const subscribeToChatsAndMessages = (currentUserId) => {
     unsubscribeChats();
     unsubscribeMessagesMap.forEach((unsubscribe) => unsubscribe());
   };
+};
+export const subscribeToChats = (userId, setChats) => {
+  const db = getFirestore();
+  const chatsRef = collection(db, "chats");
+
+  const chatsQuery = query(
+    chatsRef,
+    where(`participants.${userId}`, "==", true)
+  );
+
+  const unsubscribe = onSnapshot(chatsQuery, (snapshot) => {
+    const updatedChats = snapshot.docs.map((doc) => {
+      const chatData = doc.data();
+      return {
+        chatId: doc.id,
+        ...chatData,
+        hasUnread: chatData.lastMessageStatus === "unread", // Додавання статусу
+      };
+    });
+    setChats(updatedChats); // Оновлюємо стан чатів
+  });
+
+  return unsubscribe; // Повертаємо функцію для скасування підписки
 };

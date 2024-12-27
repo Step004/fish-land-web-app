@@ -40,8 +40,8 @@ export default function Messages() {
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   useEffect(() => {
-    markAllMessagesAsRead(chatId);
-  }, [chatId]);
+    markAllMessagesAsRead(chatId, currentUser.uid);
+  }, [chatId, currentUser]);
 
   useEffect(() => {
     if (!link) return;

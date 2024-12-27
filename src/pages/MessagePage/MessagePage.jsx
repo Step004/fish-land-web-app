@@ -3,7 +3,7 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import css from "./MessagePage.module.css";
 import Loader from "../../components/Loader/Loader.jsx";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { getAllChats } from "../../firebase/firebase/chats.js";
+import { getAllChats, subscribeToChats } from "../../firebase/firebase/chats.js";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useMediaQuery } from "react-responsive";
 
@@ -17,13 +17,22 @@ const MessagePage = () => {
   const [chats, setChats] = useState([]);
   console.log(currentUser);
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      const chats = await getAllChats(currentUser.uid);
-      setChats(chats);
-    };
-    fetchChats();
-  }, [currentUser]);
+  // useEffect(() => {
+  //   const fetchChats = async () => {
+  //     const chats = await getAllChats(currentUser.uid);
+  //     setChats(chats);
+  //   };
+  //   fetchChats();
+  // }, [currentUser]);
+    useEffect(() => {
+      if (!currentUser) return;
+
+      // Підписка на зміни у чатах
+      const unsubscribe = subscribeToChats(currentUser.uid, setChats);
+
+      // Скасування підписки при розмонтуванні
+      return () => unsubscribe();
+    }, [currentUser]);
 
   if (!currentUser) return <Loader />;
 
@@ -43,20 +52,23 @@ const MessagePage = () => {
                     }}
                     className={css.chatItem}
                   >
-                    <div className={css.photoAndName}>
-                      <img
-                        src={chat.photo || defaultPhoto}
-                        alt="UserPhoto"
-                        className={css.photo}
-                      />
-                      <div className={css.nameAndLastMsg}>
-                        <span>
-                          {currentUser.displayName === chat.name1
-                            ? chat.name2
-                            : chat.name1}
-                        </span>
-                        {/* <span className={css.lastMsg}>{chat.lastMessage}</span> */}
+                    <div className={css.nameAndStatus}>
+                      <div className={css.photoAndName}>
+                        <img
+                          src={chat.photo || defaultPhoto}
+                          alt="UserPhoto"
+                          className={css.photo}
+                        />
+                        <div className={css.nameAndLastMsg}>
+                          <span>
+                            {currentUser.displayName === chat.name1
+                              ? chat.name2
+                              : chat.name1}
+                          </span>
+                          <p className={css.lastMsg}>{chat.lastMessage}</p>
+                        </div>
                       </div>
+                      {chat.hasUnread && <div className={css.chatUnread}></div>}
                     </div>
                   </li>
                 ))
@@ -86,24 +98,32 @@ const MessagePage = () => {
                       }}
                       className={css.chatItem}
                     >
-                      <div className={css.photoAndName}>
-                        <img
-                          src={
-                            (currentUser.displayName === chat.name1
-                              ? chat.photo
-                              : chat.photoUrl) || defaultPhoto
-                          }
-                          alt="UserPhoto"
-                          className={css.photo}
-                        />
-                        <div className={css.nameAndLastMsg}>
-                          <span>
-                            {currentUser.displayName === chat.name1
-                              ? chat.name2
-                              : chat.name1}
-                          </span>
-                          {/* <span className={css.lastMsg}>{chat.lastMessage}</span> */}
+                      <div className={css.nameAndStatus}>
+                        <div className={css.photoAndName}>
+                          <img
+                            src={
+                              (currentUser.displayName === chat.name1
+                                ? chat.photo
+                                : chat.photoUrl) || defaultPhoto
+                            }
+                            alt="UserPhoto"
+                            className={css.photo}
+                          />
+                          <div className={css.nameAndLastMsg}>
+                            <span>
+                              {currentUser.displayName === chat.name1
+                                ? chat.name2
+                                : chat.name1}
+                            </span>
+
+                            <span className={css.lastMsg}>
+                              {chat.lastMessage}
+                            </span>
+                          </div>
                         </div>
+                        {chat.hasUnread && (
+                          <div className={css.chatUnread}></div>
+                        )}
                       </div>
                     </li>
                   ))

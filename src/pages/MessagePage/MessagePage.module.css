@@ -31,11 +31,6 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-
-        li {
-            border: 1px solid rgb(184, 184, 184);
-            padding: 10px 5px;
-        }
     }
 }
 
@@ -46,8 +41,22 @@
 }
 
 .chatItem {
+
+    border: 1px solid rgb(184, 184, 184);
+    padding: 10px 5px;
     cursor: pointer;
-    width: 100%;
+}
+
+.chatUnread {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: red;
+}
+
+.nameAndStatus {
+    display: flex;
+    justify-content: space-between;
 }
 
 .photoAndName {
@@ -63,7 +72,7 @@
 
 
 .lastMsg {
-    width: 100%;
+    max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
