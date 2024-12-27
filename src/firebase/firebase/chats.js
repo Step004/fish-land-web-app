@@ -117,6 +117,7 @@ export const sendMessage = async (
       name: senderName,
       photo: photo || null,
       content: content,
+      status: "unread",
       timestamp: serverTimestamp(),
     });
 
@@ -130,6 +131,29 @@ export const sendMessage = async (
   } catch (error) {
     console.error("Error sending message:", error);
     throw error;
+  }
+};
+export const markAllMessagesAsRead = async (chatId) => {
+  const db = getFirestore();
+  const messagesRef = collection(db, "chats", chatId, "messages");
+
+  try {
+    // Отримуємо всі непрочитані повідомлення
+    const unreadMessagesQuery = query(
+      messagesRef,
+      where("status", "==", "unread")
+    );
+    const querySnapshot = await getDocs(unreadMessagesQuery);
+
+    // Оновлюємо статус на "read"
+    const updatePromises = querySnapshot.docs.map((docSnap) =>
+      updateDoc(docSnap.ref, { status: "read" })
+    );
+
+    await Promise.all(updatePromises);
+    console.log("All messages marked as read!");
+  } catch (error) {
+    console.error("Error marking messages as read:", error);
   }
 };
 

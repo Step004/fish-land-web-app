@@ -7,6 +7,7 @@ import {
   deleteChat,
   getChatById,
   listenForMessages,
+  markAllMessagesAsRead,
   sendMessage,
 } from "../../firebase/firebase/chats.js";
 import { deleteCallById, endCall } from "../../firebase/firebase/calls.js";
@@ -37,6 +38,10 @@ export default function Messages() {
   const navigate = useNavigate();
 
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
+
+  useEffect(() => {
+    markAllMessagesAsRead(chatId);
+  }, [chatId]);
 
   useEffect(() => {
     if (!link) return;
@@ -193,7 +198,6 @@ export default function Messages() {
       </div>
     );
   };
-  
 
   return (
     <div className={css.containerMsg}>
