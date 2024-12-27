@@ -224,8 +224,9 @@ export const subscribeToChatsAndMessages = (currentUserId) => {
         const messagesRef = collection(db, "chats", chatId, "messages");
         const messagesQuery = query(
           messagesRef,
+          where("status", "==", "unread"),
           orderBy("timestamp", "desc"),
-          limit(1) // Беремо лише останнє повідомлення
+          limit(1)
         );
 
         const unsubscribeMessages = onSnapshot(
