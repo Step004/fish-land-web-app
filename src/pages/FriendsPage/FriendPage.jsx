@@ -17,6 +17,8 @@ import Loader from "../../components/Loader/Loader.jsx";
 import { useMediaQuery } from "react-responsive";
 import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
+import { FcLike, FcLikePlaceholder } from "react-icons/fc";
+import { FaRegCommentAlt } from "react-icons/fa";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
@@ -27,15 +29,25 @@ export default function FriendPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
-   const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
-   let value = 6;
-   if (isTabletScreen) {
-     value = 4;
-   }
-   if (isSmallScreen) {
-     value = 3;
-   }
+  const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
+  let value = 6;
+  if (isTabletScreen) {
+    value = 4;
+  }
+  if (isSmallScreen) {
+    value = 3;
+  }
+  const [isLiked, setIsLiked] = useState(false);
+  const [openPostId, setOpenPostId] = useState(null);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
+  const toggleComments = (postId) => {
+    setOpenPostId((prev) => (prev === postId ? null : postId));
+    console.log(postId);
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -64,15 +76,15 @@ export default function FriendPage() {
     addFriend(currentUser.uid, friendId);
     setIsFriend(true);
   };
-  
-    const handleStartChat = async () => {
-      try {
-        const chatId = await createChat(currentUser, user);
-        navigate(`/message/${chatId}`); 
-      } catch (error) {
-        console.error("Failed to create chat:", error);
-      }
-    };
+
+  const handleStartChat = async () => {
+    try {
+      const chatId = await createChat(currentUser, user);
+      navigate(`/message/${chatId}`);
+    } catch (error) {
+      console.error("Failed to create chat:", error);
+    }
+  };
   return (
     <main className={css.container}>
       {user.photo ? (
@@ -213,6 +225,31 @@ export default function FriendPage() {
                   <li key={post.id} className={css.listPublicationsItem}>
                     <p className={css.titlePost}>{post.title}</p>
                     <p className={css.contentPost}>{post.content}</p>
+                    <div className={css.containerForLikesAndComments}>
+                      <p className={css.likes} onClick={handleLike}>
+                        Like
+                        {isLiked ? (
+                          <FcLike className={css.likesIcon} />
+                        ) : (
+                          <FcLikePlaceholder className={css.likesIcon} />
+                        )}
+                      </p>
+                      <p
+                        className={css.likes}
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        Comments <FaRegCommentAlt className={css.commentIcon} />
+                      </p>
+                    </div>
+                    {openPostId === post.id && (
+                      <div className={css.commentsSection}>
+                        <p>Here are the comments for this post...</p>
+                        <div className={css.conForInputAndButton}>
+                          <input type="text" className={css.commentInput} />
+                          <button className={css.commentButton}>Send</button>
+                        </div>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

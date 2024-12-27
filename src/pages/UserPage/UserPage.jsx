@@ -19,6 +19,8 @@ import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 import { useMediaQuery } from "react-responsive";
 import toast from "react-hot-toast";
 import { Recommendations } from "../../components/Recommendations/Recommendations.jsx";
+import { FcLike, FcLikePlaceholder } from "react-icons/fc";
+import { FaRegCommentAlt } from "react-icons/fa";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
@@ -40,7 +42,18 @@ export default function UserPage() {
   const [openAddPost, setOpenAddPost] = useState(false);
   const [questionOpen, setQuestionOpen] = useState(false);
   const [answers, setAnswers] = useState();
+  ////////////////////////////////////
+  const [isLiked, setIsLiked] = useState(false);
+  const [openPostId, setOpenPostId] = useState(null);
 
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
+  const toggleComments = (postId) => {
+    setOpenPostId((prev) => (prev === postId ? null : postId));
+    console.log(postId);
+  };
+  ///////////////////////////////////////////
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -238,6 +251,31 @@ export default function UserPage() {
                     >
                       <MdDelete className={css.deleteIcon} />
                     </button>
+                    <div className={css.containerForLikesAndComments}>
+                      <p className={css.likes} onClick={handleLike}>
+                        Like
+                        {isLiked ? (
+                          <FcLike className={css.likesIcon} />
+                        ) : (
+                          <FcLikePlaceholder className={css.likesIcon} />
+                        )}
+                      </p>
+                      <p
+                        className={css.likes}
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        Comments <FaRegCommentAlt className={css.commentIcon} />
+                      </p>
+                    </div>
+                    {openPostId === post.id && (
+                      <div className={css.commentsSection}>
+                        <p>Here are the comments for this post...</p>
+                        <div className={css.conForInputAndButton}>
+                          <input type="text" className={css.commentInput} />
+                          <button className={css.commentButton}>Send</button>
+                        </div>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

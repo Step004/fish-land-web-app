@@ -19,6 +19,8 @@ export default function AddPostForm({ close, handleAddPost }) {
       title: values.title || "",
       content: values.content || "",
       createdAt: new Date().toISOString(),
+      likes: null,
+      comments: null
     };
 
     try {

@@ -69,6 +69,59 @@ export async function addUserPost(userId, post) {
   }
 }
 
+export async function addCommentToPost(userId, postId, comment) {
+  const db = getDatabase();
+  const postRef = ref(db, `users/${userId}/posts/${postId}/comments`);
+
+  try {
+    // Отримати поточний список коментарів
+    const snapshot = await get(postRef);
+    const existingComments = snapshot.val() || [];
+
+    // Додати новий коментар
+    const updatedComments = [...existingComments, comment];
+
+    // Оновити список коментарів у базі даних
+    await update(ref(db, `users/${userId}/posts/${postId}`), {
+      comments: updatedComments,
+    });
+
+    console.log("Comment added successfully");
+  } catch (error) {
+    console.error("Error adding comment:", error);
+  }
+}
+
+// Функція для додавання або видалення лайка до конкретного посту
+export async function toggleLikeOnPost(userId, postId, likerId) {
+  const db = getDatabase();
+  const likesRef = ref(db, `users/${userId}/posts/${postId}/likes`);
+
+  try {
+    // Отримати поточний список лайків
+    const snapshot = await get(likesRef);
+    const existingLikes = snapshot.val() || [];
+
+    // Перевірити, чи користувач вже поставив лайк
+    const hasLiked = existingLikes.includes(likerId);
+
+    const updatedLikes = hasLiked
+      ? existingLikes.filter((id) => id !== likerId) // Видалити лайк
+      : [...existingLikes, likerId]; // Додати лайк
+
+    // Оновити список лайків у базі даних
+    await update(ref(db, `users/${userId}/posts/${postId}`), {
+      likes: updatedLikes,
+    });
+
+    console.log(
+      hasLiked ? "Like removed successfully" : "Like added successfully"
+    );
+  } catch (error) {
+    console.error("Error toggling like:", error);
+  }
+}
+
 export async function deleteUserPost(userId, postId) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}/posts`);
