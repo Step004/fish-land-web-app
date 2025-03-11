@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
+import { getUserById } from "../../firebase/readData.js";
 
 const AuthContext = React.createContext();
 
@@ -10,6 +11,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userFromDB, setUserFromDB] = useState(null);
   const [userLoggedIn, setUserLoggedIn] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +50,13 @@ export function AuthProvider({ children }) {
       ...updates,
     }));
   }
-  const value = { currentUser, userLoggedIn, loading, updateCurrentUser };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const data = await getUserById(currentUser.uid);
+      setUserFromDB(data);
+    };
+    if (currentUser) fetchUser();
+  }, [currentUser]);
+  const value = { currentUser,userFromDB, userLoggedIn, loading, updateCurrentUser };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

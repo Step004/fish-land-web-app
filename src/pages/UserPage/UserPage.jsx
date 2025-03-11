@@ -13,7 +13,11 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import UserSettingsModal from "../../components/UserSettingsModal/UserSettingsModal.jsx";
 import AddPostModal from "../../components/AddPostModal/AddPostModal.jsx";
 import Loader from "../../components/Loader/Loader.jsx";
-import { deleteUserPost } from "../../firebase/firebase/writeData.js";
+import {
+  addCommentToPost,
+  deleteUserPost,
+  toggleLikeOnPost,
+} from "../../firebase/firebase/writeData.js";
 import { MdDelete } from "react-icons/md";
 import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
 import { useMediaQuery } from "react-responsive";
@@ -23,7 +27,8 @@ import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
 
 export default function UserPage() {
-  const { currentUser } = useAuth();
+  const { currentUser, userFromDB } = useAuth();
+  console.log(userFromDB);
 
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
@@ -43,12 +48,44 @@ export default function UserPage() {
   const [questionOpen, setQuestionOpen] = useState(false);
   const [answers, setAnswers] = useState();
   ////////////////////////////////////
-  const [isLiked, setIsLiked] = useState(false);
   const [openPostId, setOpenPostId] = useState(null);
+  const [likes, setLikes] = useState({});
+  const [comments, setComments] = useState({});
+  const [commentText, setCommentText] = useState("");
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
+  const handleLike = async (userId, postId) => {
+    await toggleLikeOnPost(userId, postId, currentUser.uid);
+
+    setLikes((prevLikes) => {
+      const hasLiked = prevLikes[postId]?.includes(currentUser.uid);
+      const updatedLikes = hasLiked
+        ? prevLikes[postId].filter((id) => id !== currentUser.uid)
+        : [...(prevLikes[postId] || []), currentUser.uid];
+
+      return { ...prevLikes, [postId]: updatedLikes };
+    });
   };
+
+  const handleAddComment = async (userId, postId) => {
+    if (!commentText.trim()) return;
+
+    const newComment = {
+      id: Date.now(),
+      userId: currentUser.uid,
+      text: commentText,
+      author: currentUser.displayName || "Anonymous",
+    };
+
+    await addCommentToPost(userId, postId, newComment);
+
+    setComments((prevComments) => ({
+      ...prevComments,
+      [postId]: [...(prevComments[postId] || []), newComment],
+    }));
+
+    setCommentText("");
+  };
+
   const toggleComments = (postId) => {
     setOpenPostId((prev) => (prev === postId ? null : postId));
     console.log(postId);
@@ -241,43 +278,68 @@ export default function UserPage() {
           <div className={css.containerForPublic}>
             {thisUser.posts ? (
               <ul className={css.listPublications}>
-                {thisUser.posts.map((post) => (
-                  <li key={post.id} className={css.listPublicationsItem}>
-                    <p className={css.titlePost}>{post.title}</p>
-                    <p className={css.contentPost}>{post.content}</p>
-                    <button
-                      className={css.deletePost}
-                      onClick={() => handleDeletePost(post.id)}
-                    >
-                      <MdDelete className={css.deleteIcon} />
-                    </button>
-                    <div className={css.containerForLikesAndComments}>
-                      <p className={css.likes} onClick={handleLike}>
-                        Like
-                        {isLiked ? (
-                          <FcLike className={css.likesIcon} />
-                        ) : (
-                          <FcLikePlaceholder className={css.likesIcon} />
-                        )}
-                      </p>
-                      <p
-                        className={css.likes}
-                        onClick={() => toggleComments(post.id)}
+                {thisUser.posts &&
+                  Object.values(thisUser.posts).map((post) => (
+                    <li key={post.id} className={css.listPublicationsItem}>
+                      <p className={css.titlePost}>{post.title}</p>
+                      <p className={css.contentPost}>{post.content}</p>
+                      <button
+                        className={css.deletePost}
+                        onClick={() => handleDeletePost(post.id)}
                       >
-                        Comments <FaRegCommentAlt className={css.commentIcon} />
-                      </p>
-                    </div>
-                    {openPostId === post.id && (
-                      <div className={css.commentsSection}>
-                        <p>Here are the comments for this post...</p>
-                        <div className={css.conForInputAndButton}>
-                          <input type="text" className={css.commentInput} />
-                          <button className={css.commentButton}>Send</button>
-                        </div>
+                        <MdDelete className={css.deleteIcon} />
+                      </button>
+                      <div className={css.containerForLikesAndComments}>
+                        <p
+                          className={css.likes}
+                          onClick={() => handleLike(currentUser.uid, post.id)}
+                        >
+                          Like {post.likes?.length || 0}
+                          {post.likes?.includes(currentUser.uid) ? (
+                            <FcLike className={css.likesIcon} />
+                          ) : (
+                            <FcLikePlaceholder className={css.likesIcon} />
+                          )}
+                        </p>
+                        <p
+                          className={css.likes}
+                          onClick={() => toggleComments(post.id)}
+                        >
+                          Comments {post.comments?.length || 0}
+                          <FaRegCommentAlt className={css.commentIcon} />
+                        </p>
                       </div>
-                    )}
-                  </li>
-                ))}
+                      {openPostId === post.id && (
+                        <div className={css.commentsSection}>
+                          <div className={css.commentsCont}>
+                            {post.comments?.map((comment) => (
+                              <p key={comment.id}>
+                                <strong>{comment.author}: </strong>
+                                {comment.text}
+                              </p>
+                            ))}
+                          </div>
+
+                          <div className={css.conForInputAndButton}>
+                            <input
+                              type="text"
+                              className={css.commentInput}
+                              value={commentText}
+                              onChange={(e) => setCommentText(e.target.value)}
+                            />
+                            <button
+                              className={css.commentButtonSend}
+                              onClick={() =>
+                                handleAddComment(currentUser.uid, post.id)
+                              }
+                            >
+                              Send
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>

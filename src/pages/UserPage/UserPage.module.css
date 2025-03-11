@@ -280,13 +280,19 @@
 .commentsSection {
     margin-top: 10px;
     padding: 10px;
-    background-color: #787878;
+    background-color: #aba2a230;
     border-radius: 15px;
+    margin-bottom: 20px
 }
 
 .commentInput {
     width: 100%;
     padding: 10px 10px 30px;
+    background-color: #dcd0d0;
+    border-radius: 12px;
+    border: none;
+    margin-bottom: 12px;
+
 }
 
 .commentButton {
@@ -299,8 +305,21 @@
     left: 5px;
 }
 
+.commentButtonSend {
+    border: black;
+    border-radius: 12px;
+    padding: 5px 15px;
+}
+
 .conForInputAndButton {
     position: relative;
+    margin-top: 30px;
+}
+
+.commentsCont {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .titlePost {

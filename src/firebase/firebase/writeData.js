@@ -51,23 +51,22 @@ export async function updateUserFields(userId, updates) {
 
 export async function addUserPost(userId, post) {
   const db = getDatabase();
-  const userRef = ref(db, `users/${userId}/posts`);
+  const userPostsRef = ref(db, `users/${userId}/posts`);
+
   try {
-    // Отримати поточний список постів
-    const snapshot = await get(userRef);
-    const existingPosts = snapshot.val() || [];
+    // Створюємо унікальний ключ для поста
+    const newPostRef = push(userPostsRef);
+    const postId = newPostRef.key; // Отримуємо згенерований ключ
 
-    // Додати новий пост
-    const updatedPosts = [post, ...existingPosts];
+    // Додаємо пост з унікальним ID
+    await set(newPostRef, { ...post, id: postId });
 
-    // Оновити список постів у базі даних
-    await update(ref(db, `users/${userId}`), { posts: updatedPosts });
-
-    console.log("Post added successfully");
+    console.log("Post added successfully with ID:", postId);
   } catch (error) {
     console.error("Error adding user post:", error);
   }
 }
+
 
 export async function addCommentToPost(userId, postId, comment) {
   const db = getDatabase();
@@ -100,19 +99,16 @@ export async function toggleLikeOnPost(userId, postId, likerId) {
   try {
     // Отримати поточний список лайків
     const snapshot = await get(likesRef);
-    const existingLikes = snapshot.val() || [];
+    const existingLikes = snapshot.exists() ? snapshot.val() : [];
 
     // Перевірити, чи користувач вже поставив лайк
     const hasLiked = existingLikes.includes(likerId);
-
     const updatedLikes = hasLiked
       ? existingLikes.filter((id) => id !== likerId) // Видалити лайк
       : [...existingLikes, likerId]; // Додати лайк
 
-    // Оновити список лайків у базі даних
-    await update(ref(db, `users/${userId}/posts/${postId}`), {
-      likes: updatedLikes,
-    });
+    // Оновити тільки `likes`, не зачіпаючи інші дані поста
+    await set(likesRef, updatedLikes);
 
     console.log(
       hasLiked ? "Like removed successfully" : "Like added successfully"
