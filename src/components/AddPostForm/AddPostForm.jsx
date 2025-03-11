@@ -6,28 +6,28 @@ import * as Yup from "yup";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 import { addUserPost } from "../../firebase/firebase/writeData.js";
 
 export default function AddPostForm({ close, handleAddPost }) {
   const { currentUser } = useAuth();
-  const uniqueId = nanoid();
+  // const uniqueId = nanoid();
 
   const handleSubmit = async (values, actions) => {
     const post = {
-      id: uniqueId,
+      // id: uniqueId,
       title: values.title || "",
       content: values.content || "",
       createdAt: new Date().toISOString(),
       likes: null,
-      comments: null
+      comments: null,
     };
 
     try {
       addUserPost(currentUser.uid, post);
       handleAddPost((prevUser) => ({
         ...prevUser,
-        posts: [post, ...prevUser.posts],
+        posts: [...Object.values(prevUser.posts || {}), post],
       }));
       toast.success("Post added successfully!");
       close();

@@ -1,4 +1,12 @@
-import { ref, set, getDatabase, update, get, push } from "firebase/database";
+import {
+  ref,
+  set,
+  getDatabase,
+  update,
+  get,
+  push,
+  remove,
+} from "firebase/database";
 
 export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
@@ -67,7 +75,6 @@ export async function addUserPost(userId, post) {
   }
 }
 
-
 export async function addCommentToPost(userId, postId, comment) {
   const db = getDatabase();
   const postRef = ref(db, `users/${userId}/posts/${postId}/comments`);
@@ -90,6 +97,19 @@ export async function addCommentToPost(userId, postId, comment) {
     console.error("Error adding comment:", error);
   }
 }
+// export async function addCommentToPost(userId, postId, comment) {
+//   const db = getDatabase();
+//   const postCommentsRef = ref(db, `users/${userId}/posts/${postId}/comments`);
+
+//   try {
+//     const newCommentRef = push(postCommentsRef);
+//     await set(newCommentRef, comment); // Зберігаємо коментар за унікальним ID
+
+//     console.log("Comment added successfully");
+//   } catch (error) {
+//     console.error("Error adding comment:", error);
+//   }
+// }
 
 // Функція для додавання або видалення лайка до конкретного посту
 export async function toggleLikeOnPost(userId, postId, likerId) {
@@ -117,18 +137,31 @@ export async function toggleLikeOnPost(userId, postId, likerId) {
     console.error("Error toggling like:", error);
   }
 }
+// export async function toggleLikeOnPost(userId, postId, likerId) {
+//   const db = getDatabase();
+//   const likesRef = ref(db, `users/${userId}/posts/${postId}/likes/${likerId}`);
+
+//   try {
+//     const snapshot = await get(likesRef);
+//     if (snapshot.exists()) {
+//       await remove(likesRef); // Видаляємо лайк, якщо він є
+//       console.log("Like removed successfully");
+//     } else {
+//       await set(likesRef, true); // Додаємо лайк
+//       console.log("Like added successfully");
+//     }
+//   } catch (error) {
+//     console.error("Error toggling like:", error);
+//   }
+// }
 
 export async function deleteUserPost(userId, postId) {
   const db = getDatabase();
-  const userRef = ref(db, `users/${userId}/posts`);
+  const postRef = ref(db, `users/${userId}/posts/${postId}`);
 
   try {
-    const snapshot = await get(userRef);
-    const existingPosts = snapshot.val() || [];
-
-    const updatedPosts = existingPosts.filter((post) => post.id !== postId);
-
-    await update(ref(db, `users/${userId}`), { posts: updatedPosts });
+    await remove(postRef);
+    console.log("Post and all its related data deleted successfully");
   } catch (error) {
     console.error("Error deleting user post:", error);
   }

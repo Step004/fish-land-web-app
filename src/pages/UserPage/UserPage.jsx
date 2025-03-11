@@ -132,7 +132,9 @@ export default function UserPage() {
       await deleteUserPost(currentUser.uid, postId);
       setThisUser((prevUser) => ({
         ...prevUser,
-        posts: prevUser.posts.filter((post) => post.id !== postId),
+        posts: Object.values(prevUser.posts || {}).filter(
+          (post) => post.id !== postId
+        ),
       }));
       toast.success(`Post deleted successfully`);
     } catch (error) {
@@ -145,6 +147,9 @@ export default function UserPage() {
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
   );
+  if (!thisUser) {
+    return;
+  }
 
   return (
     <main className={css.container}>
