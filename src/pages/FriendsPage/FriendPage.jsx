@@ -221,37 +221,39 @@ export default function FriendPage() {
           <div className={css.containerForPublic}>
             {user.posts ? (
               <ul className={css.listPublications}>
-                {user.posts.map((post) => (
-                  <li key={post.id} className={css.listPublicationsItem}>
-                    <p className={css.titlePost}>{post.title}</p>
-                    <p className={css.contentPost}>{post.content}</p>
-                    <div className={css.containerForLikesAndComments}>
-                      <p className={css.likes} onClick={handleLike}>
-                        Like
-                        {isLiked ? (
-                          <FcLike className={css.likesIcon} />
-                        ) : (
-                          <FcLikePlaceholder className={css.likesIcon} />
-                        )}
-                      </p>
-                      <p
-                        className={css.likes}
-                        onClick={() => toggleComments(post.id)}
-                      >
-                        Comments <FaRegCommentAlt className={css.commentIcon} />
-                      </p>
-                    </div>
-                    {openPostId === post.id && (
-                      <div className={css.commentsSection}>
-                        <p>Here are the comments for this post...</p>
-                        <div className={css.conForInputAndButton}>
-                          <input type="text" className={css.commentInput} />
-                          <button className={css.commentButton}>Send</button>
-                        </div>
+                {user.posts &&
+                  Object.values(user.posts).map((post) => (
+                    <li key={post.id} className={css.listPublicationsItem}>
+                      <p className={css.titlePost}>{post.title}</p>
+                      <p className={css.contentPost}>{post.content}</p>
+                      <div className={css.containerForLikesAndComments}>
+                        <p className={css.likes} onClick={handleLike}>
+                          Like
+                          {isLiked ? (
+                            <FcLike className={css.likesIcon} />
+                          ) : (
+                            <FcLikePlaceholder className={css.likesIcon} />
+                          )}
+                        </p>
+                        <p
+                          className={css.likes}
+                          onClick={() => toggleComments(post.id)}
+                        >
+                          Comments{" "}
+                          <FaRegCommentAlt className={css.commentIcon} />
+                        </p>
                       </div>
-                    )}
-                  </li>
-                ))}
+                      {openPostId === post.id && (
+                        <div className={css.commentsSection}>
+                          <p>Here are the comments for this post...</p>
+                          <div className={css.conForInputAndButton}>
+                            <input type="text" className={css.commentInput} />
+                            <button className={css.commentButton}>Send</button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>
