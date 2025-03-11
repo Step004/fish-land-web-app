@@ -11,7 +11,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosSend } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
-import { addFriend, removeFriend } from "../../firebase/firebase/writeData.js";
+import {
+  addCommentToPost,
+  addFriend,
+  removeFriend,
+  toggleLikeOnPost,
+} from "../../firebase/firebase/writeData.js";
 import { createChat } from "../../firebase/firebase/chats.js";
 import Loader from "../../components/Loader/Loader.jsx";
 import { useMediaQuery } from "react-responsive";
@@ -73,12 +78,8 @@ export default function FriendPage() {
   if (isSmallScreen) {
     value = 3;
   }
-  const [isLiked, setIsLiked] = useState(false);
   const [openPostId, setOpenPostId] = useState(null);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
   const toggleComments = (postId) => {
     setOpenPostId((prev) => (prev === postId ? null : postId));
     console.log(postId);
