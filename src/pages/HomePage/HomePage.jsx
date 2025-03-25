@@ -11,6 +11,7 @@ import {
   addCommentToPost,
   toggleLikeOnPost,
 } from "../../firebase/firebase/writeData.js";
+import toast from "react-hot-toast";
 
 export default function HomePage() {
   const { userLoggedIn, currentUser } = useAuth();
@@ -26,45 +27,85 @@ export default function HomePage() {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openPostId, setOpenPostId] = useState(null);
-  const [likes, setLikes] = useState({});
-  const [comments, setComments] = useState({});
   const [commentText, setCommentText] = useState("");
 
   const handleLike = async (userId, postId) => {
-    await toggleLikeOnPost(userId, postId, currentUser.uid);
+    try {
+      await toggleLikeOnPost(userId, postId, currentUser.uid);
 
-    setLikes((prevLikes) => {
-      const hasLiked = prevLikes[postId]?.includes(currentUser.uid);
-      const updatedLikes = hasLiked
-        ? prevLikes[postId].filter((id) => id !== currentUser.uid)
-        : [...(prevLikes[postId] || []), currentUser.uid];
-
-      return { ...prevLikes, [postId]: updatedLikes };
-    });
+      // Оновлюємо стан друзів після зміни лайків
+      setFriends((prevFriends) => {
+        return prevFriends.map((friend) => {
+          if (friend.uid === userId) {
+            return {
+              ...friend,
+              posts: {
+                ...friend.posts,
+                [postId]: {
+                  ...friend.posts[postId],
+                  likes: friend.posts[postId].likes?.includes(currentUser.uid)
+                    ? friend.posts[postId].likes.filter(
+                        (id) => id !== currentUser.uid
+                      )
+                    : [...(friend.posts[postId].likes || []), currentUser.uid],
+                },
+              },
+            };
+          }
+          return friend;
+        });
+      });
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      toast.error("Failed to update like");
+    }
   };
 
   const handleAddComment = async (userId, postId) => {
     if (!commentText.trim()) return;
 
-    const newComment = {
-      id: Date.now(),
-      userId: currentUser.uid,
-      text: commentText,
-      author: currentUser.displayName || "Anonymous",
-    };
+    try {
+      const newComment = {
+        id: Date.now(),
+        userId: currentUser.uid,
+        text: commentText,
+        author: currentUser.displayName || "Anonymous",
+      };
 
-    await addCommentToPost(userId, postId, newComment);
+      await addCommentToPost(userId, postId, newComment);
 
-    setComments((prevComments) => ({
-      ...prevComments,
-      [postId]: [...(prevComments[postId] || []), newComment],
-    }));
+      // Оновлюємо стан друзів після додавання коментаря
+      setFriends((prevFriends) => {
+        return prevFriends.map((friend) => {
+          if (friend.uid === userId) {
+            return {
+              ...friend,
+              posts: {
+                ...friend.posts,
+                [postId]: {
+                  ...friend.posts[postId],
+                  comments: [
+                    ...(friend.posts[postId].comments || []),
+                    newComment,
+                  ],
+                },
+              },
+            };
+          }
+          return friend;
+        });
+      });
 
-    setCommentText("");
+      setCommentText("");
+      toast.success("Comment added successfully");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast.error("Failed to add comment");
+    }
   };
+
   const toggleComments = (postId) => {
     setOpenPostId((prev) => (prev === postId ? null : postId));
-    console.log(postId);
   };
 
   // Завантаження друзів
@@ -73,6 +114,7 @@ export default function HomePage() {
       try {
         if (currentUser?.uid) {
           const friendsContacts = await getFriendsContacts(currentUser.uid);
+          console.log("Friends data:", friendsContacts);
           setFriends(friendsContacts || []);
         }
       } catch (error) {
@@ -87,32 +129,21 @@ export default function HomePage() {
 
   // Мемоізований список друзів
   const memoizedFriends = useMemo(() => {
-    return friends.map((friend) => ({
-      id: friend.uid,
-      name: friend.name,
-      photo: friend.photo,
-      posts: Array.isArray(friend.posts)
-        ? friend.posts.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        : [],
-      createdAt: friend.createdAt,
-    }));
-  }, [friends]);
-  useEffect(() => {
-    const postLikes = {};
-    const postComments = {};
-
-    memoizedFriends.forEach((friend) => {
-      friend.posts.forEach((post) => {
-        postLikes[post.id] = post.likes || [];
-        postComments[post.id] = post.comments || [];
-      });
+    console.log("Processing friends:", friends);
+    return friends.map((friend) => {
+      const processedFriend = {
+        id: friend.uid,
+        name: friend.name,
+        photo: friend.photo,
+        posts: Object.values(friend.posts || {}).sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        ),
+        createdAt: friend.createdAt,
+      };
+      console.log("Processed friend:", processedFriend);
+      return processedFriend;
     });
-
-    setLikes(postLikes);
-    setComments(postComments);
-  }, [memoizedFriends]);
+  }, [friends]);
 
   if (loading) return <Loader />;
 

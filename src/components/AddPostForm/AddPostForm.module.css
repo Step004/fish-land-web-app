@@ -1,19 +1,6 @@
-.closeBtn {
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    fill: #11101c;
-}
-
 .submitButton {
     border-radius: 30px;
     width: 100%;
-    max-width: 438px;
     height: 52px;
     background: var(--main);
     border: none;
@@ -56,7 +43,8 @@
     gap: 15px;
 }
 
-.fieldTitle, .fieldContent {
+.fieldTitle,
+.fieldContent {
     border: 1px solid rgba(17, 16, 28, 0.1);
     border-radius: 12px;
     padding: 16px 18px;
@@ -73,12 +61,155 @@
 .fieldTitle:hover {
     border-color: rgba(17, 16, 28, 0.5);
 }
+
 .fieldContent {
     width: 100%;
     max-width: 472px;
     height: 116px;
     resize: none;
 }
-.errorMsg{
+
+.errorMsg {
     color: red;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    position: relative;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+    padding: 5px;
+}
+
+.closeIcon {
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+}
+
+.containerForInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.input:focus {
+    border-color: #4CAF50;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 16px;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.textarea:focus {
+    border-color: #4CAF50;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.error {
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.imageUploadContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fileInput {
+    display: none;
+}
+
+.uploadButton {
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.uploadButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #4CAF50;
+}
+
+.imagePreview {
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.imagePreview img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.submitButton {
+    padding: 12px 24px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.submitButton:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.submitButton:active {
+    transform: translateY(0);
+}
+
+.containerForTitleAndClose {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

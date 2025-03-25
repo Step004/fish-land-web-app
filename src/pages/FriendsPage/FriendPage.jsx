@@ -33,42 +33,71 @@ export default function FriendPage() {
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const [likes, setLikes] = useState({});
-  const [comments, setComments] = useState({});
   const [commentText, setCommentText] = useState("");
+  const [openPostId, setOpenPostId] = useState(null);
 
   const handleLike = async (userId, postId) => {
-    await toggleLikeOnPost(userId, postId, currentUser.uid);
+    try {
+      await toggleLikeOnPost(userId, postId, currentUser.uid);
 
-    setLikes((prevLikes) => {
-      const hasLiked = prevLikes[postId]?.includes(currentUser.uid);
-      const updatedLikes = hasLiked
-        ? prevLikes[postId].filter((id) => id !== currentUser.uid)
-        : [...(prevLikes[postId] || []), currentUser.uid];
-
-      return { ...prevLikes, [postId]: updatedLikes };
-    });
+      // Оновлюємо стан користувача після зміни лайків
+      setUser((prevUser) => ({
+        ...prevUser,
+        posts: {
+          ...prevUser.posts,
+          [postId]: {
+            ...prevUser.posts[postId],
+            likes: prevUser.posts[postId].likes?.includes(currentUser.uid)
+              ? prevUser.posts[postId].likes.filter(
+                  (id) => id !== currentUser.uid
+                )
+              : [...(prevUser.posts[postId].likes || []), currentUser.uid],
+          },
+        },
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      toast.error("Failed to update like");
+    }
   };
 
   const handleAddComment = async (userId, postId) => {
     if (!commentText.trim()) return;
 
-    const newComment = {
-      id: Date.now(),
-      userId: currentUser.uid,
-      text: commentText,
-      author: currentUser.displayName || "Anonymous",
-    };
+    try {
+      const newComment = {
+        id: Date.now(),
+        userId: currentUser.uid,
+        text: commentText,
+        author: currentUser.displayName || "Anonymous",
+      };
 
-    await addCommentToPost(userId, postId, newComment);
+      await addCommentToPost(userId, postId, newComment);
 
-    setComments((prevComments) => ({
-      ...prevComments,
-      [postId]: [...(prevComments[postId] || []), newComment],
-    }));
+      // Оновлюємо стан користувача після додавання коментаря
+      setUser((prevUser) => ({
+        ...prevUser,
+        posts: {
+          ...prevUser.posts,
+          [postId]: {
+            ...prevUser.posts[postId],
+            comments: [...(prevUser.posts[postId].comments || []), newComment],
+          },
+        },
+      }));
 
-    setCommentText("");
+      setCommentText("");
+      toast.success("Comment added successfully");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast.error("Failed to add comment");
+    }
   };
+
+  const toggleComments = (postId) => {
+    setOpenPostId((prev) => (prev === postId ? null : postId));
+  };
+
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
   let value = 6;
@@ -78,12 +107,6 @@ export default function FriendPage() {
   if (isSmallScreen) {
     value = 3;
   }
-  const [openPostId, setOpenPostId] = useState(null);
-
-  const toggleComments = (postId) => {
-    setOpenPostId((prev) => (prev === postId ? null : postId));
-    console.log(postId);
-  };
 
   useEffect(() => {
     const fetchUser = async () => {

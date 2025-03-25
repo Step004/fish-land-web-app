@@ -25,6 +25,9 @@ import toast from "react-hot-toast";
 import { Recommendations } from "../../components/Recommendations/Recommendations.jsx";
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
+import fishImage from "../../img/1.jpg";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 export default function UserPage() {
   const { currentUser, userFromDB } = useAuth();
@@ -49,46 +52,68 @@ export default function UserPage() {
   const [answers, setAnswers] = useState();
   ////////////////////////////////////
   const [openPostId, setOpenPostId] = useState(null);
-  const [likes, setLikes] = useState({});
-  const [comments, setComments] = useState({});
   const [commentText, setCommentText] = useState("");
 
   const handleLike = async (userId, postId) => {
-    await toggleLikeOnPost(userId, postId, currentUser.uid);
+    try {
+      await toggleLikeOnPost(userId, postId, currentUser.uid);
 
-    setLikes((prevLikes) => {
-      const hasLiked = prevLikes[postId]?.includes(currentUser.uid);
-      const updatedLikes = hasLiked
-        ? prevLikes[postId].filter((id) => id !== currentUser.uid)
-        : [...(prevLikes[postId] || []), currentUser.uid];
-
-      return { ...prevLikes, [postId]: updatedLikes };
-    });
+      // Оновлюємо стан користувача після зміни лайків
+      setThisUser((prevUser) => ({
+        ...prevUser,
+        posts: {
+          ...prevUser.posts,
+          [postId]: {
+            ...prevUser.posts[postId],
+            likes: prevUser.posts[postId].likes?.includes(currentUser.uid)
+              ? prevUser.posts[postId].likes.filter(
+                  (id) => id !== currentUser.uid
+                )
+              : [...(prevUser.posts[postId].likes || []), currentUser.uid],
+          },
+        },
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      toast.error("Failed to update like");
+    }
   };
 
   const handleAddComment = async (userId, postId) => {
     if (!commentText.trim()) return;
 
-    const newComment = {
-      id: Date.now(),
-      userId: currentUser.uid,
-      text: commentText,
-      author: currentUser.displayName || "Anonymous",
-    };
+    try {
+      const newComment = {
+        id: Date.now(),
+        userId: currentUser.uid,
+        text: commentText,
+        author: currentUser.displayName || "Anonymous",
+      };
 
-    await addCommentToPost(userId, postId, newComment);
+      await addCommentToPost(userId, postId, newComment);
 
-    setComments((prevComments) => ({
-      ...prevComments,
-      [postId]: [...(prevComments[postId] || []), newComment],
-    }));
+      // Оновлюємо стан користувача після додавання коментаря
+      setThisUser((prevUser) => ({
+        ...prevUser,
+        posts: {
+          ...prevUser.posts,
+          [postId]: {
+            ...prevUser.posts[postId],
+            comments: [...(prevUser.posts[postId].comments || []), newComment],
+          },
+        },
+      }));
 
-    setCommentText("");
+      setCommentText("");
+      toast.success("Comment added successfully");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast.error("Failed to add comment");
+    }
   };
 
   const toggleComments = (postId) => {
     setOpenPostId((prev) => (prev === postId ? null : postId));
-    console.log(postId);
   };
   ///////////////////////////////////////////
   const navigation = useNavigate();
@@ -142,8 +167,8 @@ export default function UserPage() {
     }
   };
 
-  const userPhoto = currentUser.photoURL ? (
-    <img src={currentUser.photoURL} alt="UserPhoto" className={css.photo} />
+  const userPhoto = thisUser.photoURL ? (
+    <img src={thisUser.photoURL} alt="UserPhoto" className={css.photo} />
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
   );
@@ -173,7 +198,7 @@ export default function UserPage() {
               </button>
             </>
           ) : (
-            <Recommendations answers={answers} />
+            <Recommendations />
           )}
         </div>
       </div>
@@ -214,12 +239,17 @@ export default function UserPage() {
               <p className={css.textAdd}>Add photo</p>
             </button>
           </div>
-          {thisUser.gallery ? (
+          {!thisUser.gallery ? (
             <ul className={css.photoList}>
-              <li>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
+              <li className={css.photoItem}>
+                <Zoom
+                  overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
+                  zoomMargin={40}
+                  transitionDuration={300}
+                >
+                  <img src={fishImage} alt="fish" className={css.photoItem} />
+                </Zoom>
+              </li>
             </ul>
           ) : (
             <p className={css.pointPhoto}>You don`t have photo yet.</p>
@@ -288,6 +318,17 @@ export default function UserPage() {
                     <li key={post.id} className={css.listPublicationsItem}>
                       <p className={css.titlePost}>{post.title}</p>
                       <p className={css.contentPost}>{post.content}</p>
+                      {post.imageUrl && (
+                        <div className={css.postImageContainer}>
+                          <Zoom>
+                            <img
+                              src={post.imageUrl}
+                              alt="Post"
+                              className={css.postImage}
+                            />
+                          </Zoom>
+                        </div>
+                      )}
                       <button
                         className={css.deletePost}
                         onClick={() => handleDeletePost(post.id)}
@@ -331,6 +372,7 @@ export default function UserPage() {
                               className={css.commentInput}
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
+                              placeholder="Write a comment..."
                             />
                             <button
                               className={css.commentButtonSend}

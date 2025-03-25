@@ -2,45 +2,79 @@ import css from "./AddPostForm.module.css";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 import { IoClose } from "react-icons/io5";
 import * as Yup from "yup";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
-// import { nanoid } from "nanoid";
-import { addUserPost } from "../../firebase/firebase/writeData.js";
+import {
+  addUserPost,
+  uploadPostImage,
+} from "../../firebase/firebase/writeData.js";
+import { nanoid } from "nanoid";
 
 export default function AddPostForm({ close, handleAddPost }) {
   const { currentUser } = useAuth();
-  // const uniqueId = nanoid();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (values, actions) => {
-    const post = {
-      // id: uniqueId,
-      title: values.title || "",
-      content: values.content || "",
-      createdAt: new Date().toISOString(),
-      likes: null,
-      comments: null,
-    };
+    const postId = nanoid();
+    let imageUrl = null;
 
     try {
-      addUserPost(currentUser.uid, post);
+      if (selectedImage) {
+        imageUrl = await uploadPostImage(
+          selectedImage,
+          currentUser.uid,
+          postId
+        );
+      }
+
+      const post = {
+        id: postId,
+        title: values.title || "",
+        content: values.content || "",
+        createdAt: new Date().toISOString(),
+        likes: [],
+        comments: [],
+        imageUrl: imageUrl,
+      };
+
+      await addUserPost(currentUser.uid, post);
       handleAddPost((prevUser) => ({
         ...prevUser,
-        posts: [...Object.values(prevUser.posts || {}), post],
+        posts: {
+          ...prevUser.posts,
+          [postId]: post,
+        },
       }));
       toast.success("Post added successfully!");
       close();
       actions.resetForm();
+      setSelectedImage(null);
+      setImagePreview(null);
     } catch (error) {
-      toast.error("Failed to update user information.");
+      toast.error("Failed to add post");
       console.error(error);
     }
   };
+
   const validationSchema = Yup.object({
     title: Yup.string(),
-    content: Yup.string().required("This field is required"),
+    content: Yup.string(),
   });
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -55,38 +89,51 @@ export default function AddPostForm({ close, handleAddPost }) {
 
   return (
     <Formik
-      initialValues={{
-        title: "",
-        content: "",
-      }}
+      initialValues={{ title: "", content: "" }}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      <Form className={css.form} autoComplete="off">
-        <IoClose className={css.closeBtn} onClick={close} />
-        <p className={css.logInText}>Add new post</p>
-        <div className={css.fields}>
-          <div className={css.twoFields}>
-            <Field
-              name="title"
-              type="text"
-              placeholder="Title"
-              className={css.fieldTitle}
-            />
-            <Field
-              name="content"
-              as="textarea"
-              placeholder="Content"
-              className={css.fieldContent}
-            />
-            <ErrorMessage
-              name="content"
-              component="span"
-              className={css.errorMsg}
-            />
-          </div>
+      <Form className={css.form}>
+        <div className={css.containerForTitleAndClose}>
+          <h2>Add post</h2>
+          <button type="button" className={css.closeButton} onClick={close}>
+            <IoClose className={css.closeIcon} />
+          </button>
         </div>
+        <div className={css.containerForInputs}>
+          <Field
+            type="text"
+            name="title"
+            placeholder="Title"
+            className={css.input}
+          />
+          <Field
+            as="textarea"
+            name="content"
+            placeholder="Content"
+            className={css.textarea}
+          />
+          <ErrorMessage name="content" component="div" className={css.error} />
 
+          <div className={css.imageUploadContainer}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className={css.fileInput}
+              id="image-upload"
+            />
+            <label htmlFor="image-upload" className={css.uploadButton}>
+              {imagePreview ? "Change Image" : "Add Image"}
+            </label>
+          </div>
+
+          {imagePreview && (
+            <div className={css.imagePreview}>
+              <img src={imagePreview} alt="Preview" />
+            </div>
+          )}
+        </div>
         <button type="submit" className={css.submitButton}>
           Add post
         </button>

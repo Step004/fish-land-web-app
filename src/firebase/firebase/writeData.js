@@ -7,6 +7,7 @@ import {
   push,
   remove,
 } from "firebase/database";
+import { getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
@@ -59,19 +60,14 @@ export async function updateUserFields(userId, updates) {
 
 export async function addUserPost(userId, post) {
   const db = getDatabase();
-  const userPostsRef = ref(db, `users/${userId}/posts`);
+  const postRef = ref(db, `users/${userId}/posts/${post.id}`);
 
   try {
-    // Створюємо унікальний ключ для поста
-    const newPostRef = push(userPostsRef);
-    const postId = newPostRef.key; // Отримуємо згенерований ключ
-
-    // Додаємо пост з унікальним ID
-    await set(newPostRef, { ...post, id: postId });
-
-    console.log("Post added successfully with ID:", postId);
+    await set(postRef, post);
+    console.log("Post added successfully");
   } catch (error) {
-    console.error("Error adding user post:", error);
+    console.error("Error adding post:", error);
+    throw error;
   }
 }
 
@@ -251,6 +247,19 @@ export const saveAnswersToDatabase = async (userId, answers) => {
     console.log("Answers successfully saved to Realtime Database.");
   } catch (error) {
     console.error("Error saving answers to Realtime Database:", error);
+    throw error;
+  }
+};
+
+export const uploadPostImage = async (file, userId, postId) => {
+  try {
+    const storage = getStorage();
+    const storageRef = ref(storage, `posts/${userId}/${postId}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading image:", error);
     throw error;
   }
 };

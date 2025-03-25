@@ -3,16 +3,31 @@ import { Field, Formik, Form, ErrorMessage } from "formik";
 import { IoClose } from "react-icons/io5";
 import clsx from "clsx";
 import * as Yup from "yup";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import defaultPhoto from "../../img/default-user.jpg";
 import { updateUserFields } from "../../firebase/firebase/writeData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { updateUserDisplayName } from "../../firebase/firebase/auth.js";
+import { updateProfile } from "firebase/auth";
+import { updateUserPhoto } from "../../firebase/firebase/storage.js";
 
 export default function UserSettingsForm({ close, user }) {
-  const { currentUser, updateCurrentUser } = useAuth();
+  const { currentUser, updateCurrentUser, userFromDB } = useAuth();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(userFromDB.photoURL);
+
+  const handlePhotoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (values, actions) => {
     const currentUserUpdatesName =
@@ -35,12 +50,20 @@ export default function UserSettingsForm({ close, user }) {
           ? values.number
           : user.number,
     };
+
     Object.keys(updates).forEach((key) => {
-      if (updates[key] === undefined) {
+      if (updates[key] === undefined || updates[key] === "") {
         delete updates[key];
       }
     });
+
     try {
+      if (selectedImage) {
+        const photoURL = await updateUserPhoto(currentUser.uid, selectedImage);
+        console.log("photoURL", photoURL);
+
+        
+      }
       await updateUserDisplayName(currentUserUpdatesName);
       await updateUserFields(currentUser.uid, updates);
       updateCurrentUser(updates);
@@ -74,7 +97,9 @@ export default function UserSettingsForm({ close, user }) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [close]);
-  const userPhoto = currentUser.photoURL ? (
+  const userPhoto = imagePreview ? (
+    <img src={imagePreview} alt="UserPhoto" className={css.photo} />
+  ) : currentUser.photoURL ? (
     <img src={currentUser.photoURL} alt="UserPhoto" className={css.photo} />
   ) : (
     <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
@@ -104,8 +129,8 @@ export default function UserSettingsForm({ close, user }) {
                 type="file"
                 id="fileInput"
                 accept="image/*"
-                // onChange={handlePhotoChange}
-                style={{ display: "none" }} // Приховуємо
+                onChange={handlePhotoChange}
+                style={{ display: "none" }}
               />
               <button
                 className={css.choosePhotoButton}

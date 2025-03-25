@@ -374,6 +374,29 @@
     margin-top: 15px;
 }
 
+.photoItem {
+    max-width: 100px;
+    max-height: 100px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.postImageContainer {
+    width: 100%;
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.postImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: zoom-in;
+}
+
 @media screen and (max-width: 868px) {
     .container {
         gap: 20px;

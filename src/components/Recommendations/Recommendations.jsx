@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import css from "./Recommendations.module.css";
-import { getRecommendations } from "../../utils/requests.js";
-export const Recommendations = ({ answers }) => {
+import { generateRecommendations } from "../../utils/generateRecommendations.js";
+import { FaLocationDot } from "react-icons/fa6";
+import { MdLocationSearching } from "react-icons/md";
+
+export const Recommendations = () => {
   const { userFromDB } = useAuth();
-  const sessionKey = Object.keys(answers)[0];
-  const userAnswers = answers[sessionKey]?.answers;
   const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
     const fetchRecommendations = async () => {
-      const recommend = await getRecommendations(
-        userFromDB.uid,
-        userFromDB.origin,
-        userAnswers[5],
-        userAnswers[7]
-      );
+      const recommend = await generateRecommendations(userFromDB);
       setRecommendations(recommend);
       console.log("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", recommend);
     };
@@ -26,9 +22,15 @@ export const Recommendations = ({ answers }) => {
     <div className={css.container}>
       {Array.isArray(recommendations) && recommendations.length > 0 ? (
         recommendations.map((item, index) => (
-          <div key={index}>
-            <h2>{item.place_name}</h2>
-            <p>{item.location}</p>
+          <div key={index} className={css.containerForRecommendation}>
+            <div className={css.containerForIcon}>
+              <MdLocationSearching />
+              <h3>{item.place_name}</h3>
+            </div>
+            <div className={css.containerForIcon}>
+              <FaLocationDot />
+              <p>{item.location}</p>
+            </div>
           </div>
         ))
       ) : (
