@@ -30,8 +30,7 @@ import "react-medium-image-zoom/dist/styles.css";
 import { uploadGalleryImage } from "../../firebase/firebase/writeData";
 
 export default function UserPage() {
-  const { currentUser, userFromDB } = useAuth();
-  console.log(userFromDB);
+  const { currentUser } = useAuth();
 
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const isSmallScreen = useMediaQuery({ query: "(max-width: 515px)" });
@@ -348,78 +347,82 @@ export default function UserPage() {
             {thisUser.posts ? (
               <ul className={css.listPublications}>
                 {thisUser.posts &&
-                  Object.values(thisUser.posts).map((post) => (
-                    <li key={post.id} className={css.listPublicationsItem}>
-                      <p className={css.titlePost}>{post.title}</p>
-                      <p className={css.contentPost}>{post.content}</p>
-                      {post.imageUrl && (
-                        <div className={css.postImageContainer}>
-                          <Zoom>
-                            <img
-                              src={post.imageUrl}
-                              alt="Post"
-                              className={css.postImage}
-                            />
-                          </Zoom>
-                        </div>
-                      )}
-                      <button
-                        className={css.deletePost}
-                        onClick={() => handleDeletePost(post.id)}
-                      >
-                        <MdDelete className={css.deleteIcon} />
-                      </button>
-                      <div className={css.containerForLikesAndComments}>
-                        <p
-                          className={css.likes}
-                          onClick={() => handleLike(currentUser.uid, post.id)}
-                        >
-                          Like {post.likes?.length || 0}
-                          {post.likes?.includes(currentUser.uid) ? (
-                            <FcLike className={css.likesIcon} />
-                          ) : (
-                            <FcLikePlaceholder className={css.likesIcon} />
-                          )}
-                        </p>
-                        <p
-                          className={css.likes}
-                          onClick={() => toggleComments(post.id)}
-                        >
-                          Comments {post.comments?.length || 0}
-                          <FaRegCommentAlt className={css.commentIcon} />
-                        </p>
-                      </div>
-                      {openPostId === post.id && (
-                        <div className={css.commentsSection}>
-                          <div className={css.commentsCont}>
-                            {post.comments?.map((comment) => (
-                              <p key={comment.id}>
-                                <strong>{comment.author}: </strong>
-                                {comment.text}
-                              </p>
-                            ))}
+                  Object.values(thisUser.posts)
+                    .sort(
+                      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    )
+                    .map((post) => (
+                      <li key={post.id} className={css.listPublicationsItem}>
+                        <p className={css.titlePost}>{post.title}</p>
+                        <p className={css.contentPost}>{post.content}</p>
+                        {post.imageUrl && (
+                          <div className={css.postImageContainer}>
+                            <Zoom>
+                              <img
+                                src={post.imageUrl}
+                                alt="Post"
+                                className={css.postImage}
+                              />
+                            </Zoom>
                           </div>
+                        )}
+                        <button
+                          className={css.deletePost}
+                          onClick={() => handleDeletePost(post.id)}
+                        >
+                          <MdDelete className={css.deleteIcon} />
+                        </button>
+                        <div className={css.containerForLikesAndComments}>
+                          <p
+                            className={css.likes}
+                            onClick={() => handleLike(currentUser.uid, post.id)}
+                          >
+                            Like {post.likes?.length || 0}
+                            {post.likes?.includes(currentUser.uid) ? (
+                              <FcLike className={css.likesIcon} />
+                            ) : (
+                              <FcLikePlaceholder className={css.likesIcon} />
+                            )}
+                          </p>
+                          <p
+                            className={css.likes}
+                            onClick={() => toggleComments(post.id)}
+                          >
+                            Comments {post.comments?.length || 0}
+                            <FaRegCommentAlt className={css.commentIcon} />
+                          </p>
+                        </div>
+                        {openPostId === post.id && (
+                          <div className={css.commentsSection}>
+                            <div className={css.commentsCont}>
+                              {post.comments?.map((comment) => (
+                                <p key={comment.id}>
+                                  <strong>{comment.author}: </strong>
+                                  {comment.text}
+                                </p>
+                              ))}
+                            </div>
 
-                          <div className={css.conForInputAndButton}>
-                            <textarea
-                              className={css.commentInput}
-                              value={commentText}
-                              onChange={(e) => setCommentText(e.target.value)}
-                              placeholder="Write a comment..."
-                            />
-                            <button
-                              className={css.commentButtonSend}
-                              onClick={() =>
-                                handleAddComment(currentUser.uid, post.id)
-                              }
-                            >
-                              Send
-                            </button>
+                            <div className={css.conForInputAndButton}>
+                              <textarea
+                                className={css.commentInput}
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="Write a comment..."
+                              />
+                              <button
+                                className={css.commentButtonSend}
+                                onClick={() =>
+                                  handleAddComment(currentUser.uid, post.id)
+                                }
+                              >
+                                Send
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </li>
-                  ))}
+                        )}
+                      </li>
+                    ))}
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>

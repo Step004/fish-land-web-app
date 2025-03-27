@@ -11,12 +11,16 @@ export const Recommendations = () => {
 
   useEffect(() => {
     const fetchRecommendations = async () => {
-      const recommend = await generateRecommendations(userFromDB);
-      setRecommendations(recommend);
-      console.log("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", recommend);
+      if (userFromDB && userFromDB.origin) {
+        const recommend = await generateRecommendations(userFromDB);
+        setRecommendations(recommend);
+      } else {
+        console.error("Місто користувача не задано або порожнє");
+        setRecommendations([]); // Можна встановити порожній масив або показати повідомлення
+      }
     };
     fetchRecommendations();
-  }, []);
+  }, [userFromDB]);
 
   return (
     <div className={css.container}>
@@ -24,17 +28,17 @@ export const Recommendations = () => {
         recommendations.map((item, index) => (
           <div key={index} className={css.containerForRecommendation}>
             <div className={css.containerForIcon}>
-              <MdLocationSearching />
-              <h3>{item.place_name}</h3>
+              <MdLocationSearching className={css.icon} />
+              <h3 className={css.placeName}>{item.place_name}</h3>
             </div>
             <div className={css.containerForIcon}>
-              <FaLocationDot />
-              <p>{item.location}</p>
+              <FaLocationDot className={css.icon} />
+              <p className={css.location}>{item.location}</p>
             </div>
           </div>
         ))
       ) : (
-        <p>Немає рекомендацій для відображення.</p>
+        <p>{recommendations.message}.</p>
       )}
     </div>
   );

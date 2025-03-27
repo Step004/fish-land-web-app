@@ -154,100 +154,102 @@ export default function HomePage() {
         {memoizedFriends.length > 0 ? (
           <ul className={css.listPublications}>
             {memoizedFriends.flatMap((friend) =>
-              friend.posts.map((post, index) => (
-                <li
-                  key={`${friend.id}-${index}`}
-                  className={css.listPublicationsItem}
-                >
-                  <div
-                    className={css.nameRow}
-                    onClick={() => navigation(`/friends/${friend.id}`)}
+              friend.posts
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map((post, index) => (
+                  <li
+                    key={`${friend.id}-${index}`}
+                    className={css.listPublicationsItem}
                   >
-                    {friend.photoURL ? (
+                    <div
+                      className={css.nameRow}
+                      onClick={() => navigation(`/friends/${friend.id}`)}
+                    >
+                      {friend.photoURL ? (
+                        <img
+                          src={friend.photoURL}
+                          alt="UserPhoto"
+                          className={css.photo}
+                        />
+                      ) : (
+                        <img
+                          src={defaultPhoto}
+                          alt="UserPhoto"
+                          className={css.photo}
+                        />
+                      )}
+                      <div>
+                        <p className={css.friendName}>{friend.name}</p>
+                        <p className={css.timeCreatingMsg}>
+                          {new Date(post.createdAt).toLocaleString("uk-UA", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            day: "2-digit",
+                            month: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <p className={css.titlePost}>{post.title}</p>
+                    <p className={css.contentPost}>{post.content}</p>
+                    {post.imageUrl && (
                       <img
-                        src={friend.photoURL}
-                        alt="UserPhoto"
-                        className={css.photo}
-                      />
-                    ) : (
-                      <img
-                        src={defaultPhoto}
-                        alt="UserPhoto"
-                        className={css.photo}
+                        src={post.imageUrl}
+                        alt="PostPhoto"
+                        className={css.photoWraper}
                       />
                     )}
-                    <div>
-                      <p className={css.friendName}>{friend.name}</p>
-                      <p className={css.timeCreatingMsg}>
-                        {new Date(post.createdAt).toLocaleString("uk-UA", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          day: "2-digit",
-                          month: "2-digit",
-                        })}
+                    <div className={css.containerForLikesAndComments}>
+                      <p
+                        className={css.likes}
+                        onClick={() => handleLike(friend.id, post.id)}
+                      >
+                        Like {post.likes?.length || 0}
+                        {post.likes?.includes(currentUser.uid) ? (
+                          <FcLike className={css.likesIcon} />
+                        ) : (
+                          <FcLikePlaceholder className={css.likesIcon} />
+                        )}
+                      </p>
+                      <p
+                        className={css.likes}
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        Comments {post.comments?.length || 0}
+                        <FaRegCommentAlt className={css.commentIcon} />
                       </p>
                     </div>
-                  </div>
-                  <p className={css.titlePost}>{post.title}</p>
-                  <p className={css.contentPost}>{post.content}</p>
-                  {post.imageUrl && (
-                    <img
-                      src={post.imageUrl}
-                      alt="PostPhoto"
-                      className={css.photoWraper}
-                    />
-                  )}
-                  <div className={css.containerForLikesAndComments}>
-                    <p
-                      className={css.likes}
-                      onClick={() => handleLike(friend.id, post.id)}
-                    >
-                      Like {post.likes?.length || 0}
-                      {post.likes?.includes(currentUser.uid) ? (
-                        <FcLike className={css.likesIcon} />
-                      ) : (
-                        <FcLikePlaceholder className={css.likesIcon} />
-                      )}
-                    </p>
-                    <p
-                      className={css.likes}
-                      onClick={() => toggleComments(post.id)}
-                    >
-                      Comments {post.comments?.length || 0}
-                      <FaRegCommentAlt className={css.commentIcon} />
-                    </p>
-                  </div>
-                  {openPostId === post.id && (
-                    <div className={css.commentsSection}>
-                      <div className={css.commentsCont}>
-                        {post.comments?.map((comment) => (
-                          <p key={comment.id}>
-                            <strong>{comment.author}: </strong>
-                            {comment.text}
-                          </p>
-                        ))}
-                      </div>
+                    {openPostId === post.id && (
+                      <div className={css.commentsSection}>
+                        <div className={css.commentsCont}>
+                          {post.comments?.map((comment) => (
+                            <p key={comment.id}>
+                              <strong>{comment.author}: </strong>
+                              {comment.text}
+                            </p>
+                          ))}
+                        </div>
 
-                      <div className={css.conForInputAndButton}>
-                        <input
-                          type="text"
-                          className={css.commentInput}
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                        />
-                        <button
-                          className={css.commentButtonSend}
-                          onClick={() =>
-                            handleAddComment(currentUser.uid, post.id)
-                          }
-                        >
-                          Send
-                        </button>
+                        <div className={css.conForInputAndButton}>
+                          <input
+                            type="text"
+                            className={css.commentInput}
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                          />
+                          <button
+                            className={css.commentButtonSend}
+                            onClick={() =>
+                              handleAddComment(currentUser.uid, post.id)
+                            }
+                          >
+                            Send
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </li>
-              ))
+                    )}
+                  </li>
+                ))
             )}
           </ul>
         ) : (

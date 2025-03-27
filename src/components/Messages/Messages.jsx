@@ -23,10 +23,11 @@ import { useMediaQuery } from "react-responsive";
 import { IoSendSharp } from "react-icons/io5";
 import { doc, onSnapshot } from "firebase/firestore";
 import { firestore } from "../../firebase/firebase/firebase.js";
+import { getUserById } from "../../firebase/firebase/readData.js";
 
 export default function Messages() {
   const { chatId } = useParams();
-  const { currentUser } = useAuth();
+  const { currentUser, userFromDB } = useAuth();
   const [messages, setMessages] = useState([]);
   const [callModal, setCallModal] = useState(false);
   const [link, setLink] = useState("");
@@ -35,6 +36,7 @@ export default function Messages() {
   const [currentChat, setCurrentChat] = useState("");
   const listMessRef = useRef(null);
   const [isOpenMore, setIsOpenMore] = useState(false);
+  const [anotherUser, setAnotherUser] = useState(null);
   const navigate = useNavigate();
 
   const isTabletScreen = useMediaQuery({ query: "(max-width: 768px)" });
@@ -42,6 +44,21 @@ export default function Messages() {
   useEffect(() => {
     markAllMessagesAsRead(chatId, currentUser.uid);
   }, [chatId, currentUser]);
+  useEffect(() => {
+    const fetchAnotherUser = async () => {
+      const keys = Object.keys(currentChat.participants);
+      if (currentUser.uid === keys[0]) {
+        const data = await getUserById(keys[1]);
+        setAnotherUser(data);
+      } else {
+        const data = await getUserById(keys[0]);
+        setAnotherUser(data);
+      }
+    };
+    if (currentChat) {
+      fetchAnotherUser();
+    }
+  }, [currentUser, currentChat]);
 
   useEffect(() => {
     if (!link) return;
@@ -216,20 +233,12 @@ export default function Messages() {
                 const keys = Object.keys(currentChat.participants);
                 if (currentUser.uid === keys[0]) {
                   navigate(`/friends/${keys[1]}`);
-                } else navigate(`/friends/${keys[1]}`);
+                } else navigate(`/friends/${keys[0]}`);
               }}
             >
-              <p>
-                {currentUser.displayName === currentChat.name1
-                  ? currentChat.name2
-                  : currentChat.name1}
-              </p>
+              <p>{anotherUser?.name}</p>
               <img
-                src={
-                  (currentUser.displayName === currentChat.name1
-                    ? currentChat.photo
-                    : currentChat.photoUrl) || defaultPhoto
-                }
+                src={anotherUser?.photoURL || defaultPhoto}
                 alt="UserPhoto"
                 className={css.photo}
               />
@@ -276,7 +285,11 @@ export default function Messages() {
                 >
                   <div className={css.photoAndName}>
                     <img
-                      src={msg.photo || defaultPhoto}
+                      src={
+                        msg.senderId === currentUser?.uid
+                          ? userFromDB?.photoURL || defaultPhoto
+                          : anotherUser?.photoURL || defaultPhoto
+                      }
                       alt="UserPhoto"
                       className={css.photo}
                     />
@@ -305,7 +318,11 @@ export default function Messages() {
               >
                 <div className={css.photoAndName}>
                   <img
-                    src={msg.photo || defaultPhoto}
+                    src={
+                      msg.senderId === currentUser?.uid
+                        ? userFromDB?.photoURL || defaultPhoto
+                        : anotherUser?.photoURL || defaultPhoto
+                    }
                     alt="UserPhoto"
                     className={css.photo}
                   />

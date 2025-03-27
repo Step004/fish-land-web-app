@@ -3,9 +3,10 @@ import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import css from "./MessagePage.module.css";
 import Loader from "../../components/Loader/Loader.jsx";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { getAllChats, subscribeToChats } from "../../firebase/firebase/chats.js";
+import { subscribeToChats } from "../../firebase/firebase/chats.js";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useMediaQuery } from "react-responsive";
+import { getUserById } from "../../firebase/firebase/readData.js";
 
 const MessagePage = () => {
   const location = useLocation();
@@ -13,26 +14,38 @@ const MessagePage = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 570px)" });
 
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, userFromDB } = useAuth();
   const [chats, setChats] = useState([]);
-  console.log(currentUser);
+  const [anotherUsers, setAnotherUsers] = useState({}); // Стан для збереження даних про інших користувачів
 
-  // useEffect(() => {
-  //   const fetchChats = async () => {
-  //     const chats = await getAllChats(currentUser.uid);
-  //     setChats(chats);
-  //   };
-  //   fetchChats();
-  // }, [currentUser]);
-    useEffect(() => {
-      if (!currentUser) return;
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const usersData = {};
 
-      // Підписка на зміни у чатах
-      const unsubscribe = subscribeToChats(currentUser.uid, setChats);
+      for (const chat of chats) {
+        const keys = Object.keys(chat.participants);
+        const anotherUserId = currentUser.uid === keys[0] ? keys[1] : keys[0];
 
-      // Скасування підписки при розмонтуванні
-      return () => unsubscribe();
-    }, [currentUser]);
+        if (!usersData[anotherUserId]) {
+          usersData[anotherUserId] = await getUserById(anotherUserId);
+        }
+      }
+
+      setAnotherUsers(usersData);
+    };
+
+    if (chats.length > 0) {
+      fetchUsers();
+    }
+  }, [chats, currentUser.uid]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const unsubscribe = subscribeToChats(currentUser.uid, setChats);
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   if (!currentUser) return <Loader />;
 
@@ -44,34 +57,39 @@ const MessagePage = () => {
             <h2>Chat Messages</h2>
             <ul>
               {chats ? (
-                chats.map((chat) => (
-                  <li
-                    key={chat.chatId}
-                    onClick={() => {
-                      navigate(`/message/${chat.chatId}`);
-                    }}
-                    className={css.chatItem}
-                  >
-                    <div className={css.nameAndStatus}>
-                      <div className={css.photoAndName}>
-                        <img
-                          src={chat.photo || defaultPhoto}
-                          alt="UserPhoto"
-                          className={css.photo}
-                        />
-                        <div className={css.nameAndLastMsg}>
-                          <span>
-                            {currentUser.displayName === chat.name1
-                              ? chat.name2
-                              : chat.name1}
-                          </span>
-                          <p className={css.lastMsg}>{chat.lastMessage}</p>
+                chats.map((chat) => {
+                  const keys = Object.keys(chat.participants);
+                  const anotherUserId =
+                    currentUser.uid === keys[0] ? keys[1] : keys[0];
+                  const anotherUser = anotherUsers[anotherUserId];
+
+                  return (
+                    <li
+                      key={chat.chatId}
+                      onClick={() => {
+                        navigate(`/message/${chat.chatId}`);
+                      }}
+                      className={css.chatItem}
+                    >
+                      <div className={css.nameAndStatus}>
+                        <div className={css.photoAndName}>
+                          <img
+                            src={anotherUser?.photoURL || defaultPhoto}
+                            alt="UserPhoto"
+                            className={css.photo}
+                          />
+                          <div className={css.nameAndLastMsg}>
+                            <span>{anotherUser?.name}</span>
+                            <p className={css.lastMsg}>{chat.lastMessage}</p>
+                          </div>
                         </div>
+                        {chat.hasUnread && (
+                          <div className={css.chatUnread}></div>
+                        )}
                       </div>
-                      {chat.hasUnread && <div className={css.chatUnread}></div>}
-                    </div>
-                  </li>
-                ))
+                    </li>
+                  );
+                })
               ) : (
                 <p>You don`t have chats yet!</p>
               )}
@@ -90,43 +108,42 @@ const MessagePage = () => {
               <h2>Chat Messages</h2>
               <ul>
                 {chats ? (
-                  chats.map((chat) => (
-                    <li
-                      key={chat.chatId}
-                      onClick={() => {
-                        navigate(`/message/${chat.chatId}`);
-                      }}
-                      className={css.chatItem}
-                    >
-                      <div className={css.nameAndStatus}>
-                        <div className={css.photoAndName}>
-                          <img
-                            src={
-                              (currentUser.displayName === chat.name1
-                                ? chat.photo
-                                : chat.photoUrl) || defaultPhoto
-                            }
-                            alt="UserPhoto"
-                            className={css.photo}
-                          />
-                          <div className={css.nameAndLastMsg}>
-                            <span>
-                              {currentUser.displayName === chat.name1
-                                ? chat.name2
-                                : chat.name1}
-                            </span>
+                  chats.map((chat) => {
+                    const keys = Object.keys(chat.participants);
+                    const anotherUserId =
+                      currentUser.uid === keys[0] ? keys[1] : keys[0];
+                    const anotherUser = anotherUsers[anotherUserId];
 
-                            <span className={css.lastMsg}>
-                              {chat.lastMessage}
-                            </span>
+                    return (
+                      <li
+                        key={chat.chatId}
+                        onClick={() => {
+                          navigate(`/message/${chat.chatId}`);
+                        }}
+                        className={css.chatItem}
+                      >
+                        <div className={css.nameAndStatus}>
+                          <div className={css.photoAndName}>
+                            <img
+                              src={anotherUser?.photoURL || defaultPhoto}
+                              alt="UserPhoto"
+                              className={css.photo}
+                            />
+                            <div className={css.nameAndLastMsg}>
+                              <span>{anotherUser?.name}</span>
+
+                              <span className={css.lastMsg}>
+                                {chat.lastMessage}
+                              </span>
+                            </div>
                           </div>
+                          {chat.hasUnread && (
+                            <div className={css.chatUnread}></div>
+                          )}
                         </div>
-                        {chat.hasUnread && (
-                          <div className={css.chatUnread}></div>
-                        )}
-                      </div>
-                    </li>
-                  ))
+                      </li>
+                    );
+                  })
                 ) : (
                   <p>You don`t have chats yet!</p>
                 )}
