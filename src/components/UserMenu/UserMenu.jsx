@@ -10,7 +10,7 @@ import { useMediaQuery } from "react-responsive";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 export default function UserMenu({ handleBurgerMenuToggle }) {
-  const { currentUser } = useAuth();
+  const { currentUser, userFromDB } = useAuth();
   const [user, setUser] = useState(currentUser);
   const navigate = useNavigate();
   const isTabletScreen = useMediaQuery({ query: "(min-width: 768px)" });
@@ -33,8 +33,8 @@ export default function UserMenu({ handleBurgerMenuToggle }) {
     navigate("/login");
   };
 
-  const userPhoto = currentUser.photoURL ? (
-    <img src={currentUser.photoURL} alt="UserPhoto" className={css.userIcon} />
+  const userPhoto = userFromDB?.photoURL ? (
+    <img src={userFromDB?.photoURL} alt="UserPhoto" className={css.userIcon} />
   ) : (
     <FaRegUserCircle className={css.userIcon} />
   );
@@ -44,7 +44,7 @@ export default function UserMenu({ handleBurgerMenuToggle }) {
       <div className={css.userNameContainer}>
         {userPhoto}
         <p className={css.username} onClick={() => navigate("/user")}>
-          {user?.name || currentUser.displayName}
+          {userFromDB?.name || currentUser.displayName}
         </p>
       </div>
       {isTabletScreen && (

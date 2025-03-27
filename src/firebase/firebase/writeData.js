@@ -7,7 +7,12 @@ import {
   push,
   remove,
 } from "firebase/database";
-import { getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
 export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
@@ -93,19 +98,7 @@ export async function addCommentToPost(userId, postId, comment) {
     console.error("Error adding comment:", error);
   }
 }
-// export async function addCommentToPost(userId, postId, comment) {
-//   const db = getDatabase();
-//   const postCommentsRef = ref(db, `users/${userId}/posts/${postId}/comments`);
 
-//   try {
-//     const newCommentRef = push(postCommentsRef);
-//     await set(newCommentRef, comment); // Зберігаємо коментар за унікальним ID
-
-//     console.log("Comment added successfully");
-//   } catch (error) {
-//     console.error("Error adding comment:", error);
-//   }
-// }
 
 // Функція для додавання або видалення лайка до конкретного посту
 export async function toggleLikeOnPost(userId, postId, likerId) {
@@ -133,23 +126,7 @@ export async function toggleLikeOnPost(userId, postId, likerId) {
     console.error("Error toggling like:", error);
   }
 }
-// export async function toggleLikeOnPost(userId, postId, likerId) {
-//   const db = getDatabase();
-//   const likesRef = ref(db, `users/${userId}/posts/${postId}/likes/${likerId}`);
 
-//   try {
-//     const snapshot = await get(likesRef);
-//     if (snapshot.exists()) {
-//       await remove(likesRef); // Видаляємо лайк, якщо він є
-//       console.log("Like removed successfully");
-//     } else {
-//       await set(likesRef, true); // Додаємо лайк
-//       console.log("Like added successfully");
-//     }
-//   } catch (error) {
-//     console.error("Error toggling like:", error);
-//   }
-// }
 
 export async function deleteUserPost(userId, postId) {
   const db = getDatabase();
@@ -223,7 +200,8 @@ export async function removeFriend(userId, friendId) {
     }
 
     // Видалити друга з об'єкта
-    const { [friendId]: _, ...updatedFriends } = friends;
+    const updatedFriends = { ...friends };
+    delete updatedFriends[friendId];
 
     // Оновити список друзів у базі даних
     await update(ref(db, `users/${userId}`), { friends: updatedFriends });
@@ -254,12 +232,50 @@ export const saveAnswersToDatabase = async (userId, answers) => {
 export const uploadPostImage = async (file, userId, postId) => {
   try {
     const storage = getStorage();
-    const storageRef = ref(storage, `posts/${userId}/${postId}`);
-    const snapshot = await uploadBytes(storageRef, file);
+    const imageRef = storageRef(storage, `posts/${userId}/${postId}`);
+    const snapshot = await uploadBytes(imageRef, file);
     const downloadURL = await getDownloadURL(snapshot.ref);
     return downloadURL;
   } catch (error) {
     console.error("Error uploading image:", error);
+    throw error;
+  }
+};
+
+export const uploadGalleryImage = async (file, userId) => {
+  try {
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+
+    const storage = getStorage();
+    const imageRef = storageRef(storage, `gallery/${userId}/${Date.now()}`);
+    const snapshot = await uploadBytes(imageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    // Отримуємо поточну галерею користувача
+    const db = getDatabase();
+    const userRef = ref(db, `users/${userId}`);
+    const userSnapshot = await get(userRef);
+    const userData = userSnapshot.val();
+    const currentGallery = userData.gallery || [];
+
+    // Додаємо нове зображення до галереї
+    const updatedGallery = [
+      ...currentGallery,
+      {
+        url: downloadURL,
+        createdAt: new Date().toISOString(),
+        id: Date.now().toString(),
+      },
+    ];
+
+    // Оновлюємо галерею в базі даних
+    await update(userRef, { gallery: updatedGallery });
+
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading gallery image:", error);
     throw error;
   }
 };

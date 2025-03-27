@@ -6,7 +6,6 @@ import {
   getUserById,
 } from "../../firebase/firebase/readData.js";
 import defaultPhoto from "../../img/default-user.jpg";
-// import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosSend } from "react-icons/io";
@@ -24,6 +23,7 @@ import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
+import Zoom from "react-medium-image-zoom";
 
 export default function FriendPage() {
   const { currentUser } = useAuth();
@@ -146,11 +146,17 @@ export default function FriendPage() {
   };
   return (
     <main className={css.container}>
-      {user.photo ? (
-        <img src={user.photo} alt="UserPhoto" className={css.photo} />
-      ) : (
-        <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
-      )}
+      <Zoom
+        overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
+        zoomMargin={40}
+        transitionDuration={300}
+      >
+        {user?.photoURL ? (
+          <img src={user?.photoURL} alt="UserPhoto" className={css.photo} />
+        ) : (
+          <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
+        )}
+      </Zoom>
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
           <div className={css.nameAndStatus}>
@@ -217,10 +223,17 @@ export default function FriendPage() {
           <h3 className={css.forP}>Photo:</h3>
           {user.gallery ? (
             <ul className={css.photoList}>
-              <li>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
+              {user.gallery.map((photo) => (
+                <li key={photo.id} className={css.photoItem}>
+                  <Zoom
+                    overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
+                    zoomMargin={40}
+                    transitionDuration={300}
+                  >
+                    <img src={photo.url} alt="fish" className={css.photoItem} />
+                  </Zoom>
+                </li>
+              ))}
             </ul>
           ) : (
             <p className={css.pointPhoto}>{user.name} don`t have photo yet.</p>
@@ -253,9 +266,9 @@ export default function FriendPage() {
                     } else navigation(`/friends/${friends[userId].uid}`);
                   }}
                 >
-                  {friends[userId].photo ? (
+                  {friends[userId].photoURL ? (
                     <img
-                      src={friends[userId].photo}
+                      src={friends[userId].photoURL}
                       alt="UserPhoto"
                       className={css.friendPhoto}
                     />
@@ -285,6 +298,13 @@ export default function FriendPage() {
                     <li key={post.id} className={css.listPublicationsItem}>
                       <p className={css.titlePost}>{post.title}</p>
                       <p className={css.contentPost}>{post.content}</p>
+                      {post.imageUrl && (
+                        <img
+                          src={post.imageUrl}
+                          alt="PostPhoto"
+                          className={css.photoWraper}
+                        />
+                      )}
                       <div className={css.containerForLikesAndComments}>
                         <p
                           className={css.likes}

@@ -6,12 +6,42 @@
     max-width: 320px;
     max-height: 320px;
     width: 100%;
-    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     border: 4px solid black;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 15px;
     margin-bottom: 30px;
     box-sizing: border-box;
+
+}
+
+.photoList {
+    max-width: 100%;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+}
+
+.photoItem {
+    flex: 0 0 auto;
+    max-width: 100px;
+    max-height: 100px;
+    aspect-ratio: 1 / 0.8;
+    object-fit: cover;
+}
+
+.photoList::-webkit-scrollbar {
+    height: 8px;
+}
+
+.photoList::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 4px;
 }
 
 .container {
@@ -43,13 +73,24 @@
 .friendPhoto {
     max-width: 90px;
     width: 100%;
+    height: 90px;
+    object-fit: cover;
 }
 
 .friendList {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 40px;
-    gap: 5px;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+}
+
+.photoWraper {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .containerForLikesAndComments {
@@ -151,11 +192,6 @@
     padding-top: 10px;
 }
 
-.photoList {
-    display: flex;
-    gap: 40px;
-    margin-bottom: 15px;
-}
 
 .forP {
     font-size: 24px;
@@ -421,6 +457,8 @@
     .friendPhoto {
         max-width: 60px;
         width: 100%;
+        height: 60px;
+        object-fit: cover;
     }
 
     .friendName {
@@ -433,4 +471,29 @@
     .listPublicationsItem {
         padding: 20px 10px;
     }
+
+    .titlePost {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .contentPost {
+        font-size: 16px;
+        font-weight: 400;
+    }
+         .containerForLikesAndComments {
+             padding: 10px 5px;
+             gap: 10px;
+         }
+    
+         .likes {
+             gap: 3px;
+             padding: 3px 3px;
+             font-size: 12px;
+         }
+    
+         .likesIcon {
+             width: 14px;
+             height: 14px;
+         }
 }

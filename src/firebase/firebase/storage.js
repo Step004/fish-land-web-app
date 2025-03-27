@@ -13,13 +13,10 @@ export async function uploadImageToStorage(userId, imageFile) {
       `users/${userId}/images/${imageFile.name}`
     );
 
-    // Завантажуємо файл у Storage
     const snapshot = await uploadBytes(imageRef, imageFile);
 
-    // Отримуємо URL завантаженого зображення
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Оновлюємо дані користувача в базі даних
     const db = getDatabase();
     const userRef = dbRef(db, `users/${userId}`);
 

@@ -55,8 +55,8 @@ export default function FriendsList() {
             } else navigation(`/friends/${user.uid}`);
           }}
         >
-          {user.photo ? (
-            <img src={user.photo} alt="UserPhoto" className={css.photo} />
+          {user?.photoURL ? (
+            <img src={user?.photoURL} alt="UserPhoto" className={css.photo} />
           ) : (
             <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
           )}

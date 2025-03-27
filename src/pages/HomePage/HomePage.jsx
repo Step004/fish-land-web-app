@@ -134,7 +134,7 @@ export default function HomePage() {
       const processedFriend = {
         id: friend.uid,
         name: friend.name,
-        photo: friend.photo,
+        photoURL: friend.photoURL,
         posts: Object.values(friend.posts || {}).sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         ),
@@ -163,9 +163,9 @@ export default function HomePage() {
                     className={css.nameRow}
                     onClick={() => navigation(`/friends/${friend.id}`)}
                   >
-                    {friend.photo ? (
+                    {friend.photoURL ? (
                       <img
-                        src={friend.photo}
+                        src={friend.photoURL}
                         alt="UserPhoto"
                         className={css.photo}
                       />
@@ -190,6 +190,13 @@ export default function HomePage() {
                   </div>
                   <p className={css.titlePost}>{post.title}</p>
                   <p className={css.contentPost}>{post.content}</p>
+                  {post.imageUrl && (
+                    <img
+                      src={post.imageUrl}
+                      alt="PostPhoto"
+                      className={css.photoWraper}
+                    />
+                  )}
                   <div className={css.containerForLikesAndComments}>
                     <p
                       className={css.likes}

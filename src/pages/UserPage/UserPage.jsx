@@ -25,9 +25,9 @@ import toast from "react-hot-toast";
 import { Recommendations } from "../../components/Recommendations/Recommendations.jsx";
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
-import fishImage from "../../img/1.jpg";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
+import { uploadGalleryImage } from "../../firebase/firebase/writeData";
 
 export default function UserPage() {
   const { currentUser, userFromDB } = useAuth();
@@ -176,10 +176,36 @@ export default function UserPage() {
     return;
   }
 
+  const handleAddPhoto = async (event) => {
+    const file = event.target.files[0];
+    if (file && currentUser) {
+      try {
+        const photoUrl = await uploadGalleryImage(file, currentUser.uid);
+        // Оновлюємо стан користувача після додавання фото
+        setThisUser((prevUser) => ({
+          ...prevUser,
+          gallery: [...(prevUser.gallery || []), { url: photoUrl }],
+        }));
+        toast.success("Photo added successfully!");
+      } catch (error) {
+        console.error("Error adding photo to gallery:", error);
+        toast.error("Failed to add photo. Please check your permissions.");
+      }
+    } else {
+      toast.error("Please select a file and make sure you are logged in.");
+    }
+  };
+
   return (
     <main className={css.container}>
       <div className={css.containerForImgAndRecommendation}>
-        {userPhoto}
+        <Zoom
+          overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
+          zoomMargin={40}
+          transitionDuration={300}
+        >
+          {userPhoto}
+        </Zoom>
         <div className={css.containerForRecommended}>
           <h2>Recommendations</h2>
           {answers.length == 0 ? (
@@ -234,22 +260,30 @@ export default function UserPage() {
         <div>
           <div className={css.containerForPhotoText}>
             <h3 className={css.forP}>My photos</h3>
-            <button className={css.addPhotoButton}>
-              <IoMdAddCircleOutline className={css.iconAdd} />{" "}
+            <label className={css.addPhotoButton}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAddPhoto}
+                style={{ display: "none" }}
+              />
+              <IoMdAddCircleOutline className={css.iconAdd} />
               <p className={css.textAdd}>Add photo</p>
-            </button>
+            </label>
           </div>
-          {!thisUser.gallery ? (
+          {thisUser.gallery ? (
             <ul className={css.photoList}>
-              <li className={css.photoItem}>
-                <Zoom
-                  overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
-                  zoomMargin={40}
-                  transitionDuration={300}
-                >
-                  <img src={fishImage} alt="fish" className={css.photoItem} />
-                </Zoom>
-              </li>
+              {thisUser.gallery.map((photo) => (
+                <li key={photo.id} className={css.photoItem}>
+                  <Zoom
+                    overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
+                    zoomMargin={40}
+                    transitionDuration={300}
+                  >
+                    <img src={photo.url} alt="fish" className={css.photoItem} />
+                  </Zoom>
+                </li>
+              ))}
             </ul>
           ) : (
             <p className={css.pointPhoto}>You don`t have photo yet.</p>
@@ -282,9 +316,9 @@ export default function UserPage() {
                     } else navigation(`/friends/${friends[userId].uid}`);
                   }}
                 >
-                  {friends[userId].photo ? (
+                  {friends[userId].photoURL ? (
                     <img
-                      src={friends[userId].photo}
+                      src={friends[userId].photoURL}
                       alt="UserPhoto"
                       className={css.friendPhoto}
                     />
@@ -367,8 +401,7 @@ export default function UserPage() {
                           </div>
 
                           <div className={css.conForInputAndButton}>
-                            <input
-                              type="text"
+                            <textarea
                               className={css.commentInput}
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
