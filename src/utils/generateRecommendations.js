@@ -4,7 +4,9 @@ export function generateRecommendations(userData) {
   try {
     // Перевірка наявності поля 'city'
     if (!userData.origin || !userData.origin.trim()) {
-      throw new Error("Поле 'city' відсутнє або пусте у вхідних даних");
+      return {
+        message: `Ви не вказали місто`,
+      };
     }
 
     // Нормалізуємо місто користувача
