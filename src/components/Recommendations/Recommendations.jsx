@@ -11,13 +11,8 @@ export const Recommendations = () => {
 
   useEffect(() => {
     const fetchRecommendations = async () => {
-      if (userFromDB && userFromDB.origin) {
-        const recommend = await generateRecommendations(userFromDB);
-        setRecommendations(recommend);
-      } else {
-        console.error("Місто користувача не задано або порожнє");
-        setRecommendations([]); // Можна встановити порожній масив або показати повідомлення
-      }
+      const recommend = await generateRecommendations(userFromDB);
+      setRecommendations(recommend);
     };
     fetchRecommendations();
   }, [userFromDB]);
