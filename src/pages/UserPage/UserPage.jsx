@@ -28,6 +28,7 @@ import { FaRegCommentAlt } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { uploadGalleryImage } from "../../firebase/firebase/writeData";
+import ModalAddPlace from "../../components/ModalAddplace/ModalAddplace.jsx";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
@@ -48,6 +49,7 @@ export default function UserPage() {
   const [thisUser, setThisUser] = useState(null);
   const [openAddPost, setOpenAddPost] = useState(false);
   const [questionOpen, setQuestionOpen] = useState(false);
+  const [addPlaceOpen, setAddPlaceOpen] = useState(false);
   const [answers, setAnswers] = useState();
   ////////////////////////////////////
   const [openPostId, setOpenPostId] = useState(null);
@@ -150,6 +152,9 @@ export default function UserPage() {
   const toggleQuestion = () => {
     setQuestionOpen(!questionOpen);
   };
+  const toggleAddPlace = () => {
+    setAddPlaceOpen(!addPlaceOpen);
+  };
 
   const handleDeletePost = async (postId) => {
     try {
@@ -226,6 +231,9 @@ export default function UserPage() {
             <Recommendations />
           )}
         </div>
+        <button className={css.buttonAddPlace} onClick={toggleAddPlace}>
+          Add place
+        </button>
       </div>
       <div className={css.containerForElement}>
         <div className={css.nameAndButton}>
@@ -439,6 +447,7 @@ export default function UserPage() {
         <AddPostModal close={toggleAddPost} handleAddPost={setThisUser} />
       )}
       {questionOpen && <ModalQuestion close={toggleQuestion} />}
+      {addPlaceOpen && <ModalAddPlace close={toggleAddPlace} />}
     </main>
   );
 }

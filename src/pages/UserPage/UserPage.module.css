@@ -419,6 +419,16 @@
     cursor: zoom-in;
 }
 
+.buttonAddPlace {
+    background-color: #3c3c3c;
+    color: white;
+    border-radius: 5px;
+        padding: 10px 20px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
 @media screen and (max-width: 868px) {
     .container {
         gap: 20px;

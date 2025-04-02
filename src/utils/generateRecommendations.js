@@ -1,9 +1,10 @@
-import { places } from "../source/places.json";
-
-export function generateRecommendations(userData) {
+import { collection, getDocs } from "firebase/firestore";
+import { firestore } from "../firebase/firebase/firebase";
+export async function generateRecommendations(userData) {
   try {
-    // Перевірка наявності поля 'city'
-    if (!userData.origin || !userData.origin.trim()) {
+    if (!userData.origin) {
+      console.log("Ви не вказали місто");
+
       return {
         message: `Ви не вказали місто`,
       };
@@ -11,16 +12,25 @@ export function generateRecommendations(userData) {
 
     // Нормалізуємо місто користувача
     const userCity = userData.origin.trim().toLowerCase();
+    // Отримуємо всі місця з колекції places
+    const placesRef = collection(firestore, "places");
+    const placesSnapshot = await getDocs(placesRef);
+    const allPlaces = [];
 
     const recommendations = [];
 
     // Отримуємо відповіді користувача
-    const userAnswers = userData.answers[0]?.answers || {};
+    const userAnswers = userData.answers || {};
 
-    console.log(userAnswers);
+    placesSnapshot.forEach((doc) => {
+      allPlaces.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
 
     // Фільтрація місць
-    for (const place of places) {
+    for (const place of allPlaces) {
       const placeCity = place.location.trim().toLowerCase();
 
       // Пропускаємо, якщо місто не збігається
@@ -34,7 +44,7 @@ export function generateRecommendations(userData) {
       const requestedFishType = userAnswers[1]; // Питання 1: Тип риби
       if (
         requestedFishType &&
-        place.fishTypes &&
+        Array.isArray(place.fishTypes) && // Перевірка, чи fishTypes - це масив
         place.fishTypes.includes(requestedFishType)
       ) {
         matchScore += 1;
@@ -45,6 +55,7 @@ export function generateRecommendations(userData) {
       if (
         requestedFishingLocation &&
         requestedFishingLocation !== "Без різниці" &&
+        place.fishingLocation &&
         requestedFishingLocation === place.fishingLocation
       ) {
         matchScore += 1;
@@ -54,6 +65,7 @@ export function generateRecommendations(userData) {
       const requestedFishingStyle = userAnswers[3]; // Питання 3: Стиль риболовлі
       if (
         requestedFishingStyle &&
+        Array.isArray(place.fishingStyles) && // Перевірка, чи fishingStyles - це масив
         requestedFishingStyle.some((style) =>
           place.fishingStyles.includes(style)
         )
@@ -71,6 +83,7 @@ export function generateRecommendations(userData) {
       const requestedWaterTypes = userAnswers[5]; // Питання 5: Типи водойм
       if (
         requestedWaterTypes &&
+        Array.isArray(place.waterTypes) && // Перевірка, чи waterTypes - це масив
         requestedWaterTypes.some((type) => place.waterTypes.includes(type))
       ) {
         matchScore += 1;
@@ -86,6 +99,7 @@ export function generateRecommendations(userData) {
       const requestedFacilities = userAnswers[7]; // Питання 7: Зручності
       if (
         requestedFacilities &&
+        Array.isArray(place.facilities) && // Перевірка, чи facilities - це масив
         requestedFacilities.some((facility) =>
           place.facilities.includes(facility)
         )
@@ -95,7 +109,11 @@ export function generateRecommendations(userData) {
 
       // 8. Погода
       const weatherPreference = userAnswers[8]; // Питання 8: Погода
-      if (weatherPreference && place.weatherTypes.includes(weatherPreference)) {
+      if (
+        weatherPreference &&
+        Array.isArray(place.weatherTypes) && // Перевірка, чи weatherTypes - це масив
+        place.weatherTypes.includes(weatherPreference)
+      ) {
         matchScore += 1;
       }
 
@@ -121,9 +139,11 @@ export function generateRecommendations(userData) {
 
     // Вибираємо топ-3 місця
     const topRecommendations = recommendations.slice(0, 3);
+    console.log(topRecommendations);
 
     // Якщо рекомендацій немає, повертаємо повідомлення
     if (topRecommendations.length === 0) {
+      console.log("У місті немає місць, що відповідають вашим критеріям");
       return {
         message: `У місті ${userData.origin} немає місць, що відповідають вашим критеріям`,
       };
@@ -131,6 +151,7 @@ export function generateRecommendations(userData) {
 
     return topRecommendations;
   } catch (error) {
+    console.log("error", error);
     return { error: error.message };
   }
 }

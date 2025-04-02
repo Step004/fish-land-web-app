@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 import env from "../../utils/env.js";
-import { getFirestore } from "firebase/firestore"; // Імпортуємо Firestore
+import { getFirestore } from "firebase/firestore"; 
 
 const firebaseConfig = {
   apiKey: env("VITE_APIKEY"),

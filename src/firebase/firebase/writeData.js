@@ -1,18 +1,12 @@
-import {
-  ref,
-  set,
-  getDatabase,
-  update,
-  get,
-  push,
-  remove,
-} from "firebase/database";
+import { ref, set, getDatabase, update, get, remove } from "firebase/database";
 import {
   getStorage,
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { firestore } from "../firebase/firebase.js";
+import { collection, addDoc } from "firebase/firestore";
 
 export async function saveUserToDatabase(userId, email, name, photoURL) {
   const db = getDatabase();
@@ -99,7 +93,6 @@ export async function addCommentToPost(userId, postId, comment) {
   }
 }
 
-
 // Функція для додавання або видалення лайка до конкретного посту
 export async function toggleLikeOnPost(userId, postId, likerId) {
   const db = getDatabase();
@@ -126,7 +119,6 @@ export async function toggleLikeOnPost(userId, postId, likerId) {
     console.error("Error toggling like:", error);
   }
 }
-
 
 export async function deleteUserPost(userId, postId) {
   const db = getDatabase();
@@ -217,8 +209,8 @@ export const saveAnswersToDatabase = async (userId, answers) => {
     const db = getDatabase();
     const userAnswersRef = ref(db, `users/${userId}/answers`);
 
-    await push(userAnswersRef, {
-      answers,
+    await set(userAnswersRef, {
+      ...answers,
       completedAt: new Date().toISOString(),
     });
 
@@ -277,5 +269,101 @@ export const uploadGalleryImage = async (file, userId) => {
   } catch (error) {
     console.error("Error uploading gallery image:", error);
     throw error;
+  }
+};
+
+const questions = [
+  {
+    id: 1,
+    question: "Який вид риби ви найбільше любите ловити?",
+    type: "single_choice",
+    options: ["Щука", "Судак", "Окунь", "Короп", "Сом", "Інше"],
+  },
+  {
+    id: 2,
+    question: "Чи ви віддаєте перевагу ловлі з берега чи з човна?",
+    type: "single_choice",
+    options: ["З берега", "З човна", "Без різниці"],
+  },
+  {
+    id: 3,
+    question: "Який стиль риболовлі вам подобається?",
+    type: "multiple_choice",
+    options: ["Спінінг", "Поплавкова вудка", "Фідер", "Тролінг", "Інше"],
+  },
+  {
+    id: 4,
+    question: "Чи любите ви риболовлю вночі?",
+    type: "single_choice",
+    options: ["Так", "Ні"],
+  },
+  {
+    id: 5,
+    question: "Які умови водойми для вас є прийнятними?",
+    type: "multiple_choice",
+    options: ["Озеро", "Річка", "Водосховище", "Ставок"],
+  },
+  {
+    id: 6,
+    question:
+      "Який максимальний радіус відстані від вашого місцезнаходження для риболовлі?",
+    type: "number",
+    unit: "км",
+  },
+  {
+    id: 7,
+    question: "Які зручності для вас важливі?",
+    type: "multiple_choice",
+    options: [
+      "Парковка",
+      "Місця для кемпінгу",
+      "Магазин поруч",
+      "Човновий причал",
+      "Чистота місцевості",
+    ],
+  },
+  {
+    id: 8,
+    question: "Чи потрібна вам інформація про місця з платною риболовлею?",
+    type: "single_choice",
+    options: ["Так", "Ні"],
+  },
+  {
+    id: 9,
+    question: "Вкажіть ваш досвід у риболовлі.",
+    type: "single_choice",
+    options: ["Початківець", "Любитель", "Професіонал"],
+  },
+  {
+    id: 10,
+    question: "Чи є у вас переваги щодо погоди для риболовлі?",
+    type: "single_choice",
+    options: ["Сонячно", "Похмуро", "Дощ", "Без різниці"],
+  },
+];
+
+// Функція для додавання місця
+export const addPlaceToFirestore = async (name, location, answers) => {
+  try {
+    // Отримуємо посилання на колекцію "places"
+    const placesCollectionRef = collection(firestore, "places");
+
+    // Створюємо об'єкт місця
+    const placeData = {
+      name: name,
+      location: location,
+      answers: {}, // Відповіді будуть зберігатися тут
+    };
+
+    // Перебираємо питання і додаємо відповідь у поле "answers"
+    questions.forEach((question) => {
+      placeData.answers[question.id] = answers[question.id] || null; // Зберігаємо відповідь на конкретне питання
+    });
+
+    // Додаємо нове місце в Firestore з автоматичним створенням id
+    const docRef = await addDoc(placesCollectionRef, placeData);
+    console.log(`Місце успішно додано в Firestore з id: ${docRef.id}`);
+  } catch (error) {
+    console.error("Помилка при додаванні місця:", error);
   }
 };
