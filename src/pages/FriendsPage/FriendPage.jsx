@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { IoIosSend } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
+import { i18n } from "../../utils/i18n";
 import {
   addCommentToPost,
   addFriend,
@@ -40,7 +41,6 @@ export default function FriendPage() {
     try {
       await toggleLikeOnPost(userId, postId, currentUser.uid);
 
-      // Оновлюємо стан користувача після зміни лайків
       setUser((prevUser) => ({
         ...prevUser,
         posts: {
@@ -57,7 +57,7 @@ export default function FriendPage() {
       }));
     } catch (error) {
       console.error("Error toggling like:", error);
-      toast.error("Failed to update like");
+      toast.error(i18n.t("friendPage.messages.likeError"));
     }
   };
 
@@ -74,7 +74,6 @@ export default function FriendPage() {
 
       await addCommentToPost(userId, postId, newComment);
 
-      // Оновлюємо стан користувача після додавання коментаря
       setUser((prevUser) => ({
         ...prevUser,
         posts: {
@@ -87,10 +86,10 @@ export default function FriendPage() {
       }));
 
       setCommentText("");
-      toast.success("Comment added successfully");
+      toast.success(i18n.t("friendPage.messages.commentAdded"));
     } catch (error) {
       console.error("Error adding comment:", error);
-      toast.error("Failed to add comment");
+      toast.error(i18n.t("friendPage.messages.commentError"));
     }
   };
 
@@ -152,9 +151,17 @@ export default function FriendPage() {
         transitionDuration={300}
       >
         {user?.photoURL ? (
-          <img src={user?.photoURL} alt="UserPhoto" className={css.photo} />
+          <img
+            src={user?.photoURL}
+            alt={i18n.t("friendPage.aria.userPhoto")}
+            className={css.photo}
+          />
         ) : (
-          <img src={defaultPhoto} alt="UserPhoto" className={css.photo} />
+          <img
+            src={defaultPhoto}
+            alt={i18n.t("friendPage.aria.defaultPhoto")}
+            className={css.photo}
+          />
         )}
       </Zoom>
       <div className={css.containerForElement}>
@@ -163,22 +170,29 @@ export default function FriendPage() {
             <h2 className={css.userName}>{user.name}</h2>
             <p>
               {user.online ? (
-                <span className={css.online}>Online</span>
+                <span className={css.online}>
+                  {i18n.t("friendPage.status.online")}
+                </span>
               ) : (
-                <span className={css.offline}>Offline</span>
+                <span className={css.offline}>
+                  {i18n.t("friendPage.status.offline")}
+                </span>
               )}
             </p>
           </div>
           <div className={css.buttonsFriend}>
             {isFriend ? (
               <p className={css.online}>
-                We are friends.{" "}
+                {i18n.t("friendPage.messages.areFriends")}{" "}
                 <MdDelete
                   className={css.deleteIcon}
+                  aria-label={i18n.t("friendPage.aria.deleteIcon")}
                   onClick={async () => {
                     try {
                       await removeFriend(currentUser.uid, user.uid);
-                      toast.success("Friend deleted successfully");
+                      toast.success(
+                        i18n.t("friendPage.messages.friendDeleted")
+                      );
                     } catch (error) {
                       console.log(error);
                     }
@@ -188,39 +202,40 @@ export default function FriendPage() {
             ) : (
               <button className={css.publish} onClick={handleAddFriend}>
                 <IoMdAdd />
-                Add to friends
+                {i18n.t("friendPage.buttons.addFriend")}
               </button>
             )}
             <button className={css.publish} onClick={handleStartChat}>
-              <IoIosSend />
-              Send message
+              <IoIosSend className={css.sendMessageIcon} />
+              {i18n.t("friendPage.buttons.sendMessage")}
             </button>
           </div>
         </div>
         <div className={css.descriptions}>
           {user.origin ? (
             <p className={css.desc}>
-              From: <span>{user.origin}</span>
+              {i18n.t("friendPage.labels.from")}: <span>{user.origin}</span>
             </p>
           ) : null}
           {user.age ? (
             <p className={css.desc}>
-              Age: <span>{user.age}</span>
+              {i18n.t("friendPage.labels.age")}: <span>{user.age}</span>
             </p>
           ) : null}
           {user.number ? (
             <p className={css.desc}>
-              Number: <span>{user.number}</span>
+              {i18n.t("friendPage.labels.number")}: <span>{user.number}</span>
             </p>
           ) : null}
         </div>
         {user.preference ? (
           <p className={css.fromLocal}>
-            Preference: <span>{user.preference}</span>
+            {i18n.t("friendPage.labels.preference")}:{" "}
+            <span>{user.preference}</span>
           </p>
         ) : null}
         <div className={css.containerForPhotoText}>
-          <h3 className={css.forP}>Photo:</h3>
+          <h3 className={css.forP}>{i18n.t("friendPage.labels.photo")}:</h3>
           {user.gallery ? (
             <ul className={css.photoList}>
               {user.gallery.map((photo) => (
@@ -230,18 +245,26 @@ export default function FriendPage() {
                     zoomMargin={40}
                     transitionDuration={300}
                   >
-                    <img src={photo.url} alt="fish" className={css.photoItem} />
+                    <img
+                      src={photo.url}
+                      alt={i18n.t("friendPage.aria.userPhoto")}
+                      className={css.photoItem}
+                    />
                   </Zoom>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className={css.pointPhoto}>{user.name} don`t have photo yet.</p>
+            <p className={css.pointPhoto}>
+              {i18n.tReplace("friendPage.messages.noPhotos", {
+                name: user.name,
+              })}
+            </p>
           )}
         </div>
         <div className={css.containerForSeeAll}>
           <h3 className={css.friendsP}>
-            Friends: {Object.keys(friends).length}
+            {i18n.t("friendPage.labels.friends")}: {Object.keys(friends).length}
           </h3>
           <button
             className={css.buttonSeeAll}
@@ -249,7 +272,7 @@ export default function FriendPage() {
               navigation("/friends/friends", { state: { uid: friendId } });
             }}
           >
-            See all!
+            {i18n.t("friendPage.buttons.seeAll")}
           </button>
         </div>
         {friends ? (
@@ -269,13 +292,13 @@ export default function FriendPage() {
                   {friends[userId].photoURL ? (
                     <img
                       src={friends[userId].photoURL}
-                      alt="UserPhoto"
+                      alt={i18n.t("friendPage.aria.userPhoto")}
                       className={css.friendPhoto}
                     />
                   ) : (
                     <img
                       src={defaultPhoto}
-                      alt="defaultPhoto"
+                      alt={i18n.t("friendPage.aria.defaultPhoto")}
                       className={css.friendPhoto}
                     />
                   )}
@@ -284,11 +307,13 @@ export default function FriendPage() {
               ))}
           </ul>
         ) : (
-          <p>No users found.</p>
+          <p>{i18n.t("friendPage.messages.noUsers")}</p>
         )}
         <div className={css.publications}>
           <div className={css.contPubl}>
-            <h3 className={css.publicationsText}>Publications</h3>
+            <h3 className={css.publicationsText}>
+              {i18n.t("friendPage.labels.publications")}
+            </h3>
           </div>
           <div className={css.containerForPublic}>
             {user.posts ? (
@@ -297,7 +322,7 @@ export default function FriendPage() {
                   Object.values(user.posts)
                     .sort(
                       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                    ) 
+                    )
                     .map((post, index) => (
                       <li key={index} className={css.listPublicationsItem}>
                         <p className={css.titlePost}>{post.title}</p>
@@ -305,7 +330,7 @@ export default function FriendPage() {
                         {post.imageUrl && (
                           <img
                             src={post.imageUrl}
-                            alt="PostPhoto"
+                            alt={i18n.t("friendPage.aria.postPhoto")}
                             className={css.photoWraper}
                           />
                         )}
@@ -314,7 +339,8 @@ export default function FriendPage() {
                             className={css.likes}
                             onClick={() => handleLike(currentUser.uid, post.id)}
                           >
-                            Like {post.likes?.length || 0}
+                            {i18n.t("friendPage.labels.like")}{" "}
+                            {post.likes?.length || 0}
                             {post.likes?.includes(currentUser.uid) ? (
                               <FcLike className={css.likesIcon} />
                             ) : (
@@ -325,7 +351,8 @@ export default function FriendPage() {
                             className={css.likes}
                             onClick={() => toggleComments(post.id)}
                           >
-                            Comments {post.comments?.length || 0}
+                            {i18n.t("friendPage.labels.comments")}{" "}
+                            {post.comments?.length || 0}
                             <FaRegCommentAlt className={css.commentIcon} />
                           </p>
                         </div>
@@ -353,7 +380,7 @@ export default function FriendPage() {
                                   handleAddComment(currentUser.uid, post.id)
                                 }
                               >
-                                Send
+                                {i18n.t("friendPage.buttons.send")}
                               </button>
                             </div>
                           </div>
@@ -363,7 +390,9 @@ export default function FriendPage() {
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>
-                {user.name} don`t have publications!
+                {i18n.tReplace("friendPage.messages.noPublications", {
+                  name: user.name,
+                })}
               </p>
             )}
           </div>

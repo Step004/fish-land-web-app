@@ -1,27 +1,34 @@
 import { IoClose } from "react-icons/io5";
 import css from "./ModalAddplace.module.css";
 import { useState } from "react";
-import { questions } from "../../source/questions.json";
+import { questions } from "../../source/questionsPlaces.json";
 import toast from "react-hot-toast";
-import { saveAnswersToDatabase } from "../../firebase/firebase/writeData.js";
-import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import { addPlaceToFirestore } from "../../firebase/firebase/writeData.js";
+import { i18n } from "../../utils/i18n";
 
 export default function ModalAddPlace({ close }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const data = questions;
-  const { currentUser } = useAuth();
+  const [place, setPlace] = useState({
+    placeName: "",
+    placeLocation: "",
+    placeType: "",
+    placeAnswers: {},
+  });
 
   const handleNextStep = async () => {
     if (step === data.length - 1) {
-      toast.success("Finish!");
-      console.log("User answers:", answers);
-
       try {
-        await saveAnswersToDatabase(currentUser.uid, answers);
-        toast.success("Answers saved successfully!");
+        await addPlaceToFirestore(
+          place.placeName,
+          place.placeLocation,
+          place.placeType,
+          answers
+        );
+        toast.success(i18n.t("addPlace.messages.success"));
       } catch (error) {
-        toast.error("Failed to save answers.");
+        toast.error(i18n.t("addPlace.messages.error"));
         console.error("Помилка збереження відповідей:", error);
       }
 
@@ -33,7 +40,7 @@ export default function ModalAddPlace({ close }) {
 
   const handlePrevStep = () => {
     if (step === 0) {
-      toast.error("You are on the first question!");
+      toast.error(i18n.t("addPlace.messages.firstQuestion"));
       return;
     }
     setStep(step - 1);
@@ -66,9 +73,49 @@ export default function ModalAddPlace({ close }) {
       <div className={css.overlay} onClick={close}></div>
       <div className={css.window}>
         <IoClose className={css.closeBtn} onClick={close} />
-        <h2 className={css.title}>Your fishing preferences</h2>
+        <h2 className={css.title}>{i18n.t("addPlace.title")}</h2>
 
-        {/* Прогрес-бар */}
+        <div className={css.inputContainer}>
+          <label htmlFor="placeName">
+            {i18n.t("addPlace.labels.placeName")}
+          </label>
+          <input
+            type="text"
+            id="placeName"
+            value={place.placeName}
+            onChange={(e) => setPlace({ ...place, placeName: e.target.value })}
+            placeholder={i18n.t("addPlace.placeholders.placeName")}
+          />
+        </div>
+
+        <div className={css.inputContainer}>
+          <label htmlFor="placeLocation">
+            {i18n.t("addPlace.labels.placeLocation")}
+          </label>
+          <input
+            type="text"
+            id="placeLocation"
+            value={place.placeLocation}
+            onChange={(e) =>
+              setPlace({ ...place, placeLocation: e.target.value })
+            }
+            placeholder={i18n.t("addPlace.placeholders.placeLocation")}
+          />
+        </div>
+
+        <div className={css.inputContainer}>
+          <label htmlFor="placeType">
+            {i18n.t("addPlace.labels.placeType")}
+          </label>
+          <input
+            type="text"
+            id="placeType"
+            value={place.placeType}
+            onChange={(e) => setPlace({ ...place, placeType: e.target.value })}
+            placeholder={i18n.t("addPlace.placeholders.placeType")}
+          />
+        </div>
+
         <div className={css.progressBar}>
           {data.map((_, index) => (
             <span
@@ -76,6 +123,13 @@ export default function ModalAddPlace({ close }) {
               className={`${css.progressCircle} ${
                 isAnswered(data[index].id) ? css.completed : ""
               } ${index === step ? css.active : ""}`}
+              aria-label={
+                isAnswered(data[index].id)
+                  ? i18n.t("addPlace.progressBar.completed")
+                  : index === step
+                  ? i18n.t("addPlace.progressBar.active")
+                  : ""
+              }
             ></span>
           ))}
         </div>
@@ -128,8 +182,12 @@ export default function ModalAddPlace({ close }) {
         </div>
 
         <div className={css.buttons}>
-          <button onClick={handlePrevStep}>Prev</button>
-          <button onClick={handleNextStep}>Next</button>
+          <button onClick={handlePrevStep}>
+            {i18n.t("addPlace.buttons.prev")}
+          </button>
+          <button onClick={handleNextStep}>
+            {i18n.t("addPlace.buttons.next")}
+          </button>
         </div>
       </div>
     </>

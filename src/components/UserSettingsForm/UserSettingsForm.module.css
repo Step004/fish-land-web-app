@@ -56,9 +56,14 @@
 
   font-family: var(--font-family);
   font-weight: 400;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 125%;
-  color: #11101c;
+  color: #4e4e54;
+}
+
+.field:placeholder {
+  font-size: 20px;
+  color: rgba(54, 53, 66, 0.097);
 }
 
 .field:hover {
@@ -216,4 +221,38 @@
   .logInText {
     font-size: 30px;
   }
+}
+
+.select {
+  max-width: 150px;
+  width: auto;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.select:hover {
+  border-color: #666;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.label {
+  color: #11101c;
+  font-size: 18px;
+  font-weight: 500;
+
+}
+
+.inputContainerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

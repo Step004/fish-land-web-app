@@ -1,13 +1,13 @@
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../firebase/firebase/firebase";
+import { i18n } from "./i18n";
+
 export async function generateRecommendations(userData) {
   try {
     if (!userData.origin) {
-      console.log("Ви не вказали місто");
-
-      return {
-        message: `Ви не вказали місто`,
-      };
+      const message = i18n.t("recommendations.errors.noCitySpecified");
+      console.log(message);
+      return { message };
     }
 
     // Нормалізуємо місто користувача
@@ -16,7 +16,6 @@ export async function generateRecommendations(userData) {
     const placesRef = collection(firestore, "places");
     const placesSnapshot = await getDocs(placesRef);
     const allPlaces = [];
-
     const recommendations = [];
 
     // Отримуємо відповіді користувача
@@ -40,21 +39,22 @@ export async function generateRecommendations(userData) {
 
       let matchScore = 0;
 
-      // 1. Фільтрація за типом риби (якщо вказано)
-      const requestedFishType = userAnswers[1]; // Питання 1: Тип риби
+      // 1. Фільтрація за типом риби
+      const requestedFishType = userAnswers[1];
       if (
         requestedFishType &&
-        Array.isArray(place.fishTypes) && // Перевірка, чи fishTypes - це масив
+        Array.isArray(place.fishTypes) &&
         place.fishTypes.includes(requestedFishType)
       ) {
         matchScore += 1;
       }
 
-      // 2. Фільтрація за місцем риболовлі (берег чи човен)
-      const requestedFishingLocation = userAnswers[2]; // Питання 2: Ловля з берега чи з човна
+      // 2. Фільтрація за місцем риболовлі
+      const requestedFishingLocation = userAnswers[2];
       if (
         requestedFishingLocation &&
-        requestedFishingLocation !== "Без різниці" &&
+        requestedFishingLocation !==
+          i18n.t("recommendations.fishingLocation.noPreference") &&
         place.fishingLocation &&
         requestedFishingLocation === place.fishingLocation
       ) {
@@ -62,10 +62,10 @@ export async function generateRecommendations(userData) {
       }
 
       // 3. Фільтрація за стилем риболовлі
-      const requestedFishingStyle = userAnswers[3]; // Питання 3: Стиль риболовлі
+      const requestedFishingStyle = userAnswers[3];
       if (
         requestedFishingStyle &&
-        Array.isArray(place.fishingStyles) && // Перевірка, чи fishingStyles - це масив
+        Array.isArray(place.fishingStyles) &&
         requestedFishingStyle.some((style) =>
           place.fishingStyles.includes(style)
         )
@@ -74,32 +74,35 @@ export async function generateRecommendations(userData) {
       }
 
       // 4. Фільтрація за нічною риболовлею
-      const likesNightFishing = userAnswers[4]; // Питання 4: Нічна риболовля
-      if (likesNightFishing === "Так" && place.hasNightFishing) {
+      const likesNightFishing = userAnswers[4];
+      if (
+        likesNightFishing === i18n.t("recommendations.answers.yes") &&
+        place.hasNightFishing
+      ) {
         matchScore += 1;
       }
 
       // 5. Фільтрація за типом водойми
-      const requestedWaterTypes = userAnswers[5]; // Питання 5: Типи водойм
+      const requestedWaterTypes = userAnswers[5];
       if (
         requestedWaterTypes &&
-        Array.isArray(place.waterTypes) && // Перевірка, чи waterTypes - це масив
+        Array.isArray(place.waterTypes) &&
         requestedWaterTypes.some((type) => place.waterTypes.includes(type))
       ) {
         matchScore += 1;
       }
 
       // 6. Фільтрація за відстанню
-      const maxDistance = userAnswers[6]; // Питання 6: Максимальна відстань
+      const maxDistance = userAnswers[6];
       if (maxDistance && place.distance <= maxDistance) {
         matchScore += 1;
       }
 
       // 7. Фільтрація за зручностями
-      const requestedFacilities = userAnswers[7]; // Питання 7: Зручності
+      const requestedFacilities = userAnswers[7];
       if (
         requestedFacilities &&
-        Array.isArray(place.facilities) && // Перевірка, чи facilities - це масив
+        Array.isArray(place.facilities) &&
         requestedFacilities.some((facility) =>
           place.facilities.includes(facility)
         )
@@ -108,22 +111,21 @@ export async function generateRecommendations(userData) {
       }
 
       // 8. Погода
-      const weatherPreference = userAnswers[8]; // Питання 8: Погода
+      const weatherPreference = userAnswers[8];
       if (
         weatherPreference &&
-        Array.isArray(place.weatherTypes) && // Перевірка, чи weatherTypes - це масив
+        Array.isArray(place.weatherTypes) &&
         place.weatherTypes.includes(weatherPreference)
       ) {
         matchScore += 1;
       }
 
       // 9. Досвід у риболовлі
-      const fishingExperience = userAnswers[9]; // Питання 9: Досвід у риболовлі
+      const fishingExperience = userAnswers[9];
       if (fishingExperience && place.experienceLevel === fishingExperience) {
         matchScore += 1;
       }
 
-      // Якщо місце пройшло всі фільтри, додаємо до рекомендацій
       if (matchScore >= 0) {
         recommendations.push({
           place_name: place.name,
@@ -134,24 +136,23 @@ export async function generateRecommendations(userData) {
       }
     }
 
-    // Сортуємо місця за найбільшим коефіцієнтом відповідності
     recommendations.sort((a, b) => b.matchScore - a.matchScore);
-
-    // Вибираємо топ-3 місця
     const topRecommendations = recommendations.slice(0, 3);
-    console.log(topRecommendations);
 
-    // Якщо рекомендацій немає, повертаємо повідомлення
     if (topRecommendations.length === 0) {
-      console.log("У місті немає місць, що відповідають вашим критеріям");
-      return {
-        message: `У місті ${userData.origin} немає місць, що відповідають вашим критеріям`,
-      };
+      const message = i18n.tReplace("recommendations.errors.noMatchingPlaces", {
+        city: userData.origin,
+      });
+      console.log(message);
+      return { message };
     }
 
     return topRecommendations;
   } catch (error) {
-    console.log("error", error);
+    const message = i18n.tReplace("recommendations.errors.generalError", {
+      error: error.message,
+    });
+    console.log(message);
     return { error: error.message };
   }
 }

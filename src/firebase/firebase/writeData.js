@@ -343,7 +343,7 @@ const questions = [
 ];
 
 // Функція для додавання місця
-export const addPlaceToFirestore = async (name, location, answers) => {
+export const addPlaceToFirestore = async (name, location, type, answers) => {
   try {
     // Отримуємо посилання на колекцію "places"
     const placesCollectionRef = collection(firestore, "places");
@@ -352,6 +352,7 @@ export const addPlaceToFirestore = async (name, location, answers) => {
     const placeData = {
       name: name,
       location: location,
+      type: type,
       answers: {}, // Відповіді будуть зберігатися тут
     };
 

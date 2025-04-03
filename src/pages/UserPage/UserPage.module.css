@@ -185,16 +185,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
     font-size: 14px;
     border-radius: 15px;
-    width: 100px;
+    max-width: 130px;
+    width: 100%;
     height: 30px;
     border: 3px solid white;
     background: none;
     color: aliceblue;
     transition: all 0.3s ease;
     cursor: pointer;
+    padding: 10px;
 }
 
 .publish:hover {
@@ -420,13 +421,14 @@
 }
 
 .buttonAddPlace {
-    background-color: #3c3c3c;
+    background-color: #45c74e;
     color: white;
     border-radius: 5px;
-        padding: 10px 20px;
+    padding: 10px 20px;
     cursor: pointer;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 20px;
+    font-size: 20px;
 }
 
 @media screen and (max-width: 868px) {
@@ -501,8 +503,9 @@
     .publish {
         font-size: 12px;
         border-radius: 10px;
-        width: 80px;
-        height: 20px;
+        max-width: 100px;
+        width: 100%;
+        padding: 5px;
     }
 
     .settingsIcon {

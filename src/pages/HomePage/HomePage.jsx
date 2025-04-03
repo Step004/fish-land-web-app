@@ -12,6 +12,7 @@ import {
   toggleLikeOnPost,
 } from "../../firebase/firebase/writeData.js";
 import toast from "react-hot-toast";
+import { i18n } from "../../utils/i18n";
 
 export default function HomePage() {
   const { userLoggedIn, currentUser } = useAuth();
@@ -150,7 +151,7 @@ export default function HomePage() {
   return (
     <main className={css.container}>
       <div className={css.containerForElement}>
-        <h2 className={css.title}>News from your friends</h2>
+        <h2 className={css.title}>{i18n.t("homePage.titles.newsFromFriends")}</h2>
         {memoizedFriends.length > 0 ? (
           <ul className={css.listPublications}>
             {memoizedFriends.flatMap((friend) =>

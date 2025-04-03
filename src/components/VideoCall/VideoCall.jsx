@@ -18,6 +18,7 @@ import { FaMicrophoneSlash } from "react-icons/fa6";
 import css from "./VideoCall.module.css";
 import { sendMessage } from "../../firebase/firebase/chats.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import { i18n } from "../../utils/i18n";
 
 const VideoCall = ({ chatId, link, close }) => {
   const { currentUser } = useAuth();
@@ -289,7 +290,7 @@ const VideoCall = ({ chatId, link, close }) => {
             disabled={isCalling}
             onClick={createCall}
           >
-            Start Call
+            {i18n.t("videoCall.buttons.startCall")}
           </button>
         )}
 
@@ -302,7 +303,7 @@ const VideoCall = ({ chatId, link, close }) => {
             endCall(callId);
           }}
         >
-          End Call
+          {i18n.t("videoCall.buttons.endCall")}
         </button>
         {link && (
           <>
@@ -312,7 +313,7 @@ const VideoCall = ({ chatId, link, close }) => {
                 answerCall(link);
               }}
             >
-              Join
+              {i18n.t("videoCall.buttons.join")}
             </button>
           </>
         )}

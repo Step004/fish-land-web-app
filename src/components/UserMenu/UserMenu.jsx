@@ -8,6 +8,7 @@ import { getUserById } from "../../firebase/firebase/readData.js";
 import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
 import { useMediaQuery } from "react-responsive";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { i18n } from "../../utils/i18n";
 
 export default function UserMenu({ handleBurgerMenuToggle }) {
   const { currentUser, userFromDB } = useAuth();
@@ -49,7 +50,7 @@ export default function UserMenu({ handleBurgerMenuToggle }) {
       </div>
       {isTabletScreen && (
         <button className={css.logout} onClick={handleLogout}>
-          Logout
+          {i18n.t("userMenu.buttons.logout")}
         </button>
       )}
       <GiHamburgerMenu

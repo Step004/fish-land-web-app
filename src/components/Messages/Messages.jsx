@@ -24,6 +24,7 @@ import { IoSendSharp } from "react-icons/io5";
 import { doc, onSnapshot } from "firebase/firestore";
 import { firestore } from "../../firebase/firebase/firebase.js";
 import { getUserById } from "../../firebase/firebase/readData.js";
+import { i18n } from "../../utils/i18n";
 
 export default function Messages() {
   const { chatId } = useParams();
@@ -179,10 +180,10 @@ export default function Messages() {
             setLink("");
           }}
         >
-          End call!
+          {i18n.t("messagePage.buttons.endCall")}
         </button>
       ) : (
-        <p>Call ended</p>
+        <p>{i18n.t("messagePage.calls.ended")}</p>
       );
     }
     return (
@@ -210,7 +211,7 @@ export default function Messages() {
             </button>
           </>
         ) : (
-          <p>Call ended</p>
+          <p>{i18n.t("messagePage.calls.ended")}</p>
         )}
       </div>
     );
@@ -223,6 +224,7 @@ export default function Messages() {
           <button
             className={css.buttonBack}
             onClick={() => navigate("/message")}
+            aria-label={i18n.t("messagePage.buttons.back")}
           >
             <IoArrowBackSharp className={css.iconBack} />
           </button>
@@ -239,7 +241,7 @@ export default function Messages() {
               <p>{anotherUser?.name}</p>
               <img
                 src={anotherUser?.photoURL || defaultPhoto}
-                alt="UserPhoto"
+                alt={i18n.t("messagePage.aria.userPhoto")}
                 className={css.photo}
               />
             </div>
@@ -251,10 +253,10 @@ export default function Messages() {
                     onClick={() => {
                       handleOpenMore();
                       deleteChat(currentChat.chatId);
-                      toast("Chat successfully deleted!");
+                      toast(i18n.t("messagePage.messages.deleteChat"));
                     }}
                   >
-                    Delete chat
+                    {i18n.t("messagePage.buttons.deleteChat")}
                   </li>
                 </ul>
               </div>
@@ -272,10 +274,10 @@ export default function Messages() {
                   className={css.message}
                   style={{
                     margin: 10,
-                    border:
+                    backgroundColor:
                       currentUser.uid === msg.senderId
-                        ? "2px solid green"
-                        : "1px dashed red",
+                        ? "rgb(65, 64, 148)"
+                        : "rgb(23, 22, 126)",
                     marginLeft:
                       currentUser.uid === msg.senderId ? "auto" : "10px",
                     width: "fit-content",
@@ -290,12 +292,14 @@ export default function Messages() {
                           ? userFromDB?.photoURL || defaultPhoto
                           : anotherUser?.photoURL || defaultPhoto
                       }
-                      alt="UserPhoto"
+                      alt={i18n.t("messagePage.aria.userPhoto")}
                       className={css.photo}
                     />
                     <p>{msg.name}</p>
                   </div>
-                  {isLastLink(msg) ? callForm(msg) : "Call ended"}
+                  {isLastLink(msg)
+                    ? callForm(msg)
+                    : i18n.t("messagePage.calls.ended")}
                 </li>
               );
             }
@@ -305,15 +309,16 @@ export default function Messages() {
                 className={css.message}
                 style={{
                   margin: 10,
-                  border:
+                  backgroundColor:
                     currentUser.uid === msg.senderId
-                      ? "2px solid green"
-                      : "1px dashed red",
+                      ? "rgb(65, 64, 148)"
+                      : "rgb(23, 22, 126)",
                   marginLeft:
                     currentUser.uid === msg.senderId ? "auto" : "10px",
                   width: "fit-content",
                   padding: 5,
                   color: "white",
+                  borderRadius: "10px",
                 }}
               >
                 <div className={css.photoAndName}>
@@ -323,7 +328,7 @@ export default function Messages() {
                         ? userFromDB?.photoURL || defaultPhoto
                         : anotherUser?.photoURL || defaultPhoto
                     }
-                    alt="UserPhoto"
+                    alt={i18n.t("messagePage.aria.userPhoto")}
                     className={css.photo}
                   />
                   <p>{msg.name}</p>
@@ -341,10 +346,14 @@ export default function Messages() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Your text..."
+          placeholder={i18n.t("messagePage.placeholders.messageInput")}
         />
         <button className={css.sendButton} onClick={handleSendMessage}>
-          {isTabletScreen ? <IoSendSharp /> : "Send"}
+          {isTabletScreen ? (
+            <IoSendSharp />
+          ) : (
+            i18n.t("messagePage.buttons.send")
+          )}
         </button>
         <button
           className={css.joinToCall}

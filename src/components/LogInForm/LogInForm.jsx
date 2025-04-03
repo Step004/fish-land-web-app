@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { changeOnlineStatusForLogin } from "../../firebase/firebase/writeData.js";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
+import { i18n } from "../../utils/i18n";
 
 export default function LogInForm() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,11 +26,15 @@ export default function LogInForm() {
             const userId = userCredential.user.uid;
             await changeOnlineStatusForLogin(userId);
             console.log("User logged in and status updated");
-            toast.success("Successfully logged in!");
+            toast.success(i18n.t("loginForm.messages.loginSuccess"));
           }
         );
       } catch (error) {
-        toast.error(error.message);
+        toast.error(
+          i18n.tReplace("loginForm.messages.loginError", {
+            error: error.message,
+          })
+        );
       }
 
       navigate("/");
@@ -43,11 +48,14 @@ export default function LogInForm() {
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: Yup.string()
+      .email(i18n.t("loginForm.validation.emailInvalid"))
+      .required(i18n.t("loginForm.validation.emailRequired")),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters long")
-      .required("Password is required"),
+      .min(6, i18n.t("loginForm.validation.passwordMin"))
+      .required(i18n.t("loginForm.validation.passwordRequired")),
   });
+
   const handleGoogleLogin = async () => {
     if (!isLoggedIn) {
       setIsLoggedIn(true);
@@ -58,12 +66,16 @@ export default function LogInForm() {
         await changeOnlineStatusForLogin(userId);
 
         console.log("User logged in and status updated");
-        toast.success("Вхід виконано успішно!");
+        toast.success(i18n.t("loginForm.messages.loginSuccess"));
 
         navigate("/");
       } catch (error) {
         console.error("Error during login:", error);
-        toast.error(`Помилка авторизації: ${error.message}`);
+        toast.error(
+          i18n.tReplace("loginForm.messages.loginError", {
+            error: error.message,
+          })
+        );
         setIsLoggedIn(false);
       }
     }
@@ -80,17 +92,14 @@ export default function LogInForm() {
         onSubmit={handleSubmit}
       >
         <Form className={css.form} autoComplete="off">
-          <p className={css.logInText}>Log In</p>
-          <p className={css.welcomeText}>
-            Welcome back! Please enter your credentials to access your account
-            and continue your babysitter search.
-          </p>
+          <p className={css.logInText}>{i18n.t("loginForm.title")}</p>
+          <p className={css.welcomeText}>{i18n.t("loginForm.welcome")}</p>
           <div className={css.fields}>
             <div className={css.errorMsgCont}>
               <Field
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder={i18n.t("loginForm.fields.email")}
                 className={css.field}
               />
               <ErrorMessage
@@ -104,7 +113,7 @@ export default function LogInForm() {
                 <Field
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Password"
+                  placeholder={i18n.t("loginForm.fields.password")}
                   className={css.field}
                 />
                 <ErrorMessage
@@ -117,6 +126,11 @@ export default function LogInForm() {
                 type="button"
                 onClick={togglePasswordVisibility}
                 className={css.eyeIcon}
+                aria-label={
+                  showPassword
+                    ? i18n.t("loginForm.buttons.hidePassword")
+                    : i18n.t("loginForm.buttons.showPassword")
+                }
               >
                 {showPassword ? (
                   <RxEyeOpen className={css.eye} />
@@ -128,23 +142,28 @@ export default function LogInForm() {
           </div>
 
           <button type="submit" className={css.submitButton}>
-            Log In
+            {i18n.t("loginForm.buttons.login")}
           </button>
           <div className={css.googleIconContainer}>
             <FcGoogle
               className={css.googleIcon}
               onClick={() => handleGoogleLogin()}
+              aria-label={i18n.t("loginForm.aria.googleLogin")}
+              role="button"
+              tabIndex={0}
             />
           </div>
           <p className={css.registr}>
-            Don`t have an account?{" "}
+            {i18n.t("loginForm.registration.prompt")}{" "}
             <span
               className={css.registrLink}
               onClick={() => {
                 navigate("/register");
               }}
+              role="button"
+              tabIndex={0}
             >
-              Registration
+              {i18n.t("loginForm.registration.link")}
             </span>
           </p>
         </Form>

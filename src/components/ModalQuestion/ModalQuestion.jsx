@@ -5,35 +5,36 @@ import { questions } from "../../source/questions.json";
 import toast from "react-hot-toast";
 import { saveAnswersToDatabase } from "../../firebase/firebase/writeData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
+import { i18n } from "../../utils/i18n";
 
 export default function ModalQuestion({ close }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const data = questions;
-  const {currentUser}= useAuth()
+  const { currentUser } = useAuth();
 
-    const handleNextStep = async () => {
-      if (step === data.length - 1) {
-        toast.success("Finish!");
-        console.log("User answers:", answers);
+  const handleNextStep = async () => {
+    if (step === data.length - 1) {
+      toast.success(i18n.t("modalQuestion.messages.finish"));
+      console.log("User answers:", answers);
 
-        try {
-          await saveAnswersToDatabase(currentUser.uid, answers);
-          toast.success("Answers saved successfully!");
-        } catch (error) {
-          toast.error("Failed to save answers.");
-          console.error("Помилка збереження відповідей:", error);
-        }
-
-        close();
-        return;
+      try {
+        await saveAnswersToDatabase(currentUser.uid, answers);
+        toast.success(i18n.t("modalQuestion.messages.answersSaved"));
+      } catch (error) {
+        toast.error(i18n.t("modalQuestion.messages.savingError"));
+        console.error("Error saving answers:", error);
       }
-      setStep(step + 1);
-    };
+
+      close();
+      return;
+    }
+    setStep(step + 1);
+  };
 
   const handlePrevStep = () => {
     if (step === 0) {
-      toast.error("You are on the first question!");
+      toast.error(i18n.t("modalQuestion.messages.firstQuestion"));
       return;
     }
     setStep(step - 1);
@@ -65,10 +66,13 @@ export default function ModalQuestion({ close }) {
     <>
       <div className={css.overlay} onClick={close}></div>
       <div className={css.window}>
-        <IoClose className={css.closeBtn} onClick={close} />
-        <h2 className={css.title}>Your fishing preferences</h2>
+        <IoClose
+          className={css.closeBtn}
+          onClick={close}
+          aria-label={i18n.t("modalQuestion.aria.close")}
+        />
+        <h2 className={css.title}>{i18n.t("modalQuestion.title")}</h2>
 
-        {/* Прогрес-бар */}
         <div className={css.progressBar}>
           {data.map((_, index) => (
             <span
@@ -76,6 +80,11 @@ export default function ModalQuestion({ close }) {
               className={`${css.progressCircle} ${
                 isAnswered(data[index].id) ? css.completed : ""
               } ${index === step ? css.active : ""}`}
+              aria-label={i18n.t("modalQuestion.aria.progressCircle")}
+              role="progressbar"
+              aria-valuenow={index + 1}
+              aria-valuemin={1}
+              aria-valuemax={data.length}
             ></span>
           ))}
         </div>
@@ -128,8 +137,12 @@ export default function ModalQuestion({ close }) {
         </div>
 
         <div className={css.buttons}>
-          <button onClick={handlePrevStep}>Prev</button>
-          <button onClick={handleNextStep}>Next</button>
+          <button onClick={handlePrevStep}>
+            {i18n.t("modalQuestion.buttons.prev")}
+          </button>
+          <button onClick={handleNextStep}>
+            {i18n.t("modalQuestion.buttons.next")}
+          </button>
         </div>
       </div>
     </>

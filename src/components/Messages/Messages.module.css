@@ -27,22 +27,18 @@
 .inputMsg {
     width: 100%;
     height: 38px;
-    font-size: 24px;
+    font-size: 18px;
     border-radius: 5px;
     padding-left: 5px;
 }
 
 .sendButton {
     width: auto;
-    height: 32px;
-    font-size: 24px;
+    padding: 5px 10px;
+    font-size: 20px;
     cursor: pointer;
 }
 
-.phoneButton {
-    height: 32px;
-    cursor: pointer;
-}
 
 .sendButton:hover {
     background-color: bisque;
@@ -52,9 +48,7 @@
     /* position: relative; */
     width: 100%;
     height: 75vh;
-    border: 2px dashed white;
     overflow-y: auto;
-    margin-top: 20px;
     box-sizing: border-box;
 }
 
@@ -63,11 +57,12 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 40px;
-    background-color: rgb(137, 137, 137);
+    height: 60px;
+    background-color: rgb(0, 0, 0);
     color: white;
     z-index: 10;
     padding: 0 6px;
+    border-bottom: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -83,15 +78,19 @@
 .nameAndPhoto {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 15px;
     position: relative;
     cursor: pointer;
 }
 
 .iconMore {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
+}
+
+.iconMore:hover {
+    color: rgb(23, 22, 126);
 }
 
 .menu {
@@ -159,8 +158,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 15px;
-    border-radius: 5px;
+    padding: 10px 10px;
+    border-radius: 100%;
 }
 
 .rejectCallIcon {
@@ -181,6 +180,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 15px;
-    border-radius: 5px;
+    padding: 10px 10px;
+    border-radius: 100%;
+}
+
+.joinToCall:hover {
+    background-color: rgb(8, 255, 8);
 }

@@ -8,6 +8,7 @@ import { doCreateUserWithEmailAndPassword } from "../../firebase/firebase/auth.j
 import { useNavigate } from "react-router-dom";
 import { saveUserToDatabase } from "../../firebase/firebase/writeData.js";
 import toast from "react-hot-toast";
+import { i18n } from "../../utils/i18n";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -38,12 +39,15 @@ export default function RegisterForm() {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    name: Yup.string().required("Name is required"),
+    email: Yup.string()
+      .email(i18n.t("registerForm.validation.emailInvalid"))
+      .required(i18n.t("registerForm.validation.emailRequired")),
+    name: Yup.string().required(i18n.t("registerForm.validation.nameRequired")),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters long")
-      .required("Password is required"),
+      .min(6, i18n.t("registerForm.validation.passwordMin"))
+      .required(i18n.t("registerForm.validation.passwordRequired")),
   });
 
   return (
@@ -58,18 +62,14 @@ export default function RegisterForm() {
         onSubmit={handleSubmit}
       >
         <Form className={css.form} autoComplete="off">
-          <p className={css.logInText}>Registration</p>
-          <p className={css.welcomeText}>
-            Thank you for your interest in our platform! In order to register,
-            we need some information. Please provide us with the following
-            information.
-          </p>
+          <p className={css.logInText}>{i18n.t("registerForm.title")}</p>
+          <p className={css.welcomeText}>{i18n.t("registerForm.welcome")}</p>
           <div className={css.fields}>
             <div className={css.errorMsgCont}>
               <Field
                 type="text"
                 name="name"
-                placeholder="Name"
+                placeholder={i18n.t("registerForm.fields.name")}
                 className={css.field}
               />
               <ErrorMessage
@@ -82,7 +82,7 @@ export default function RegisterForm() {
               <Field
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder={i18n.t("registerForm.fields.email")}
                 className={css.field}
               />
               <ErrorMessage
@@ -96,7 +96,7 @@ export default function RegisterForm() {
                 <Field
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Password"
+                  placeholder={i18n.t("registerForm.fields.password")}
                   className={css.field}
                 />
                 <ErrorMessage
@@ -109,6 +109,11 @@ export default function RegisterForm() {
                 type="button"
                 onClick={togglePasswordVisibility}
                 className={css.eyeIcon}
+                aria-label={
+                  showPassword
+                    ? i18n.t("registerForm.buttons.hidePassword")
+                    : i18n.t("registerForm.buttons.showPassword")
+                }
               >
                 {showPassword ? (
                   <RxEyeOpen className={css.eye} />
@@ -120,18 +125,20 @@ export default function RegisterForm() {
           </div>
 
           <button type="submit" className={css.submitButton}>
-            Sign Up
+            {i18n.t("registerForm.buttons.signup")}
           </button>
-        
+
           <p className={css.registr}>
-            Do you have an account?{" "}
+            {i18n.t("registerForm.login.prompt")}{" "}
             <span
               className={css.registrLink}
               onClick={() => {
                 navigate("/login");
               }}
+              role="button"
+              tabIndex={0}
             >
-              Log in
+              {i18n.t("registerForm.login.link")}
             </span>
           </p>
         </Form>

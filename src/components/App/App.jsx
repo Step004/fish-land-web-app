@@ -1,8 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../Layout/Layout.jsx";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import Loader from "../Loader/Loader.jsx";
+import { i18n } from "../../utils/i18n.js";
 
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage.jsx"));
 const UserPage = lazy(() => import("../../pages/UserPage/UserPage.jsx"));
@@ -28,7 +29,14 @@ const NotFoundPage = lazy(() =>
 );
 
 function App() {
-  const { loading } = useAuth();
+  const { loading, userFromDB } = useAuth();
+  useEffect(() => {
+    // Встановлюємо мову з даних користувача, якщо він авторизований
+    if (userFromDB?.language) {
+      i18n.setLanguage(userFromDB.language);
+    }
+  }, [userFromDB]);
+
   if (loading) return <Loader />;
 
   return (

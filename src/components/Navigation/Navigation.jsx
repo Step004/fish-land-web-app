@@ -1,27 +1,28 @@
-import { NavLink} from "react-router-dom";
-import clsx from "clsx";
+import { NavLink } from "react-router-dom";
 import css from "./Navigation.module.css";
-
-const buildLinkClass = ({ isActive }) => {
-  return clsx(css.link, isActive && css.active);
-};
+import { i18n } from "../../utils/i18n";
 
 export default function Navigation() {
+  const buildLinkClass = ({ isActive }) =>
+    isActive ? `${css.link} ${css.active}` : css.link;
+
   return (
     <>
       <nav className={css.navigation}>
         <NavLink to="/" className={buildLinkClass}>
-          News
+          {i18n.t("navigation.links.news")}
         </NavLink>
 
         <NavLink to="/friends/friends" className={buildLinkClass}>
-          Friends
+          {i18n.t("navigation.links.friends")}
         </NavLink>
+
         <NavLink to="/message" className={buildLinkClass}>
-          Message
+          {i18n.t("navigation.links.messages")}
         </NavLink>
+
         {/* <NavLink to="/map" className={buildLinkClass}>
-          Map
+          {i18n.t("navigation.links.map")}
         </NavLink> */}
       </nav>
     </>

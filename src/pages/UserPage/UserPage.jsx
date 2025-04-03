@@ -17,6 +17,7 @@ import {
   addCommentToPost,
   deleteUserPost,
   toggleLikeOnPost,
+  uploadGalleryImage,
 } from "../../firebase/firebase/writeData.js";
 import { MdDelete } from "react-icons/md";
 import ModalQuestion from "../../components/ModalQuestion/ModalQuestion.jsx";
@@ -27,8 +28,8 @@ import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import { uploadGalleryImage } from "../../firebase/firebase/writeData";
 import ModalAddPlace from "../../components/ModalAddplace/ModalAddplace.jsx";
+import { i18n } from "../../utils/i18n";
 
 export default function UserPage() {
   const { currentUser } = useAuth();
@@ -185,18 +186,17 @@ export default function UserPage() {
     if (file && currentUser) {
       try {
         const photoUrl = await uploadGalleryImage(file, currentUser.uid);
-        // Оновлюємо стан користувача після додавання фото
         setThisUser((prevUser) => ({
           ...prevUser,
           gallery: [...(prevUser.gallery || []), { url: photoUrl }],
         }));
-        toast.success("Photo added successfully!");
+        toast.success(i18n.t("userPage.messages.photoAddSuccess"));
       } catch (error) {
         console.error("Error adding photo to gallery:", error);
-        toast.error("Failed to add photo. Please check your permissions.");
+        toast.error(i18n.t("userPage.messages.photoAddError"));
       }
     } else {
-      toast.error("Please select a file and make sure you are logged in.");
+      toast.error(i18n.t("userPage.messages.fileSelectError"));
     }
   };
 
@@ -211,20 +211,19 @@ export default function UserPage() {
           {userPhoto}
         </Zoom>
         <div className={css.containerForRecommended}>
-          <h2>Recommendations</h2>
-          {answers.length == 0 ? (
+          <h2>{i18n.t("userPage.titles.recommendations")}</h2>
+          {answers.length === 0 ? (
             <>
               <div className={css.containerForDescRecommend}>
                 <p className={css.descRecommend}>
-                  In order to receive recommendations for fishing spots, you
-                  need to complete a survey!
+                  {i18n.t("userPage.messages.recommendationsSurvey")}
                 </p>
               </div>
               <button
                 className={css.buttonStart}
                 onClick={() => toggleQuestion()}
               >
-                Start
+                {i18n.t("userPage.buttons.start")}
               </button>
             </>
           ) : (
@@ -232,7 +231,7 @@ export default function UserPage() {
           )}
         </div>
         <button className={css.buttonAddPlace} onClick={toggleAddPlace}>
-          Add place
+          {i18n.t("userPage.buttons.addPlace")}
         </button>
       </div>
       <div className={css.containerForElement}>
@@ -243,30 +242,31 @@ export default function UserPage() {
           </button>
         </div>
         <div className={css.descriptions}>
-          {thisUser.origin ? (
+          {thisUser.origin && (
             <p className={css.desc}>
-              From: <span>{thisUser.origin}</span>
+              {i18n.t("userPage.labels.from")}: <span>{thisUser.origin}</span>
             </p>
-          ) : null}
-          {thisUser.age ? (
+          )}
+          {thisUser.age && (
             <p className={css.desc}>
-              Age: <span>{thisUser.age}</span>
+              {i18n.t("userPage.labels.age")}: <span>{thisUser.age}</span>
             </p>
-          ) : null}
-          {thisUser.number ? (
+          )}
+          {thisUser.number && (
             <p className={css.desc}>
-              Number: <span>{thisUser.number}</span>
+              {i18n.t("userPage.labels.number")}: <span>{thisUser.number}</span>
             </p>
-          ) : null}
+          )}
         </div>
-        {thisUser.preference ? (
+        {thisUser.preference && (
           <p className={css.fromLocal}>
-            Preference: <span>{thisUser.preference}</span>
+            {i18n.t("userPage.labels.preference")}:{" "}
+            <span>{thisUser.preference}</span>
           </p>
-        ) : null}
+        )}
         <div>
           <div className={css.containerForPhotoText}>
-            <h3 className={css.forP}>My photos</h3>
+            <h3 className={css.forP}>{i18n.t("userPage.titles.myPhotos")}</h3>
             <label className={css.addPhotoButton}>
               <input
                 type="file"
@@ -275,7 +275,9 @@ export default function UserPage() {
                 style={{ display: "none" }}
               />
               <IoMdAddCircleOutline className={css.iconAdd} />
-              <p className={css.textAdd}>Add photo</p>
+              <p className={css.textAdd}>
+                {i18n.t("userPage.buttons.addPhoto")}
+              </p>
             </label>
           </div>
           {thisUser.gallery ? (
@@ -293,12 +295,14 @@ export default function UserPage() {
               ))}
             </ul>
           ) : (
-            <p className={css.pointPhoto}>You don`t have photo yet.</p>
+            <p className={css.pointPhoto}>
+              {i18n.t("userPage.messages.noPhotos")}
+            </p>
           )}
         </div>
         <div className={css.containerForSeeAll}>
           <h3 className={css.friendsP}>
-            My friends: {Object.keys(friends).length}
+            {i18n.t("userPage.titles.myFriends")}: {Object.keys(friends).length}
           </h3>
           <button
             className={css.buttonSeeAll}
@@ -306,7 +310,7 @@ export default function UserPage() {
               navigation("/friends/friends");
             }}
           >
-            See all
+            {i18n.t("userPage.buttons.seeAll")}
           </button>
         </div>
         {friends ? (
@@ -341,14 +345,15 @@ export default function UserPage() {
               ))}
           </ul>
         ) : (
-          <p>No users found.</p>
+          <p>{i18n.t("userPage.messages.noUsers")}</p>
         )}
         <div className={css.publications}>
           <div className={css.contPubl}>
-            <h3 className={css.publicationsText}>Publications</h3>
+            <h3 className={css.publicationsText}>
+              {i18n.t("userPage.titles.publications")}
+            </h3>
             <button className={css.publish} onClick={toggleAddPost}>
-              {/* <IoAddSharp className={css.iconAdd} /> */}
-              Add news
+              {i18n.t("userPage.buttons.addNews")}
             </button>
           </div>
           <div className={css.containerForPublic}>
@@ -385,7 +390,8 @@ export default function UserPage() {
                             className={css.likes}
                             onClick={() => handleLike(currentUser.uid, post.id)}
                           >
-                            Like {post.likes?.length || 0}
+                            {i18n.t("userPage.social.like")}{" "}
+                            {post.likes?.length || 0}
                             {post.likes?.includes(currentUser.uid) ? (
                               <FcLike className={css.likesIcon} />
                             ) : (
@@ -396,7 +402,8 @@ export default function UserPage() {
                             className={css.likes}
                             onClick={() => toggleComments(post.id)}
                           >
-                            Comments {post.comments?.length || 0}
+                            {i18n.t("userPage.social.comments")}{" "}
+                            {post.comments?.length || 0}
                             <FaRegCommentAlt className={css.commentIcon} />
                           </p>
                         </div>
@@ -416,7 +423,9 @@ export default function UserPage() {
                                 className={css.commentInput}
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
-                                placeholder="Write a comment..."
+                                placeholder={i18n.t(
+                                  "userPage.social.writeComment"
+                                )}
                               />
                               <button
                                 className={css.commentButtonSend}
@@ -424,7 +433,7 @@ export default function UserPage() {
                                   handleAddComment(currentUser.uid, post.id)
                                 }
                               >
-                                Send
+                                {i18n.t("userPage.buttons.send")}
                               </button>
                             </div>
                           </div>
@@ -434,7 +443,7 @@ export default function UserPage() {
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>
-                You don`t have publications!
+                {i18n.t("userPage.messages.noPublications")}
               </p>
             )}
           </div>

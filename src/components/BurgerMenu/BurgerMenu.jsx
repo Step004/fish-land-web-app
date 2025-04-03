@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { changeOnlineStatusForLogOut } from "../../firebase/firebase/writeData.js";
 import { useAuth } from "../../firebase/contexts/authContexts/index.jsx";
 import { doSignOut } from "../../firebase/firebase/auth.js";
+import { i18n } from "../../utils/i18n";
 
 export const BurgerMenu = ({ isOpen, close }) => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export const BurgerMenu = ({ isOpen, close }) => {
           <p className={css.logotype}>Fish Land</p>
           <nav className={css.navigation}>
             <NavLink to="/" className={buildLinkClass} onClick={close}>
-              News
+              {i18n.t("navigation.links.news")}
             </NavLink>
 
             <NavLink
@@ -34,13 +35,13 @@ export const BurgerMenu = ({ isOpen, close }) => {
               className={buildLinkClass}
               onClick={close}
             >
-              Friends
+              {i18n.t("navigation.links.friends")}
             </NavLink>
             <NavLink to="/message" className={buildLinkClass} onClick={close}>
-              Message
+              {i18n.t("navigation.links.messages")}
             </NavLink>
             <NavLink to="/user" className={buildLinkClass} onClick={close}>
-              My profile
+              {i18n.t("navigation.links.myProfile")}
             </NavLink>
           </nav>
           <button
@@ -50,7 +51,7 @@ export const BurgerMenu = ({ isOpen, close }) => {
               close();
             }}
           >
-            Logout
+            {i18n.t("navigation.links.logout")}
           </button>
         </div>
       </>

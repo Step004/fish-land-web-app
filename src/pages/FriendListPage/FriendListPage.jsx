@@ -1,6 +1,7 @@
 import css from "./FriendListPage.module.css";
 import { NavLink, Outlet } from "react-router-dom";
 import clsx from "clsx";
+import { i18n } from "../../utils/i18n";
 
 export default function FriendListPage() {
   const buildLinkClass = ({ isActive }) => {
@@ -11,12 +12,12 @@ export default function FriendListPage() {
       <ul className={css.listNav}>
         <li>
           <NavLink to="friends" className={buildLinkClass}>
-            Friends
+            {i18n.t("navigation.links.friends")}
           </NavLink>
         </li>
         <li>
           <NavLink to="users" className={buildLinkClass}>
-            All users
+            {i18n.t("friendListPage.links.users")}
           </NavLink>
         </li>
       </ul>

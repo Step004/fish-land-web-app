@@ -5,6 +5,7 @@ import css from "./FriendsList.module.css";
 import defaultPhoto from "../../img/default-user.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader.jsx";
+import { i18n } from "../../utils/i18n";
 
 export default function FriendsList() {
   const location = useLocation();
@@ -40,7 +41,7 @@ export default function FriendsList() {
     <div className={css.container}>
       <input
         type="text"
-        placeholder="Search friends by name..."
+        placeholder={i18n.t("friendsList.searchInputPlaceholder")}
         className={css.searchInput}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -65,32 +66,36 @@ export default function FriendsList() {
               <p className={css.name}>{user.name}</p>
               <p>
                 {user.online ? (
-                  <span className={css.online}>Online</span>
+                  <span className={css.online}>
+                    {i18n.t("friendsList.online")}
+                  </span>
                 ) : (
-                  <span className={css.offline}>Offline</span>
+                  <span className={css.offline}>
+                    {i18n.t("friendsList.offline")}
+                  </span>
                 )}
               </p>
             </div>
             <div className={css.descriptions}>
               {user.origin ? (
                 <p className={css.desc}>
-                  From: <span>{user.origin}</span>
+                  {i18n.t("friendsList.from")}: <span>{user.origin}</span>
                 </p>
               ) : null}
               {user.age ? (
                 <p className={css.desc}>
-                  Age: <span>{user.age}</span>
+                  {i18n.t("friendsList.age")}: <span>{user.age}</span>
                 </p>
               ) : null}
               {user.number ? (
                 <p className={css.desc}>
-                  Number: <span>{user.number}</span>
+                  {i18n.t("friendsList.number")}: <span>{user.number}</span>
                 </p>
               ) : null}
             </div>
             {user.preference ? (
               <p className={css.fromLocal}>
-                Preference: <span>{user.preference}</span>
+                {i18n.t("friendsList.preference")}: <span>{user.preference}</span>
               </p>
             ) : null}
           </div>
