@@ -16,12 +16,28 @@ export const Recommendations = () => {
     };
     fetchRecommendations();
   }, [userFromDB]);
+  const handleOpenMap = (placeName) => {
+    console.log(placeName);
+
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        placeName
+      )}`,
+      "_blank"
+    );
+  };
 
   return (
     <div className={css.container}>
       {Array.isArray(recommendations) && recommendations.length > 0 ? (
         recommendations.map((item, index) => (
-          <div key={index} className={css.containerForRecommendation}>
+          <div
+            key={index}
+            className={css.containerForRecommendation}
+            onClick={() => {
+              handleOpenMap(`${item.place_name} ${item.location}`);
+            }}
+          >
             <div className={css.containerForIcon}>
               <MdLocationSearching className={css.icon} />
               <h3 className={css.placeName}>{item.place_name}</h3>
