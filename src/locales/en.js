@@ -203,9 +203,9 @@ export const translations = {
     },
     messages: {
       areFriends: "We are friends",
-      noPhotos: "{name} doesn't have any photos yet",
+      noPhotos: "{{name}} doesn't have any photos yet",
       noUsers: "No users found",
-      noPublications: "{name} doesn't have any publications!",
+      noPublications: "{{name}} doesn't have any publications!",
       friendDeleted: "Friend deleted successfully",
       commentAdded: "Comment added successfully",
       commentError: "Failed to add comment",

@@ -256,9 +256,7 @@ export default function FriendPage() {
             </ul>
           ) : (
             <p className={css.pointPhoto}>
-              {i18n.tReplace("friendPage.messages.noPhotos", {
-                name: user.name,
-              })}
+              {i18n.t("friendPage.messages.noPhotos", { name: user.name })}
             </p>
           )}
         </div>
@@ -390,7 +388,7 @@ export default function FriendPage() {
               </ul>
             ) : (
               <p className={css.pForNothingPublications}>
-                {i18n.tReplace("friendPage.messages.noPublications", {
+                {i18n.t("friendPage.messages.noPublications", {
                   name: user.name,
                 })}
               </p>

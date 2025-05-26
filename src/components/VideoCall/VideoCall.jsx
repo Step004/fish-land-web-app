@@ -27,12 +27,12 @@ const VideoCall = ({ chatId, link, close }) => {
   const [callId, setCallId] = useState("");
   const [isCalling, setIsCalling] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const webcamVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+  
   const pc = useRef(
     typeof window !== "undefined" ? new RTCPeerConnection(servers) : null
   );
-  const webcamVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-
   const startWebcam = async () => {
     if (typeof window === "undefined") return;
     const stream = await navigator.mediaDevices.getUserMedia({

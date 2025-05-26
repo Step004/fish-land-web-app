@@ -95,7 +95,8 @@ export default function FriendsList() {
             </div>
             {user.preference ? (
               <p className={css.fromLocal}>
-                {i18n.t("friendsList.preference")}: <span>{user.preference}</span>
+                {i18n.t("friendsList.preference")}:{" "}
+                <span>{user.preference}</span>
               </p>
             ) : null}
           </div>

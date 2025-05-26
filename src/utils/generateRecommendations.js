@@ -9,36 +9,25 @@ export async function generateRecommendations(userData) {
       console.log(message);
       return { message };
     }
-
-    // Нормалізуємо місто користувача
     const userCity = userData.origin.trim().toLowerCase();
-    // Отримуємо всі місця з колекції places
     const placesRef = collection(firestore, "places");
     const placesSnapshot = await getDocs(placesRef);
     const allPlaces = [];
     const recommendations = [];
-
-    // Отримуємо відповіді користувача
     const userAnswers = userData.answers || {};
-
     placesSnapshot.forEach((doc) => {
       allPlaces.push({
         id: doc.id,
         ...doc.data(),
       });
     });
-
-    // Фільтрація місць
     for (const place of allPlaces) {
       const placeCity = place.location.trim().toLowerCase();
 
-      // Пропускаємо, якщо місто не збігається
       if (placeCity !== userCity) {
         continue;
       }
-
       let matchScore = 0;
-
       // 1. Фільтрація за типом риби
       const requestedFishType = userAnswers[1];
       if (
@@ -48,7 +37,6 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 2. Фільтрація за місцем риболовлі
       const requestedFishingLocation = userAnswers[2];
       if (
@@ -60,7 +48,6 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 3. Фільтрація за стилем риболовлі
       const requestedFishingStyle = userAnswers[3];
       if (
@@ -72,7 +59,6 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 4. Фільтрація за нічною риболовлею
       const likesNightFishing = userAnswers[4];
       if (
@@ -81,7 +67,6 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 5. Фільтрація за типом водойми
       const requestedWaterTypes = userAnswers[5];
       if (
@@ -91,13 +76,11 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 6. Фільтрація за відстанню
       const maxDistance = userAnswers[6];
       if (maxDistance && place.distance <= maxDistance) {
         matchScore += 1;
       }
-
       // 7. Фільтрація за зручностями
       const requestedFacilities = userAnswers[7];
       if (
@@ -109,7 +92,6 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 8. Погода
       const weatherPreference = userAnswers[8];
       if (
@@ -119,13 +101,11 @@ export async function generateRecommendations(userData) {
       ) {
         matchScore += 1;
       }
-
       // 9. Досвід у риболовлі
       const fishingExperience = userAnswers[9];
       if (fishingExperience && place.experienceLevel === fishingExperience) {
         matchScore += 1;
       }
-
       if (matchScore >= 0) {
         recommendations.push({
           place_name: place.name,
@@ -135,7 +115,6 @@ export async function generateRecommendations(userData) {
         });
       }
     }
-
     recommendations.sort((a, b) => b.matchScore - a.matchScore);
     const topRecommendations = recommendations.slice(0, 3);
 
@@ -146,7 +125,6 @@ export async function generateRecommendations(userData) {
       console.log(message);
       return { message };
     }
-
     return topRecommendations;
   } catch (error) {
     const message = i18n.tReplace("recommendations.errors.generalError", {

@@ -282,8 +282,8 @@ export default function UserPage() {
           </div>
           {thisUser.gallery ? (
             <ul className={css.photoList}>
-              {thisUser.gallery.map((photo) => (
-                <li key={photo.id} className={css.photoItem}>
+              {thisUser.gallery.map((photo, index) => (
+                <li key={index} className={css.photoItem}>
                   <Zoom
                     overlayBgColorEnd="rgba(0, 0, 0, 0.85)"
                     zoomMargin={40}

@@ -160,6 +160,9 @@ export const translations = {
       friends: "Друзі",
       users: "Користувачі",
     },
+    messages: {
+      noPhotos: "У користувача {{name}} немає фотографій",
+    },
   },
   friendsList: {
     searchInputPlaceholder: "Пошук друзів за іменем...",
@@ -206,9 +209,9 @@ export const translations = {
     },
     messages: {
       areFriends: "Ми друзі",
-      noPhotos: "У користувача {name} ще немає фотографій",
+      noPhotos: "У користувача {{name}} ще немає фотографій",
       noUsers: "Користувачів не знайдено",
-      noPublications: "У користувача {name} немає публікацій!",
+      noPublications: "У користувача {{name}} немає публікацій!",
       friendDeleted: "Друга успішно видалено",
       commentAdded: "Коментар додано успішно",
       commentError: "Помилка при додаванні коментаря",
